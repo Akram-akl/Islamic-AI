@@ -126,38 +126,56 @@ def _jaccard(a: str, b: str, n: int = 3) -> float:
 
 def get_cached_answer(question: str) -> dict | None:
     """البحث في كاش الإجابات المتحقق منها"""
-    q_hash = hashlib.sha256(question.strip().lower().encode()).hexdigest()
-    conn = get_conn()
     try:
-        row = conn.execute(
-            "SELECT answer_json FROM answer_cache WHERE question_hash=?",
-            (q_hash,)
-        ).fetchone()
-        if row:
-            conn.execute(
-                "UPDATE answer_cache SET hit_count=hit_count+1 WHERE question_hash=?",
+        q_hash = hashlib.sha256(question.strip().lower().encode()).hexdigest()
+        conn = get_conn()
+        try:
+            row = conn.execute(
+                "SELECT * FROM answer_cache WHERE question_hash=?",
                 (q_hash,)
-            )
-            conn.commit()
-            return json.loads(row["answer_json"])
+            ).fetchone()
+            if row:
+                conn.execute(
+                    "UPDATE answer_cache SET hit_count=hit_count+1 WHERE question_hash=?",
+                    (q_hash,)
+                )
+                conn.commit()
+                # يدعم كلا التنسيقين: answer_json أو answer العادي
+                keys = row.keys()
+                if "answer_json" in keys and row["answer_json"]:
+                    try:
+                        return json.loads(row["answer_json"])
+                    except Exception:
+                        pass
+                if "answer" in keys and row["answer"]:
+                    return {"answer": row["answer"], "sources": [], "cached": True}
+            return None
+        finally:
+            conn.close()
+    except Exception as e:
         return None
-    finally:
-        conn.close()
 
 
 def save_to_cache(question: str, answer: dict):
     """حفظ إجابة متحقق منها في الكاش"""
-    q_hash = hashlib.sha256(question.strip().lower().encode()).hexdigest()
-    conn = get_conn()
     try:
-        conn.execute(
-            """INSERT OR REPLACE INTO answer_cache
-               (question_hash, question, answer_json) VALUES (?,?,?)""",
-            (q_hash, question, json.dumps(answer, ensure_ascii=False))
-        )
-        conn.commit()
-    finally:
-        conn.close()
+        q_hash = hashlib.sha256(question.strip().lower().encode()).hexdigest()
+        ans_text = answer.get("answer", "") if isinstance(answer, dict) else str(answer)
+        ans_json = json.dumps(answer, ensure_ascii=False) if isinstance(answer, dict) else json.dumps({"answer": ans_text}, ensure_ascii=False)
+        conn = get_conn()
+        try:
+            conn.execute(
+                """INSERT OR REPLACE INTO answer_cache
+                   (question_hash, question_text, question, answer, answer_json)
+                   VALUES (?, ?, ?, ?, ?)""",
+                (q_hash, question[:500], question[:500], ans_text, ans_json)
+            )
+            conn.commit()
+        finally:
+            conn.close()
+    except Exception as e:
+        pass
+
 
 
 # ─────────────────────────────────────────────────────────────

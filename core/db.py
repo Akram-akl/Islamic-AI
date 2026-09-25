@@ -92,12 +92,15 @@ CREATE TABLE IF NOT EXISTS islamic_books (
 CREATE TABLE IF NOT EXISTS answer_cache (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     question_hash   TEXT    NOT NULL UNIQUE,
-    question_text   TEXT    NOT NULL,
-    answer          TEXT    NOT NULL,
+    question_text   TEXT    NOT NULL DEFAULT '',
+    question        TEXT    NOT NULL DEFAULT '',
+    answer          TEXT    NOT NULL DEFAULT '',
+    answer_json     TEXT    NOT NULL DEFAULT '',
     hit_count       INTEGER NOT NULL DEFAULT 1,
     created_at      TEXT    NOT NULL DEFAULT (datetime('now')),
     updated_at      TEXT    NOT NULL DEFAULT (datetime('now'))
 );
+
 
 -- سجل الأسئلة للإحصائيات
 CREATE TABLE IF NOT EXISTS query_log (
@@ -166,10 +169,26 @@ def init_db():
                 except sqlite3.OperationalError as e:
                     if "already exists" not in str(e):
                         print(f"  ⚠️  DB Schema: {e}")
+
+        # ضمان وجود جميع أعمدة الكاش حتى لو كان الجدول قديماً
+        for col, col_type in [
+            ("question_text", "TEXT NOT NULL DEFAULT ''"),
+            ("question",      "TEXT NOT NULL DEFAULT ''"),
+            ("answer",        "TEXT NOT NULL DEFAULT ''"),
+            ("answer_json",   "TEXT NOT NULL DEFAULT ''"),
+            ("updated_at",    "TEXT NOT NULL DEFAULT (datetime('now'))"),
+        ]:
+            try:
+                conn.execute(f"ALTER TABLE answer_cache ADD COLUMN {col} {col_type}")
+            except Exception:
+                pass
+
         conn.commit()
         print("  ✅ قاعدة البيانات جاهزة")
+
     finally:
         conn.close()
+
 
 
 # ─────────────────────────────────────────────────────────────
