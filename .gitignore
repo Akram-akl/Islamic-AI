@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+.venv/
+venv/
+ENV/
+*.log
+.DS_Store
+Thumbs.db
+data/train.jsonl
+data/eval.jsonl
+data/islamic.db
+data/islamic.db-wal
+data/islamic.db-shm

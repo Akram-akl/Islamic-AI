@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "files": {
+    "quran/quran_hafs_ar.json": true,
+    "hadith/bukhari_ar.json": true,
+    "hadith/bukhari_en.json": true,
+    "hadith/bukhari_ur.json": true,
+    "hadith/bukhari_tr.json": true,
+    "hadith/bukhari_fr.json": true,
+    "hadith/bukhari_id.json": true,
+    "hadith/muslim_ar.json": true,
+    "hadith/muslim_en.json": true,
+    "hadith/muslim_ur.json": true,
+    "hadith/muslim_tr.json": true,
+    "hadith/muslim_fr.json": true,
+    "hadith/muslim_id.json": true,
+    "hadith/riyadh_ar.json": false,
+    "hadith/riyadh_en.json": false,
+    "hadith/nawawi40_ar.json": true,
+    "hadith/nawawi40_en.json": true,
+    "hadith/abudawud_ar.json": true,
+    "hadith/abudawud_en.json": true,
+    "hadith/tirmidhi_ar.json": true,
+    "hadith/tirmidhi_en.json": true,
+    "hadith/ibnmajah_ar.json": true,
+    "hadith/ibnmajah_en.json": true,
+    "hadith/qudsi_ar.json": true,
+    "hadith/qudsi_en.json": true
+  }
+}

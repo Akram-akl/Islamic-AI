@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>الذكاء الاصطناعي الإسلامي — Islamic AI</title>
+  <meta name="description" content="نظام ذكاء اصطناعي إسلامي فائق الدقة — القرآن الكريم والسنة النبوية والفقه والسيرة والأذكار بلا هلوسة">
+  <link rel="manifest" href="/static/manifest.json">
+  <meta name="theme-color" content="#1B6B45">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/static/icon.svg">
+  <link rel="icon" type="image/svg+xml" href="/static/icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold:       #C9A84C;
+      --gold-light: #E8C97A;
+      --gold-dark:  #9B7B2E;
+      --emerald:    #1B6B45;
+      --emerald-light: #2D9E68;
+      --emerald-glow:  #00FF8850;
+      --bg-dark:    #0A0E14;
+      --bg-card:    #0F1620;
+      --bg-input:   #141E2C;
+      --border:     #1E2E42;
+      --text:       #E8EDF5;
+      --text-muted: #6B8099;
+      --red:        #FF4D4D;
+      --shadow:     0 8px 40px rgba(0,0,0,0.6);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── خلفية متحركة ─── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 20%, #1B6B4520, transparent),
+        radial-gradient(ellipse 50% 60% at 80% 80%, #C9A84C15, transparent),
+        radial-gradient(ellipse 80% 50% at 50% 50%, #0A0E1490, transparent);
+      pointer-events: none;
+    }
+
+    /* ─── شريط علوي ─── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,14,20,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex; align-items: center; gap: 16px;
+    }
+
+    .logo {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, var(--emerald), var(--gold));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+      box-shadow: 0 0 20px var(--emerald-glow);
+    }
+
+    .header-title h1 {
+      font-size: 18px; font-weight: 800; color: var(--gold);
+      line-height: 1.2;
+    }
+    .header-title p { font-size: 12px; color: var(--text-muted); }
+
+    .header-badge {
+      margin-right: auto;
+      background: linear-gradient(135deg, #1B4020, #0D2810);
+      border: 1px solid var(--emerald-light);
+      color: var(--emerald-light);
+      font-size: 11px; padding: 4px 12px; border-radius: 20px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .header-badge::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--emerald-light);
+      animation: pulse 2s infinite;
+    }
+
+    /* ─── التخطيط الرئيسي ─── */
+    main {
+      position: relative; z-index: 1;
+      max-width: 1100px; margin: 0 auto;
+      padding: 32px 20px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    /* ─── تبويبات ─── */
+    .tabs {
+      display: flex; gap: 4px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 6px;
+    }
+    .tab {
+      flex: 1; padding: 10px 16px;
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted); font-family: 'Tajawal', sans-serif;
+      font-size: 14px; font-weight: 500;
+      border-radius: 10px; transition: all 0.25s;
+    }
+    .tab:hover { color: var(--text); background: var(--bg-input); }
+    .tab.active {
+      background: linear-gradient(135deg, var(--emerald), var(--gold-dark));
+      color: #fff; font-weight: 700;
+      box-shadow: 0 4px 15px rgba(27,107,69,0.4);
+    }
+
+    /* ─── بطاقة السؤال ─── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      transition: border-color 0.3s;
+    }
+    .card:focus-within { border-color: var(--gold-dark); }
+
+    .card-title {
+      font-size: 13px; font-weight: 700;
+      color: var(--gold); letter-spacing: 0.5px;
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+
+    /* ─── منطقة السؤال ─── */
+    .question-box {
+      position: relative;
+    }
+    textarea#question {
+      width: 100%;
+      min-height: 100px; max-height: 240px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      color: var(--text);
+      font-family: 'Tajawal', sans-serif;
+      font-size: 16px; line-height: 1.7;
+      resize: vertical; outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    textarea#question::placeholder { color: var(--text-muted); }
+    textarea#question:focus {
+      border-color: var(--gold-dark);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+    }
+
+    /* ─── خيارات متقدمة ─── */
+    .options-row {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      margin-top: 14px; align-items: center;
+    }
+    .option-group { display: flex; flex-direction: column; gap: 4px; }
+    .option-group label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+    select {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 12px;
+      color: var(--text); font-family: 'Tajawal', sans-serif;
+      font-size: 13px; outline: none; cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    select:focus { border-color: var(--gold-dark); }
+
+    .checkbox-group {
+      display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+    }
+    .checkbox-label {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 12px; color: var(--text-muted); cursor: pointer;
+      padding: 4px 10px;
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: 20px; transition: all 0.2s;
+    }
+    .checkbox-label:hover { border-color: var(--gold-dark); color: var(--text); }
+    .checkbox-label input[type=checkbox] { accent-color: var(--gold); }
+    .checkbox-label.checked { border-color: var(--gold); color: var(--gold); }
+
+    /* ─── زر الإرسال ─── */
+    .send-btn {
+      margin-top: 16px;
+      width: 100%;
+      background: linear-gradient(135deg, var(--emerald), var(--gold-dark));
+      border: none; border-radius: 14px;
+      padding: 14px 24px;
+      color: #fff; font-family: 'Tajawal', sans-serif;
+      font-size: 16px; font-weight: 700;
+      cursor: pointer; transition: all 0.3s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 4px 20px rgba(27,107,69,0.4);
+    }
+    .send-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(27,107,69,0.6);
+    }
+    .send-btn:active { transform: translateY(0); }
+    .send-btn:disabled {
+      opacity: 0.5; cursor: not-allowed; transform: none;
+    }
+
+    /* ─── منطقة النتائج ─── */
+    #results { display: none; }
+
+    .answer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--gold-dark);
+      border-radius: 20px; padding: 24px;
+      box-shadow: 0 0 40px rgba(201,168,76,0.1);
+      animation: slideIn 0.4s ease;
+    }
+
+    .answer-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 16px; padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .answer-badge {
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+    }
+    .badge-verified { background: #0D2810; color: #4CAF50; border: 1px solid #4CAF50; }
+    .badge-unknown  { background: #2A1010; color: #FF6B6B; border: 1px solid #FF6B6B; }
+    .badge-cached   { background: #1A1020; color: #9B7BFF; border: 1px solid #9B7BFF; }
+    .badge-corrected{ background: #2A1A00; color: var(--gold); border: 1px solid var(--gold); }
+
+    .answer-text {
+      font-family: 'Tajawal', sans-serif;
+      font-size: 16px; line-height: 2;
+      color: var(--text); white-space: pre-wrap;
+    }
+
+    /* ─── مصادر ─── */
+    .sources-title {
+      font-size: 13px; font-weight: 700; color: var(--gold);
+      margin: 20px 0 12px; display: flex; align-items: center; gap: 6px;
+    }
+
+    .source-item {
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 16px;
+      margin-bottom: 10px; transition: border-color 0.2s;
+    }
+    .source-item:hover { border-color: var(--gold-dark); }
+
+    .source-ref {
+      font-size: 12px; font-weight: 700; color: var(--gold);
+      margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+    }
+    .source-ref .type-icon {
+      width: 22px; height: 22px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+    }
+    .type-quran  { background: #1B4020; }
+    .type-hadith { background: #1A1400; }
+
+    .source-text {
+      font-family: 'Amiri', serif;
+      font-size: 17px; line-height: 2.2; color: #D4C5A0;
+      direction: rtl;
+    }
+    .source-grade {
+      display: inline-block; margin-top: 6px;
+      font-size: 11px; padding: 2px 10px; border-radius: 10px;
+      background: #1B4020; color: #4CAF50;
+    }
+
+    /* ─── إحصاء ─── */
+    #stats-panel, #search-panel { display: none; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px; margin-top: 16px;
+    }
+    .stat-card {
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px; text-align: center;
+      transition: all 0.3s;
+    }
+    .stat-card:hover { border-color: var(--gold-dark); transform: translateY(-3px); }
+    .stat-number {
+      font-size: 36px; font-weight: 800;
+      background: linear-gradient(135deg, var(--gold-light), var(--emerald-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+
+    /* ─── بحث ─── */
+    .search-input-row {
+      display: flex; gap: 10px;
+    }
+    input[type=text] {
+      flex: 1;
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 18px;
+      color: var(--text); font-family: 'Tajawal', sans-serif;
+      font-size: 15px; outline: none; transition: border-color 0.2s;
+    }
+    input[type=text]:focus { border-color: var(--gold-dark); }
+
+    .search-btn {
+      background: linear-gradient(135deg, var(--emerald), var(--gold-dark));
+      border: none; border-radius: 12px; padding: 12px 20px;
+      color: #fff; cursor: pointer; font-size: 18px;
+      transition: all 0.25s;
+    }
+    .search-btn:hover { transform: scale(1.05); }
+
+    /* ─── جدول النتائج ─── */
+    .result-table {
+      width: 100%; border-collapse: collapse; margin-top: 16px;
+    }
+    .result-table th {
+      background: var(--bg-input); padding: 10px 14px;
+      font-size: 12px; color: var(--text-muted); text-align: right;
+      border-bottom: 1px solid var(--border);
+    }
+    .result-table td {
+      padding: 12px 14px; border-bottom: 1px solid var(--border);
+      font-size: 14px; vertical-align: top;
+    }
+    .result-table tr:hover td { background: var(--bg-input); }
+
+    /* ─── Loading ─── */
+    .loading {
+      display: flex; align-items: center; justify-content: center;
+      gap: 14px; padding: 32px;
+    }
+    .spinner {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--gold);
+      animation: spin 0.8s linear infinite;
+    }
+    .loading-text { color: var(--text-muted); font-size: 15px; }
+
+    /* ─── خطأ ─── */
+    .error-box {
+      background: #1A0808; border: 1px solid #FF4D4D;
+      border-radius: 12px; padding: 16px 20px;
+      color: #FF8080; font-size: 14px;
+    }
+
+    /* ─── حالة قاعدة البيانات ─── */
+    .db-status {
+      display: flex; gap: 12px; flex-wrap: wrap;
+    }
+    .db-chip {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: 20px; padding: 6px 14px;
+      font-size: 12px; color: var(--text-muted);
+    }
+    .db-chip .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--emerald-light);
+    }
+
+    /* ─── Animations ─── */
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    /* ─── زخارف هندسية ─── */
+    .geometric {
+      position: fixed; pointer-events: none;
+      opacity: 0.04; z-index: 0;
+    }
+    .geo-1 {
+      top: -100px; left: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+    }
+    .geo-2 {
+      bottom: -150px; right: -150px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, var(--emerald-light) 0%, transparent 70%);
+    }
+
+    .install-btn {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: #0A0E14;
+      font-weight: 700;
+      font-size: 12px;
+      border: none;
+      border-radius: 20px;
+      padding: 6px 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(201, 168, 76, 0.3);
+      transition: all 0.25s;
+    }
+    .install-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201, 168, 76, 0.5);
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      header { padding: 10px 14px; }
+      main { padding: 16px 12px; }
+      .options-row { flex-direction: column; align-items: stretch; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="geometric geo-1"></div>
+<div class="geometric geo-2"></div>
+
+<!-- ─── Header ─── -->
+<header>
+  <div class="logo">☪</div>
+  <div class="header-title">
+    <h1>الذكاء الاصطناعي الإسلامي</h1>
+    <p>Islamic AI — صفر هلوسة · مصادر معتمدة فقط</p>
+  </div>
+  <button id="pwa-install-btn" class="install-btn" onclick="installPWA()">📱 تثبيت التطبيق</button>
+  <div class="header-badge" id="db-badge">يتحقق...</div>
+</header>
+
+<!-- ─── Main ─── -->
+<main>
+
+  <!-- تبويبات -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('ask')" id="tab-ask">💬 سؤال وجواب</button>
+    <button class="tab" onclick="switchTab('search')" id="tab-search">🔍 بحث مباشر</button>
+    <button class="tab" onclick="switchTab('stats')" id="tab-stats">📊 إحصاءات</button>
+  </div>
+
+  <!-- ══════════════ تبويب السؤال ══════════════ -->
+  <div id="ask-panel">
+    <div class="card">
+      <div class="card-title">✨ اطرح سؤالك الديني</div>
+
+      <div class="question-box">
+        <textarea id="question" rows="4"
+          placeholder="مثال: ما هو حكم الصلاة في الإسلام؟
+أو: ما حديث النبي ﷺ عن النية؟
+أو: كم مرة ذُكرت كلمة الرحمة في القرآن؟"></textarea>
+      </div>
+
+      <div class="options-row">
+        <div class="option-group">
+          <label>رواية القرآن</label>
+          <select id="qiraah">
+            <option value="hafs">حفص عن عاصم ✓</option>
+            <option value="warsh">ورش عن نافع</option>
+          </select>
+        </div>
+
+        <div class="option-group">
+          <label>المجموعات الحديثية</label>
+          <div class="checkbox-group" id="collections-group">
+            <label class="checkbox-label checked" id="cb-bukhari">
+              <input type="checkbox" value="bukhari" checked> البخاري
+            </label>
+            <label class="checkbox-label checked" id="cb-muslim">
+              <input type="checkbox" value="muslim" checked> مسلم
+            </label>
+            <label class="checkbox-label" id="cb-nawawi">
+              <input type="checkbox" value="nawawi"> الأربعون
+            </label>
+            <label class="checkbox-label" id="cb-abudawud">
+              <input type="checkbox" value="abudawud"> أبو داود
+            </label>
+            <label class="checkbox-label" id="cb-tirmidhi">
+              <input type="checkbox" value="tirmidhi"> الترمذي
+            </label>
+            <label class="checkbox-label" id="cb-ibnmajah">
+              <input type="checkbox" value="ibnmajah"> ابن ماجه
+            </label>
+            <label class="checkbox-label" id="cb-qudsi">
+              <input type="checkbox" value="qudsi"> القدسية
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <button class="send-btn" onclick="askQuestion()" id="ask-btn">
+        <span>🔮</span> ابحث وأجب من المصادر المعتمدة
+      </button>
+    </div>
+
+    <!-- نتائج -->
+    <div id="results">
+      <div id="loading-box" class="card loading" style="display:none">
+        <div class="spinner"></div>
+        <div class="loading-text">جار البحث في القرآن والسنة...</div>
+      </div>
+      <div id="answer-box"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════ تبويب البحث ══════════════ -->
+  <div id="search-panel" style="display:none">
+    <div class="card">
+      <div class="card-title">🔍 بحث نصي مباشر</div>
+      <div class="search-input-row">
+        <input type="text" id="search-query"
+          placeholder="ابحث في القرآن والأحاديث... مثال: الصبر، الصلاة، إنما الأعمال"
+          onkeypress="if(event.key==='Enter') doSearch()">
+        <button class="search-btn" onclick="doSearch()">⚡</button>
+      </div>
+      <div class="options-row" style="margin-top:12px">
+        <div class="option-group">
+          <label>مصدر البحث</label>
+          <select id="search-source">
+            <option value="all">القرآن + الأحاديث</option>
+            <option value="quran">القرآن فقط</option>
+            <option value="hadith">الأحاديث فقط</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div id="search-results"></div>
+  </div>
+
+  <!-- ══════════════ تبويب الإحصاء ══════════════ -->
+  <div id="stats-panel" style="display:none">
+    <div class="card">
+      <div class="card-title">📊 الإحصاءات الرياضية الحتمية</div>
+
+      <div class="options-row" style="flex-direction:column; gap:16px">
+        <!-- إحصاء كلمة في القرآن -->
+        <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap">
+          <div class="option-group" style="flex:1">
+            <label>إحصاء تكرار كلمة في القرآن الكريم</label>
+            <input type="text" id="stat-word"
+              placeholder="مثال: الرحمة، الصبر، الجنة" style="width:100%">
+          </div>
+          <button class="search-btn" onclick="doWordStats()" style="height:42px">احسب</button>
+        </div>
+
+        <!-- إحصاء سورة -->
+        <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap">
+          <div class="option-group" style="flex:1">
+            <label>إحصاء سورة كاملة</label>
+            <input type="number" id="stat-surah" min="1" max="114"
+              placeholder="رقم السورة (1-114)" style="width:100%" class="search-input-row">
+          </div>
+          <button class="search-btn" onclick="doSurahStats()" style="height:42px">احسب</button>
+        </div>
+
+        <!-- إحصاء مجموعة حديثية -->
+        <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap">
+          <div class="option-group" style="flex:1">
+            <label>إحصاء مجموعة حديثية</label>
+            <select id="stat-collection" style="width:100%">
+              <option value="bukhari">صحيح البخاري</option>
+              <option value="muslim">صحيح مسلم</option>
+              <option value="nawawi">الأربعون النووية</option>
+              <option value="abudawud">سنن أبي داود</option>
+              <option value="tirmidhi">جامع الترمذي</option>
+              <option value="ibnmajah">سنن ابن ماجه</option>
+              <option value="qudsi">الأحاديث القدسية</option>
+            </select>
+          </div>
+          <button class="search-btn" onclick="doHadithStats()" style="height:42px">احسب</button>
+        </div>
+      </div>
+    </div>
+    <div id="stats-results"></div>
+  </div>
+
+</main>
+
+<script>
+const API = '';  // نفس المضيف
+
+// ─── حالة قاعدة البيانات ─── 
+async function checkHealth() {
+  try {
+    const r = await fetch(`${API}/health`);
+    const d = await r.json();
+    const badge = document.getElementById('db-badge');
+    if (d.status === 'ok') {
+      badge.textContent = `✅ ${d.quran_ayahs.toLocaleString('ar')} آية · ${d.hadiths.toLocaleString('ar')} حديث`;
+      badge.style.borderColor = 'var(--emerald-light)';
+    } else {
+      badge.textContent = '⚠️ جاري البناء...';
+    }
+  } catch {
+    document.getElementById('db-badge').textContent = '⛔ قاعدة البيانات فارغة — شغّل: python setup.py';
+  }
+}
+checkHealth();
+
+// ─── تبديل تبويبات ───
+function switchTab(name) {
+  ['ask','search','stats'].forEach(t => {
+    document.getElementById(`${t}-panel`).style.display = t===name ? 'block' : 'none';
+    document.getElementById(`tab-${t}`).classList.toggle('active', t===name);
+  });
+}
+
+// ─── خانات اختيار المجموعات ───
+document.querySelectorAll('.checkbox-label').forEach(lbl => {
+  const cb = lbl.querySelector('input[type=checkbox]');
+  cb.addEventListener('change', () => {
+    lbl.classList.toggle('checked', cb.checked);
+  });
+});
+
+// ─── السؤال الرئيسي ───
+async function askQuestion() {
+  const q = document.getElementById('question').value.trim();
+  if (!q) { alert('يُرجى كتابة سؤالك أولاً'); return; }
+
+  const collections = [...document.querySelectorAll('#collections-group input:checked')]
+    .map(cb => cb.value);
+
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('loading-box').style.display = 'flex';
+  document.getElementById('answer-box').innerHTML = '';
+  document.getElementById('ask-btn').disabled = true;
+
+  try {
+    const res = await fetch(`${API}/api/ask`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        question: q,
+        collections: collections.length ? collections : null,
+        qiraah: document.getElementById('qiraah').value,
+        limit: 8,
+      })
+    });
+
+    document.getElementById('loading-box').style.display = 'none';
+
+    if (!res.ok) {
+      const err = await res.json();
+      renderError(err.detail || 'حدث خطأ');
+      return;
+    }
+
+    const data = await res.json();
+    renderAnswer(data);
+  } catch(e) {
+    document.getElementById('loading-box').style.display = 'none';
+    renderError('تعذّر الاتصال بالخادم: ' + e.message);
+  } finally {
+    document.getElementById('ask-btn').disabled = false;
+  }
+}
+
+function renderAnswer(d) {
+  const badges = [];
+  if (d.cached) badges.push('<span class="answer-badge badge-cached">⚡ من الكاش</span>');
+  if (d.unknown) badges.push('<span class="answer-badge badge-unknown">❌ لا يوجد في المصادر</span>');
+  else if (d.hallucination_detected) badges.push('<span class="answer-badge badge-corrected">⚠️ تم تصحيح</span>');
+  else badges.push('<span class="answer-badge badge-verified">✅ متحقق</span>');
+
+  let html = `
+    <div class="answer-card">
+      <div class="answer-header">
+        ${badges.join('')}
+        <span style="margin-right:auto;font-size:11px;color:var(--text-muted)">${d.ms}ms · ${d.lang || ''}</span>
+      </div>
+      <div class="answer-text">${escHtml(d.answer)}</div>`;
+
+  if (d.sources && d.sources.length) {
+    html += `<div class="sources-title">📚 المصادر المُسترجعة (${d.sources.length})</div>`;
+    d.sources.forEach((s, i) => {
+      const isQ = s.source === 'quran';
+      html += `
+        <div class="source-item">
+          <div class="source-ref">
+            <span class="type-icon ${isQ?'type-quran':'type-hadith'}">${isQ?'📖':'📜'}</span>
+            ${escHtml(s.reference || s.reference_label || '')}
+          </div>
+          <div class="source-text">${escHtml(s.text_ar || '')}</div>
+          ${s.grade ? `<span class="source-grade">${escHtml(s.grade)}</span>` : ''}
+        </div>`;
+    });
+  }
+
+  if (d.corrections && d.corrections.length) {
+    html += `
+      <details style="margin-top:16px">
+        <summary style="cursor:pointer;font-size:12px;color:var(--gold)">⚠️ ${d.corrections.length} تصحيح تم تطبيقه</summary>
+        ${d.corrections.map(c => `
+          <div style="font-size:12px;padding:8px;margin-top:6px;background:var(--bg-input);border-radius:8px;color:var(--text-muted)">
+            النص الأصلي: <s>${escHtml(c.original)}</s><br>
+            التصحيح: <b style="color:var(--gold-light)">${escHtml(c.corrected)}</b>
+          </div>`).join('')}
+      </details>`;
+  }
+
+  html += '</div>';
+  document.getElementById('answer-box').innerHTML = html;
+}
+
+// ─── البحث المباشر ───
+async function doSearch() {
+  const q = document.getElementById('search-query').value.trim();
+  if (!q) return;
+
+  document.getElementById('search-results').innerHTML = `
+    <div class="card loading" style="display:flex">
+      <div class="spinner"></div><div class="loading-text">جار البحث...</div>
+    </div>`;
+
+  try {
+    const res = await fetch(`${API}/api/search`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        query: q,
+        source: document.getElementById('search-source').value,
+        limit: 15,
+      })
+    });
+    const d = await res.json();
+    renderSearchResults(d);
+  } catch(e) {
+    document.getElementById('search-results').innerHTML = `<div class="error-box">خطأ: ${e.message}</div>`;
+  }
+}
+
+function renderSearchResults(d) {
+  let html = `<div class="card" style="margin-top:16px">
+    <div class="card-title">🎯 النتائج: ${d.total} نتيجة (${d.ms}ms)</div>`;
+
+  if (d.quran && d.quran.length) {
+    html += `<div class="sources-title">📖 آيات قرآنية (${d.quran.length})</div>`;
+    d.quran.forEach(r => {
+      html += `
+        <div class="source-item">
+          <div class="source-ref">
+            <span class="type-icon type-quran">📖</span>
+            ${escHtml(r.reference)}
+          </div>
+          <div class="source-text">${escHtml(r.text_ar)}</div>
+        </div>`;
+    });
+  }
+
+  if (d.hadiths && d.hadiths.length) {
+    html += `<div class="sources-title">📜 أحاديث شريفة (${d.hadiths.length})</div>`;
+    d.hadiths.forEach(r => {
+      html += `
+        <div class="source-item">
+          <div class="source-ref">
+            <span class="type-icon type-hadith">📜</span>
+            ${escHtml(r.reference_label || r.reference || '')}
+          </div>
+          <div class="source-text">${escHtml(r.text_ar)}</div>
+          ${r.grade ? `<span class="source-grade">${escHtml(r.grade)}</span>` : ''}
+        </div>`;
+    });
+  }
+
+  if (!d.total) html += `<p style="color:var(--text-muted);text-align:center;padding:20px">لا توجد نتائج لهذا البحث</p>`;
+  html += '</div>';
+  document.getElementById('search-results').innerHTML = html;
+}
+
+// ─── الإحصاءات ───
+async function doWordStats() {
+  const word = document.getElementById('stat-word').value.trim();
+  if (!word) return;
+  await fetchStats('/api/stats', {type:'word_in_quran', word});
+}
+async function doSurahStats() {
+  const n = parseInt(document.getElementById('stat-surah').value);
+  if (!n) return;
+  await fetchStats('/api/stats', {type:'surah_stats', surah_number:n});
+}
+async function doHadithStats() {
+  const c = document.getElementById('stat-collection').value;
+  await fetchStats('/api/stats', {type:'hadith_stats', collection:c});
+}
+
+async function fetchStats(url, body) {
+  document.getElementById('stats-results').innerHTML = `
+    <div class="card loading" style="display:flex;margin-top:16px">
+      <div class="spinner"></div><div class="loading-text">جار الحساب...</div>
+    </div>`;
+  try {
+    const res = await fetch(`${API}${url}`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const d = await res.json();
+    renderStats(d);
+  } catch(e) {
+    document.getElementById('stats-results').innerHTML = `<div class="error-box">خطأ: ${e.message}</div>`;
+  }
+}
+
+function renderStats(d) {
+  let html = '<div class="card" style="margin-top:16px">';
+  if (d.error) {
+    html += `<div class="error-box">${escHtml(d.error)}</div>`;
+  } else if (d.total_count !== undefined) {
+    // إحصاء كلمة
+    html += `
+      <div class="card-title">📊 إحصاء: "${escHtml(d.word)}"</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-number">${d.total_count}</div><div class="stat-label">إجمالي التكرارات</div></div>
+        <div class="stat-card"><div class="stat-number">${d.ayahs_count}</div><div class="stat-label">آية تحتويها</div></div>
+      </div>
+      <div class="sources-title">📈 أعلى السور تكراراً</div>
+      ${(d.top_surahs||[]).map(s => `
+        <div class="source-item" style="display:flex;justify-content:space-between;align-items:center">
+          <span>سورة ${s.surah}</span>
+          <span class="source-grade">${s.count} مرة</span>
+        </div>`).join('')}`;
+  } else if (d.ayahs_count !== undefined) {
+    // إحصاء سورة
+    html += `
+      <div class="card-title">📊 ${escHtml(d.surah_name_ar)} (${d.surah_type==='meccan'?'مكية':'مدنية'})</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-number">${d.ayahs_count}</div><div class="stat-label">عدد الآيات</div></div>
+        <div class="stat-card"><div class="stat-number">${d.words_count}</div><div class="stat-label">عدد الكلمات</div></div>
+        <div class="stat-card"><div class="stat-number">${d.letters_count}</div><div class="stat-label">عدد الحروف</div></div>
+      </div>
+      <div class="sources-title">🔤 أكثر الكلمات تكراراً</div>
+      ${(d.top_words||[]).map(w => `
+        <div class="source-item" style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Amiri',serif;font-size:18px">${escHtml(w.word)}</span>
+          <span class="source-grade">${w.count} مرة</span>
+        </div>`).join('')}`;
+  } else if (d.total_hadiths !== undefined) {
+    // إحصاء حديثية
+    const labels = {bukhari:'البخاري',muslim:'مسلم',nawawi:'الأربعون',abudawud:'أبو داود',tirmidhi:'الترمذي',ibnmajah:'ابن ماجه',qudsi:'القدسية'};
+    html += `
+      <div class="card-title">📊 ${labels[d.collection]||d.collection}</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-number">${d.total_hadiths.toLocaleString('ar')}</div><div class="stat-label">إجمالي الأحاديث</div></div>
+      </div>
+      <div class="sources-title">🏅 الأحاديث حسب الدرجة</div>
+      ${(d.grades||[]).map(g => `
+        <div class="source-item" style="display:flex;justify-content:space-between;align-items:center">
+          <span>${escHtml(g.grade||'غير محدد')}</span>
+          <span class="source-grade">${g.count}</span>
+        </div>`).join('')}`;
+  }
+  html += '</div>';
+  document.getElementById('stats-results').innerHTML = html;
+}
+
+function renderError(msg) {
+  document.getElementById('answer-box').innerHTML =
+    `<div class="error-box">❌ ${escHtml(msg)}</div>`;
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Enter للإرسال
+document.getElementById('question').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.ctrlKey) askQuestion();
+});
+
+// ─── PWA Service Worker & Install Prompt ───
+let deferredPrompt;
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/static/sw.js').catch(err => {
+      console.log('SW registration skipped:', err);
+    });
+  });
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const btn = document.getElementById('pwa-install-btn');
+  if (btn) btn.style.display = 'inline-flex';
+});
+
+async function installPWA() {
+  if (!deferredPrompt) {
+    alert("لتثبيت التطبيق على هاتفك: اضغط على زر المشاركة أو القائمة في المتصفح ثم اختر 'إضافة إلى الشاشة الرئيسية' (Add to Home Screen)");
+    return;
+  }
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') {
+    const btn = document.getElementById('pwa-install-btn');
+    if (btn) btn.style.display = 'none';
+  }
+  deferredPrompt = null;
+}
+</script>
+</body>
+</html>
