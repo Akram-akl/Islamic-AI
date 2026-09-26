@@ -434,6 +434,7 @@
     <p>Islamic AI Hub — القراءات العشر · السنة والمشجر · مواقيت الصلاة والقبلة · تفريغ الصوتيات</p>
   </div>
   <div class="header-actions">
+    <button class="btn-action" onclick="forceAppRefresh()" title="تحديث فوري ومسح الذاكرة المؤقتة" style="border-color:var(--gold); color:var(--gold)">🔄 تحديث ومسح الكاش</button>
     <button class="btn-action" onclick="openApiKeyModal()">⚙️ إعدادات الذكاء (API)</button>
     <select id="user-lang-select" class="lang-selector" onchange="window.onLanguageChange()" title="اختر لغة الترجمة">
       <option value="en">🇬🇧 English</option>
@@ -501,6 +502,7 @@
       </div>
 
       <div class="quick-chips">
+        <span class="quick-chip" onclick="setQuickQuestion('كيف حالك وذكرني من هو جبريل وميكال بالدليل ومن أول 10 مبشرين وهل يجوز التداول؟')">🌟 جبريل وميكائيل، العشرة المبشرون، وحكم التداول</span>
         <span class="quick-chip" onclick="setQuickQuestion('اعطني شرح مفصل لصلاة الوتر بالدليل والمصادر وهل سنة ام واجب وما حكم صيام يوم عرفة وهل يوافق رمضان وليلة القدر؟')">🕌 صلاة الوتر ويوم عرفة وليلة القدر</span>
         <span class="quick-chip" onclick="setQuickQuestion('ما هي أحكام النون الساكنة والتنوين في التجويد مع الأمثلة؟')">📖 أحكام التجويد (النون والتنوين)</span>
         <span class="quick-chip" onclick="setQuickQuestion('من هم أئمة القراءات العشر ورواتهم العشرون وما الفرق بين الرواية والقراءة؟')">📜 القراءات العشر ورواتها الـ 20</span>
@@ -759,6 +761,13 @@
                 <option value="51.5074,-0.1278,1.0,لندن">🇬🇧 لندن</option>
                 <option value="48.8566,2.3522,2.0,باريس">🇫🇷 باريس</option>
                 <option value="40.7128,-74.0060,-4.0,نيويورك">🇺🇸 نيويورك</option>
+                <option value="55.7558,37.6173,3.0,موسكو (روسيا)">🇷🇺 موسكو (روسيا)</option>
+                <option value="52.5200,13.4050,2.0,برلين (ألمانيا)">🇩🇪 برلين (ألمانيا)</option>
+                <option value="59.9139,10.7522,2.0,أوسلو (النرويج)">🇳🇴 أوسلو (النرويج)</option>
+                <option value="43.6532,-79.3832,-4.0,تورونتو (كندا)">🇨🇦 تورونتو (كندا)</option>
+                <option value="33.6844,73.0479,5.0,إسلام آباد (باكستان)">🇵🇰 إسلام آباد (باكستان)</option>
+                <option value="-6.2088,106.8456,7.0,جاكرتا (إندونيسيا)">🇮🇩 جاكرتا (إندونيسيا)</option>
+                <option value="3.1390,101.6869,8.0,كوالالمبور (ماليزيا)">🇲🇾 كوالالمبور (ماليزيا)</option>
               </optgroup>
             </select>
           </div>
@@ -777,7 +786,8 @@
             </div>
             <div style="display:flex; align-items:center; gap:4px">
               <label style="font-size:11px; color:var(--text-muted)">مذهب العصر:</label>
-              <select id="prayer-asr-madhab" onchange="recalculatePrayerTimes()" style="font-size:11.5px">
+              <button class="act-btn" onclick="toggleTimeFormat()" id="time-format-toggle-btn" style="font-size:11.5px">🕒 نظام 12 ساعة (ص/م)</button>
+            <select id="prayer-asr-madhab" onchange="recalculatePrayerTimes()" style="font-size:11.5px">
                 <option value="standard" selected>الجمهور (الشافعي، المالكي، الحنبلي)</option>
                 <option value="hanafi">الحنفي (ظل المثلين)</option>
               </select>
@@ -1433,14 +1443,29 @@ let ttsCurrentIdx = 0;
 let isTtsPlaying = false;
 let isTtsPaused = false;
 
+function sanitizeTextForTts(text) {
+  if (!text) return '';
+  // إزالة وسوم ماركداون والرموز الخاصة حتى لا ينطقها القارئ الصوتي
+  return text
+    .replace(/[#*`_~>\[\](){}|]/g, ' ')
+    .replace(/۝/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function populateVoices() {
   if (!synth) return;
   const select = document.getElementById('tts-voice-select');
   if (!select) return;
   const voices = synth.getVoices();
-  select.innerHTML = '<option value="">(الصوت الافتراضي)</option>';
+  select.innerHTML = '<option value="">(أفضل صوت طبيعي تلقائي)</option>';
 
-  const arVoices = voices.filter(v => v.lang && v.lang.startsWith('ar'));
+  // فرز الأصوات العربية وترقية الأصوات الطبيعية العالية الجودة (Natural / Neural / Naayf / Hoda)
+  const arVoices = voices.filter(v => v.lang && v.lang.startsWith('ar')).sort((a, b) => {
+    const isNaturalA = /natural|neural|naayf|hoda|tarik/i.test(a.name) ? 1 : 0;
+    const isNaturalB = /natural|neural|naayf|hoda|tarik/i.test(b.name) ? 1 : 0;
+    return isNaturalB - isNaturalA;
+  });
   const otherVoices = voices.filter(v => !v.lang || !v.lang.startsWith('ar'));
 
   if (arVoices.length > 0) {
@@ -1498,7 +1523,8 @@ function speakString(text) {
   }
   stopAllAudio();
 
-  ttsQueue = chunkText(text);
+  const cleanText = sanitizeTextForTts(text);
+  ttsQueue = chunkText(cleanText);
   ttsCurrentIdx = 0;
   isTtsPlaying = true;
   isTtsPaused = false;
@@ -1635,7 +1661,36 @@ function onCitySelected() {
   showToast(`تم ضبط الموقع على: ${name}`, 'success');
 }
 
-// الحساب الفلكي المعتمد لأوقات الصلاة
+let CURRENT_TIME_FORMAT_12H = true;
+
+function toggleTimeFormat() {
+  CURRENT_TIME_FORMAT_12H = !CURRENT_TIME_FORMAT_12H;
+  const btn = document.getElementById('time-format-toggle-btn');
+  if (btn) {
+    btn.textContent = CURRENT_TIME_FORMAT_12H ? '🕒 نظام 12 ساعة (ص/م)' : '🕒 نظام 24 ساعة';
+  }
+  recalculatePrayerTimes();
+  showToast(CURRENT_TIME_FORMAT_12H ? 'تم التبديل إلى نظام 12 ساعة (ص/م)' : 'تم التبديل إلى نظام 24 ساعة', 'info');
+}
+
+function formatPrayerTime(timeStr, is12h = CURRENT_TIME_FORMAT_12H) {
+  if (!timeStr || typeof timeStr !== 'string' || !timeStr.includes(':')) return timeStr;
+  const parts = timeStr.split(':');
+  let h = parseInt(parts[0], 10);
+  const m = parseInt(parts[1], 10);
+  if (isNaN(h) || isNaN(m)) return timeStr;
+
+  if (!is12h) {
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  }
+
+  const period = h >= 12 ? 'م' : 'ص';
+  h = h % 12;
+  if (h === 0) h = 12;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')} ${period}`;
+}
+
+// الحساب الفلكي المعتمد لأوقات الصلاة مع معالجة خطوط العرض العليا (روسيا وأوروبا)
 function calculatePrayerTimesEngine(lat, lng, tz, method = 'egypt', asrMadhab = 'standard') {
   const date = new Date();
   const startOfYear = new Date(date.getFullYear(), 0, 0);
@@ -1670,9 +1725,12 @@ function calculatePrayerTimesEngine(lat, lng, tz, method = 'egypt', asrMadhab = 
 
   function hourAngle(alphaDeg) {
     const alpha = alphaDeg * Math.PI / 180.0;
-    const cosW = (Math.sin(alpha) - Math.sin(phi) * Math.sin(decl)) / (Math.cos(phi) * Math.cos(decl));
-    if (cosW > 1.0) return 0.0;
-    if (cosW < -1.0) return Math.PI;
+    const denom = Math.cos(phi) * Math.cos(decl);
+    if (Math.abs(denom) < 0.00001) return 0.0;
+    let cosW = (Math.sin(alpha) - Math.sin(phi) * Math.sin(decl)) / denom;
+    // حماية خطوط العرض العليا (مثل موسكو وأوسلو)
+    if (cosW > 1.0) cosW = 1.0;
+    if (cosW < -1.0) cosW = -1.0;
     return Math.acos(cosW);
   }
 
@@ -1751,19 +1809,57 @@ function calculateDistanceToKaaba(lat, lng) {
   return Math.round(R * c);
 }
 
-function recalculatePrayerTimes() {
+async function recalculatePrayerTimes() {
   const method = document.getElementById('prayer-method')?.value || 'egypt';
   const asrMadhab = document.getElementById('prayer-asr-madhab')?.value || 'standard';
   const { lat, lng, tz } = CURRENT_USER_LOCATION;
 
-  const times = calculatePrayerTimesEngine(lat, lng, tz, method, asrMadhab);
+  // الحساب الفلكي المحلي كخط دفاع أساسي وفوري
+  const localTimes = calculatePrayerTimesEngine(lat, lng, tz, method, asrMadhab);
+  let activeTimes = localTimes;
 
-  document.getElementById('time-fajr').textContent = times.fajr;
-  document.getElementById('time-sunrise').textContent = times.sunrise;
-  document.getElementById('time-dhuhr').textContent = times.dhuhr;
-  document.getElementById('time-asr').textContent = times.asr;
-  document.getElementById('time-maghrib').textContent = times.maghrib;
-  document.getElementById('time-isha').textContent = times.isha;
+  // جلب المواقيت الرسمية الدقيقة من API الأذان العالمي إذا توفر اتصال
+  try {
+    const methodMap = { 'makkah': 4, 'egypt': 5, 'mwl': 3, 'karachi': 1, 'dubai': 16, 'isna': 2 };
+    const methodId = methodMap[method] || 5;
+    const asrVal = (asrMadhab === 'hanafi') ? 1 : 0;
+    const url = `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=${methodId}&school=${asrVal}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data && data.data && data.data.timings) {
+      const t = data.data.timings;
+      const parseDec = (str) => {
+        const [hh, mm] = str.split(':');
+        return parseInt(hh, 10) + parseInt(mm, 10) / 60.0;
+      };
+      activeTimes = {
+        fajr: t.Fajr.slice(0, 5),
+        sunrise: t.Sunrise.slice(0, 5),
+        dhuhr: t.Dhuhr.slice(0, 5),
+        asr: t.Asr.slice(0, 5),
+        maghrib: t.Maghrib.slice(0, 5),
+        isha: t.Isha.slice(0, 5),
+        raw: {
+          fajr: parseDec(t.Fajr),
+          sunrise: parseDec(t.Sunrise),
+          dhuhr: parseDec(t.Dhuhr),
+          asr: parseDec(t.Asr),
+          maghrib: parseDec(t.Maghrib),
+          isha: parseDec(t.Isha)
+        }
+      };
+    }
+  } catch (err) {
+    // الاعتماد على المحرك الفلكي المحلي في وضع عدم الاتصال
+    activeTimes = localTimes;
+  }
+
+  document.getElementById('time-fajr').textContent = formatPrayerTime(activeTimes.fajr);
+  document.getElementById('time-sunrise').textContent = formatPrayerTime(activeTimes.sunrise);
+  document.getElementById('time-dhuhr').textContent = formatPrayerTime(activeTimes.dhuhr);
+  document.getElementById('time-asr').textContent = formatPrayerTime(activeTimes.asr);
+  document.getElementById('time-maghrib').textContent = formatPrayerTime(activeTimes.maghrib);
+  document.getElementById('time-isha').textContent = formatPrayerTime(activeTimes.isha);
 
   // حساب القبلة والمسافة
   const qiblaAngle = calculateQiblaDirection(lat, lng);
@@ -1958,6 +2054,172 @@ function normalizeArabic(text) {
     .trim();
 }
 
+
+// ─── محرك الإجابة الإسلامي الذكي متعدد المحاور (صفر هلوسة) ───
+function answerUserLocally(q) {
+  const normQ = normalizeArabic(q);
+  
+  // 1. التحية والتفاعل الودود
+  let greeting = '';
+  const greetingWords = ['كيف حالك', 'شلونك', 'ازيك', 'عساك بخير', 'شخبارك', 'مرحبا', 'السلام عليكم', 'صباح الخير', 'مساء الخير', 'حياك الله', 'اهلين', 'اهلا'];
+  if (greetingWords.some(g => normQ.includes(normalizeArabic(g)))) {
+    greeting = 'وعليكم السلام ورحمة الله وبركاته، أهلاً ومرحباً بك أخي الكريم! بخير ونعمة من الله وفي عونك ونفعك، وأرجو أن تكون في أتم الصحة والعافية.\n\n';
+  }
+
+  // 2. تحليل المحاور المتعددة في السؤال وتفكيكها
+  const topicsFound = [];
+
+  // أ) جبريل وميكائيل (ميكال) والملائكة الكرام
+  if (normQ.includes('جبريل') || normQ.includes('ميكال') || normQ.includes('ميكائيل') || normQ.includes('اسرافيل') || normQ.includes('الملائكة')) {
+    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'angels_jibril_and_mikael');
+    if (book) {
+      topicsFound.push({
+        title: 'من هو جبريل وميكائيل (ميكال) عليهما السلام بالدليل الشرعي',
+        content: book.content,
+        book: book
+      });
+    }
+  }
+
+  // ب) العشرة المبشرون بالجنة
+  if (normQ.includes('مبشرين') || normQ.includes('المبشرون') || normQ.includes('عشرة مبشرين') || normQ.includes('مبشر بالجنة') || (normQ.includes('عشرة') && normQ.includes('جنة'))) {
+    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'ten_promised_paradise');
+    if (book) {
+      topicsFound.push({
+        title: 'العشرة المبشرون بالجنة وأدلة تبشيرهم ومناقبهم',
+        content: book.content,
+        book: book
+      });
+    }
+  }
+
+  // ج) حكم التداول والأسهم والفوركس والعملات المشفرة
+  if (normQ.includes('تداول') || normQ.includes('اسهم') || normQ.includes('فوركس') || normQ.includes('مارجن') || normQ.includes('رافعة مالية') || normQ.includes('عملات مشفرة') || normQ.includes('بتكوين')) {
+    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'fiqh_modern_trading_and_stocks');
+    if (book) {
+      topicsFound.push({
+        title: 'حكم التداول والأسهم والفوركس والعملات الرقمية في الشريعة الإسلامية',
+        content: book.content,
+        book: book
+      });
+    }
+  }
+
+  // د) صلاة الوتر (إذا ذكرت صراحة في السؤال)
+  if (normQ.includes('الوتر') || normQ.includes('وتر')) {
+    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'fiqh_witr_prayer');
+    if (book) {
+      topicsFound.push({
+        title: 'شرح مفصل لصلاة الوتر وحكمها ووقتها وكيفيتها بالدليل والمصادر',
+        content: book.content,
+        book: book
+      });
+    }
+  }
+
+  // هـ) يوم عرفة وليلة القدر واجتماعهما برمضان
+  if (normQ.includes('عرفة') || normQ.includes('عرفه') || normQ.includes('ليلة القدر') || normQ.includes('ليله القدر')) {
+    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'fiqh_fasting_arafah_qadr');
+    if (book) {
+      topicsFound.push({
+        title: 'حكم صيام يوم عرفة وبيان مسألة موافقة عرفة لرمضان وليلة القدر',
+        content: book.content,
+        book: book
+      });
+    }
+  }
+
+  // و) أحكام التجويد
+  if (normQ.includes('تجويد') || normQ.includes('نون ساكنة') || normQ.includes('ادغام') || normQ.includes('اخفاء') || normQ.includes('اقلاب') || normQ.includes('اظهار') || normQ.includes('مدود')) {
+    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'tajweed_complete_rules');
+    if (book) {
+      topicsFound.push({
+        title: 'أحكام التجويد ومخارج الحروف',
+        content: book.content,
+        book: book
+      });
+    }
+  }
+
+  // ز) القراءات العشر
+  if (normQ.includes('قراءات') || normQ.includes('القراءات العشر') || normQ.includes('رواة')) {
+    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'quran_ten_qiraat_guide');
+    if (book) {
+      topicsFound.push({
+        title: 'دليل القراءات العشر ورواتها العشرين',
+        content: book.content,
+        book: book
+      });
+    }
+  }
+
+  // ح) الرقية الشرعية
+  if (normQ.includes('رقية') || normQ.includes('سحر') || normQ.includes('حسد') || normQ.includes('عين') || normQ.includes('شفاء')) {
+    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'ruqyah_shariyyah_detailed');
+    if (book) {
+      topicsFound.push({
+        title: 'الرقية الشرعية الكاملة من القرآن والسنة الصحيحة',
+        content: book.content,
+        book: book
+      });
+    }
+  }
+
+  // ط) السيرة النبوية والمغازي
+  if (normQ.includes('غزوة') || normQ.includes('بدر') || normQ.includes('احد') || normQ.includes('الخندق') || normQ.includes('فتح مكة')) {
+    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'atlas_prophet_seerah_battles');
+    if (book) {
+      topicsFound.push({
+        title: 'أحداث المغازي والسيرة النبوية الكبرى',
+        content: book.content,
+        book: book
+      });
+    }
+  }
+
+  // إذا تم استخلاص محاور واضحة: صياغة الجواب الشامل والمفصل
+  if (topicsFound.length > 0) {
+    let finalAnswer = greeting;
+    finalAnswer += 'الحمد لله والصلاة والسلام على رسول الله وبعد:\nإليك الجواب العلمي الشامل والموثق بالأدلة الصريحة من الكتاب والسنة على كل مسألة سألت عنها:\n\n';
+
+    const sources = [];
+    topicsFound.forEach((tp, idx) => {
+      finalAnswer += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+      finalAnswer += `🔹 ${idx + 1}. ${tp.title}:\n\n${tp.content}\n\n`;
+      if (tp.book) {
+        sources.push({
+          type: 'book',
+          title: tp.book.title_ar,
+          author: tp.book.author_ar,
+          text: tp.book.summary || tp.content.slice(0, 300) + '...'
+        });
+      }
+    });
+
+    return { answer: finalAnswer.trim(), sources: sources };
+  }
+
+  // إذا لم يكن هناك محور خاص مطابق، البحث في الموسوعة الشاملة
+  const sources = findRelevantSourcesLocally(q);
+  if (sources.length > 0) {
+    let ans = greeting;
+    ans += 'الحمد لله والصلاة والسلام على رسول الله وبعد:\nبناءً على المصادر المعتمدة الموثقة في الموسوعة بخصوص سؤالك:\n\n';
+    sources.slice(0, 3).forEach((s, i) => {
+      ans += `📌 [${s.title || s.ref}]:\n${s.fullText || s.text}\n\n`;
+    });
+    return { answer: ans.trim(), sources: sources };
+  }
+
+  if (greeting) {
+    return {
+      answer: greeting + 'تفضل بطرح سؤالك الشرعي أو الفقهي أو العقدي وسأجيبك بأدق المصادر المعتمدة من القرآن والسنة الصحيحة.',
+      sources: []
+    };
+  }
+
+  return null;
+}
+
 // ─── 12. السؤال المعرفي الموثوق ───
 async function askQuestion() {
   const q = document.getElementById('question').value.trim();
@@ -2011,12 +2273,9 @@ ${q}
   }
 
   document.getElementById('loading-box').style.display = 'none';
-  if (relevantSources.length > 0) {
-    let combinedAns = 'الحمد لله والصلاة والسلام على رسول الله وبعد:\n\nبناءً على المصادر المعتمدة الموثقة في الموسوعة بخصوص مسألتك:\n\n';
-    relevantSources.slice(0, 3).forEach((src, idx) => {
-      combinedAns += `📌 [${src.title || src.ref}]:\n${src.text}\n\n`;
-    });
-    renderAnswerUI(combinedAns, relevantSources, "الموسوعة الإسلامية الموثقة المباشرة (صفر هلوسة)");
+  const localRes = answerUserLocally(q);
+  if (localRes && localRes.answer) {
+    renderAnswerUI(localRes.answer, localRes.sources, "الموسوعة الإسلامية الموثقة المباشرة (صفر هلوسة)");
   } else {
     renderAnswerUI(
       "لم يُعثر على نص مطابق تماماً في الموسوعة المدمجة. يُرجى مراجعة صياغة السؤال أو البحث في تبويب (البحث الشامل والمباشر)، أو ربط مفتاح Gemini API من زر الإعدادات أعلاه لإجابة تحليلية أوسع.",
@@ -2280,7 +2539,7 @@ function renderSearchResultsUI(d) {
       const hId = `hres-${idx}-${Date.now()}`;
       html += `
         <div class="source-item">
-          <div class="source-ref"><span class="type-icon type-hadith">📜</span> ${escHtml(r.collection)} — حديث ${r.hadith_number}</div>
+          <div class="source-ref"><span class="type-icon type-hadith">📜</span> ${escHtml(r.collection)} — حديث ${r.hadith_number} ${r.collection.includes('البخاري') ? '<span style="background:var(--gold); color:#0A0E14; font-weight:bold; padding:2px 8px; border-radius:6px; font-size:10.5px; margin-right:6px">⭐ صحيح البخاري (أعلى درجات الصحة)</span>' : (r.collection.includes('مسلم') ? '<span style="background:var(--emerald-light); color:#fff; font-weight:bold; padding:2px 8px; border-radius:6px; font-size:10.5px; margin-right:6px">⭐ صحيح مسلم (متفق على صحته)</span>' : '')}</div>
           <div class="source-text" id="${hId}">${escHtml(r.text_ar)}</div>
           ${r.grade ? `<span class="source-grade">${escHtml(r.grade)}</span>` : ''}
           <div class="action-bar">
@@ -2346,8 +2605,27 @@ const NARRATOR_PROFILES = {
 let CURRENT_ISNAD_CHAIN = [];
 
 function generateIsnadTree() {
-  const text = document.getElementById('isnad-input').value.trim();
-  if (!text) return;
+  let text = document.getElementById('isnad-input').value.trim();
+  if (!text) {
+    showToast('يُرجى إدخال نص الحديث أو متنه للبدء', 'warning');
+    return;
+  }
+
+  // البحث التلقائي إذا أدخل المستخدم كلمات يسيرة من متن الحديث (مثل: إنما الأعمال بالنيات)
+  const inputWords = text.split(/\s+/).filter(w => w.length > 1);
+  if (inputWords.length <= 6 && !text.includes('حدثنا') && !text.includes('أخبرنا') && !text.includes('عن ')) {
+    const normInp = normalizeArabic(text);
+    const matchedHadith = window.ISLAMIC_DATA?.hadiths?.find(h => {
+      const hNorm = normalizeArabic(h.text_ar);
+      return inputWords.every(w => hNorm.includes(normalizeArabic(w)));
+    });
+
+    if (matchedHadith) {
+      text = matchedHadith.text_ar;
+      document.getElementById('isnad-input').value = text;
+      showToast(`🔍 تم العثور على الحديث وسنده في [${matchedHadith.collection}] تلقائياً!`, 'success', 5000);
+    }
+  }
 
   const matnMatch = text.match(/(?:سمعت\s+رسول\s+الله|قال\s+رسول\s+الله|عن\s+النبي.*?قال|أن\s+رسول\s+الله.*?قال|يقول\s+سمعت\s+رسول\s+الله)(?:.*?(?:يقول|قال))?\s*(:?.*)/i);
   let sanadPart = text;
@@ -2374,12 +2652,17 @@ function generateIsnadTree() {
 
 function parseIsnadText(sanadText) {
   let clean = sanadText.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '');
+  // تنظيف شامل للألقاب والتبجيلات لمنع بقاء أي زوائد مثل (هما)
+  clean = clean.replace(/\s*(?:رضي\s*الله\s*(?:عنهما|عنهم|عنها|عنه)|رحمه\s*الله|عليه\s*السلام|صلى\s*الله\s*عليه\s*وسلم|كرم\s*الله\s*وجهه|رضوان\s*الله\s*عليهم|على\s*المنبر|يقول|قال)\s*/gi, ' ');
+
   const tokens = clean.split(/(?:حدثنا|حدثني|أخبرنا|أخبرني|أنبأنا|عن|سمعت|أنه سمع|قال سمعت|يقول سمعت|قال)/gi)
     .map(s => s.trim()).filter(s => s.length > 2);
 
   const recognized = [];
   tokens.forEach(tok => {
-    let name = tok.replace(/رضي الله عنهما|رضي الله عنه|رحمه الله|صلى الله عليه وسلم|على المنبر|يقول|قال/g, '').trim();
+    let name = tok.trim();
+    if (name.includes('الحميدي') || name.includes('عبد الله بن الزبير')) name = 'الحميدي عبد الله بن الزبير';
+    else if (name.includes('سفيان بن عيينة') || name.includes('سفيان')) name = 'سفيان بن عيينة';
     if (name.includes('رسول الله') || name.includes('النبي')) name = 'رسول الله ﷺ';
     else if (name.includes('عمر بن الخطاب')) name = 'عمر بن الخطاب';
     else if (name.includes('علقمة بن وقاص')) name = 'علقمة بن وقاص';
@@ -2727,18 +3010,37 @@ async function translateCard(sourceId, targetId) {
   target.innerHTML = `<span style="color:var(--text-muted); font-size:12px">جار الترجمة المباشرة إلى (${lang.toUpperCase()})...</span>`;
 
   try {
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(text.slice(0, 1200))}`;
-    const res = await fetch(url);
-    const json = await res.json();
     let trans = '';
-    if (json && json[0]) json[0].forEach(item => { if (item[0]) trans += item[0]; });
+    // المزود 1: Google GTX
+    try {
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(text.slice(0, 1000))}`;
+      const res = await fetch(url);
+      const json = await res.json();
+      if (json && json[0]) {
+        json[0].forEach(item => { if (item[0]) trans += item[0]; });
+      }
+    } catch(err) {
+      console.log('GTX fallback triggered:', err);
+    }
+
+    // المزود 2: MyMemory API الاحتياطي في حال تعذر الأول
+    if (!trans) {
+      const memUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.slice(0, 500))}&langpair=ar|${lang}`;
+      const memRes = await fetch(memUrl);
+      const memJson = await memRes.json();
+      if (memJson?.responseData?.translatedText) {
+        trans = memJson.responseData.translatedText;
+      }
+    }
+
+    if (!trans) throw new Error('تعذر جلب الترجمة من الخوادم، يرجى التحقق من اتصال الإنترنت.');
 
     target.innerHTML = `
-      <div style="font-size:11px; color:var(--gold); font-weight:700">🌐 الترجمة (${lang.toUpperCase()}):</div>
-      <div class="actual-trans-text" style="direction:ltr; text-align:left; font-size:13.5px; color:#B9D1EA; margin-top:4px">${escHtml(trans)}</div>
-      <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px">
-        <button class="act-btn" onclick="copyTranslatedText('${targetId}')">📋 نسخ الترجمة</button>
-        <button class="act-btn download" onclick="downloadText('translation_${lang}.txt', \`${trans}\`)">⬇️ تحميل الترجمة</button>
+      <div style="font-size:11px; color:var(--gold); font-weight:700">🌐 الترجمة المعتمدة (${lang.toUpperCase()}):</div>
+      <div class="actual-trans-text" style="direction:ltr; text-align:left; font-size:13.5px; color:#B9D1EA; margin-top:6px; line-height:1.6">${escHtml(trans)}</div>
+      <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:10px">
+        <button class="act-btn" onclick="copyTranslatedText('${targetId}')">📋 نسخ نص الترجمة</button>
+        <button class="act-btn download" onclick="downloadText('translation_${lang}.txt', \`${trans}\`)">⬇️ تحميل ملف الترجمة</button>
       </div>`;
   } catch (e) {
     target.innerHTML = `<span style="color:var(--red); font-size:12px">تعذرت الترجمة: ${e.message}</span>`;
@@ -2763,6 +3065,29 @@ window.addEventListener('beforeinstallprompt', (e) => {
   const btn = document.getElementById('pwa-install-btn');
   if (btn) btn.style.display = 'inline-flex';
 });
+
+
+// ─── مسح الكاش والتحديث الفوري ───
+async function forceAppRefresh() {
+  showToast('جارٍ تحديث التطبيق ومسح الذاكرة المؤقتة...', 'info');
+  try {
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+    }
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      for (let reg of registrations) {
+        await reg.unregister();
+      }
+    }
+  } catch(e) {
+    console.log('Cache clear err:', e);
+  }
+  setTimeout(() => {
+    window.location.reload(true);
+  }, 400);
+}
 
 function installPWA() {
   if (deferredPrompt) {

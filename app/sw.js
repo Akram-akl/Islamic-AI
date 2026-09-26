@@ -1,4 +1,4 @@
-const CACHE_NAME = 'islamic-ai-v2';
+const CACHE_NAME = 'islamic-ai-v5';
 const ASSETS_TO_CACHE = [
   '/',
   'index.html',
@@ -7,11 +7,6 @@ const ASSETS_TO_CACHE = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE).catch(() => {});
-    })
-  );
   self.skipWaiting();
 });
 
@@ -20,42 +15,46 @@ self.addEventListener('activate', (e) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
-          if (key !== CACHE_NAME) return caches.delete(key);
+          if (key !== CACHE_NAME) {
+            console.log('[SW] Deleting old cache:', key);
+            return caches.delete(key);
+          }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (e) => {
-  // Ignore non-http requests (e.g., chrome-extension://)
-  if (!e.request.url.startsWith('http')) return;
+  // Ignore non-http requests (e.g. chrome-extension://)
+  if (e.request.method !== 'GET' || !e.request.url.startsWith('http')) return;
 
-  // للـ API requests: Network first
-  if (e.request.url.includes('/api/')) {
+  // Network-First for HTML/document/index.html to ensure live updates without stale cache
+  if (e.request.mode === 'navigate' || e.request.destination === 'document' || e.request.url.endsWith('index.html') || e.request.url.endsWith('/')) {
     e.respondWith(
-      fetch(e.request).catch(() => {
-        return new Response(JSON.stringify({
-          error: "لا يتوفر اتصال بالإنترنت حالياً",
-          offline: true
-        }), { headers: { "Content-Type": "application/json" } });
-      })
+      fetch(e.request)
+        .then((res) => {
+          if (res && res.status === 200) {
+            const clone = res.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+          }
+          return res;
+        })
+        .catch(() => caches.match(e.request).then((cached) => cached || caches.match('/index.html') || caches.match('/')))
     );
     return;
   }
 
-  // للأصول الثابتة: Cache first مع Network fallback
+  // Network-first for static scripts and data, fallback to cache
   e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
-      return cachedResponse || fetch(e.request).then((networkResponse) => {
-        return caches.open(CACHE_NAME).then((cache) => {
-          if (e.request.method === 'GET' && networkResponse && networkResponse.status === 200 && e.request.url.startsWith('http')) {
-            cache.put(e.request, networkResponse.clone());
-          }
-          return networkResponse;
-        });
-      });
-    }).catch(() => fetch(e.request))
+    fetch(e.request)
+      .then((res) => {
+        if (res && res.status === 200) {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+        }
+        return res;
+      })
+      .catch(() => caches.match(e.request))
   );
 });
