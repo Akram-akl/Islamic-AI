@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A1610"/>
+      <stop offset="50%" stop-color="#1B6B45"/>
+      <stop offset="100%" stop-color="#0A0E14"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE082"/>
+      <stop offset="50%" stop-color="#C9A84C"/>
+      <stop offset="100%" stop-color="#8D6E1A"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="230" fill="none" stroke="url(#gold)" stroke-width="4" opacity="0.4"/>
+  <!-- Crescent Moon -->
+  <path d="M 280 120 A 130 130 0 1 0 370 330 A 110 110 0 1 1 280 120 Z" fill="url(#gold)" filter="url(#glow)"/>
+  <!-- Star / 8-pointed Islamic Star -->
+  <polygon points="340,165 352,195 385,195 358,215 368,245 340,225 312,245 322,215 295,195 328,195" fill="url(#gold)"/>
+  <!-- Base Book / Quran Emblem -->
+  <path d="M 160 380 Q 256 350 352 380 L 352 400 Q 256 370 160 400 Z" fill="url(#gold)" opacity="0.8"/>
+</svg>
