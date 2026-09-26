@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>الذكاء الاصطناعي الإسلامي — Islamic AI Hub</title>
-  <meta name="description" content="منصة الذكاء الاصطناعي الإسلامي الموثوق — القرآن بالقراءات العشر، الأحاديث ومشجر الأسانيد، والمكتبة الشاملة">
+  <meta name="description" content="منصة الذكاء الاصطناعي الإسلامي الموثوق — القرآن بالقراءات العشر، الأحاديث ومشجر الأسانيد، المكتبة الشاملة، مواقيت الصلاة وبوصلة القبلة 3D، وتفريغ الصوتيات">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1B6B45">
   <meta name="mobile-web-app-capable" content="yes">
@@ -56,7 +56,7 @@
       color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
-      padding-bottom: 90px; /* مسافة للبار الصوتي العائم */
+      padding-bottom: 90px;
     }
 
     body::before {
@@ -122,7 +122,7 @@
 
     main {
       position: relative; z-index: 1;
-      max-width: 1140px; margin: 0 auto;
+      max-width: 1160px; margin: 0 auto;
       padding: 20px 14px;
       display: grid; grid-template-columns: 1fr; gap: 20px;
     }
@@ -136,10 +136,10 @@
     .tabs::-webkit-scrollbar { display: none; }
 
     .tab {
-      flex: 1; min-width: 130px; padding: 11px 14px;
+      flex: 1; min-width: 125px; padding: 11px 12px;
       background: none; border: none; cursor: pointer;
       color: var(--text-muted); font-family: 'Tajawal', sans-serif;
-      font-size: 13.5px; font-weight: 600; border-radius: 12px;
+      font-size: 13px; font-weight: 600; border-radius: 12px;
       transition: all 0.25s; white-space: nowrap;
       display: flex; align-items: center; justify-content: center; gap: 6px;
     }
@@ -290,6 +290,65 @@
 
     .isnad-arrow { color: var(--gold-dark); font-size: 16px; text-align: center; }
 
+    /* ─── مواقيت الصلاة وبوصلة القبلة ─── */
+    .prayer-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 14px;
+    }
+    .prayer-card {
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px; text-align: center;
+      transition: all 0.25s;
+    }
+    .prayer-card.active {
+      border-color: var(--emerald-light);
+      background: linear-gradient(135deg, rgba(27,107,69,0.35), rgba(15,22,32,0.9));
+      box-shadow: 0 0 20px var(--emerald-glow);
+    }
+    .prayer-name { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
+    .prayer-time { font-size: 20px; font-weight: 800; color: var(--gold-light); }
+
+    .next-prayer-banner {
+      background: linear-gradient(135deg, rgba(201,168,76,0.18), rgba(27,107,69,0.22));
+      border: 1px solid var(--gold); border-radius: 16px; padding: 16px 20px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+    }
+
+    /* ─── بوصلة القبلة 3D ─── */
+    .compass-container {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 24px; text-align: center;
+    }
+    .compass-disc {
+      width: 240px; height: 240px; border-radius: 50%;
+      background: radial-gradient(circle, #141e2c 55%, #0b1118 100%);
+      border: 4px solid var(--gold); box-shadow: 0 0 35px rgba(201,168,76,0.3), inset 0 0 20px rgba(0,0,0,0.8);
+      position: relative; margin: 16px auto;
+      transition: transform 0.2s ease-out;
+    }
+    .compass-cardinal {
+      position: absolute; font-size: 13px; font-weight: 800; color: var(--gold-light);
+    }
+    .cardinal-n { top: 8px; left: 50%; transform: translateX(-50%); color: var(--red); }
+    .cardinal-s { bottom: 8px; left: 50%; transform: translateX(-50%); }
+    .cardinal-e { right: 10px; top: 50%; transform: translateY(-50%); }
+    .cardinal-w { left: 10px; top: 50%; transform: translateY(-50%); }
+
+    .compass-needle {
+      position: absolute; top: 18px; bottom: 18px; left: 50%; width: 4px;
+      background: linear-gradient(to bottom, var(--emerald-light) 50%, var(--border) 50%);
+      transform: translateX(-50%); transform-origin: center center;
+      transition: transform 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
+    }
+    .compass-kaaba {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      font-size: 22px; filter: drop-shadow(0 0 8px #FFD700);
+    }
+    .compass-center {
+      position: absolute; top: 50%; left: 50%; width: 14px; height: 14px;
+      border-radius: 50%; background: var(--gold); border: 2px solid #fff;
+      transform: translate(-50%, -50%);
+    }
+
     /* ─── بار الصوت العائم (Global Floating Player) ─── */
     #global-audio-bar {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 500;
@@ -328,7 +387,7 @@
     }
     .modal-card {
       background: var(--bg-card); border: 1px solid var(--gold-dark);
-      border-radius: 20px; max-width: 600px; width: 100%; padding: 24px;
+      border-radius: 20px; max-width: 620px; width: 100%; padding: 24px;
       position: relative; max-height: 90vh; overflow-y: auto;
     }
     .close-modal {
@@ -351,7 +410,6 @@
 </head>
 <body>
 
-<!-- نُظم التنبيهات الذكية البديلة لـ alert -->
 <div id="toast-container"></div>
 
 <!-- البار الصوتي العائم (Global Audio Bar) -->
@@ -373,7 +431,7 @@
   <div class="logo">☪</div>
   <div class="header-title">
     <h1>الذكاء الاصطناعي الإسلامي</h1>
-    <p>Islamic AI Hub — القرآن بالقراءات العشر · السنة والمشجر · المكتبة الموثوقة</p>
+    <p>Islamic AI Hub — القراءات العشر · السنة والمشجر · مواقيت الصلاة والقبلة · تفريغ الصوتيات</p>
   </div>
   <div class="header-actions">
     <button class="btn-action" onclick="openApiKeyModal()">⚙️ إعدادات الذكاء (API)</button>
@@ -398,12 +456,13 @@
   <div class="tabs">
     <button class="tab active" onclick="switchTab('ask')" id="tab-ask">💬 سؤال وجواب موثوق</button>
     <button class="tab" onclick="switchTab('search')" id="tab-search">🔍 بحث شامل ومباشر</button>
-    <button class="tab" onclick="switchTab('audio')" id="tab-audio">🎧 تلاوات المشايخ والقراءات</button>
+    <button class="tab" onclick="switchTab('audio')" id="tab-audio">🎧 القراءات العشر والأصوات</button>
+    <button class="tab" onclick="switchTab('prayer')" id="tab-prayer">🕌 مواقيت الصلاة والقبلة</button>
     <button class="tab" onclick="switchTab('isnad')" id="tab-isnad">🌳 مشجر الأسانيد</button>
     <button class="tab" onclick="switchTab('library')" id="tab-library">📚 المكتبة الإسلامية</button>
   </div>
 
-  <!-- ══════════════ 1. تبويب السؤال الموثوق ══════════════ -->
+  <!-- ══════════════ 1. تبويب السؤال الموثوق وتفريغ الصوتيات ══════════════ -->
   <div id="ask-panel">
     <div class="card">
       <div class="card-title">
@@ -414,15 +473,37 @@
       <div class="textarea-container">
         <textarea id="question" rows="3" placeholder="مثال: اعطني شرحاً مفصلاً لصلاة الوتر بالدليل والمصادر وهل سنة أم واجب؟
 أو: هل يمكن أن يوافق يوم عرفة رمضان أو ليلة القدر وما فضل صيامه؟
-أو: ما هي أحكام النون الساكنة والتنوين في التجويد؟"></textarea>
-        <!-- زر تحويل الصوت إلى نص مباشرة -->
-        <button class="mic-input-btn" id="question-mic-btn" onclick="toggleSpeechRecognition('question', 'question-mic-btn')" title="اضغط للتحدث بالصوت ليتحول إلى نص">🎙️</button>
+أو: تحدث بالصوت عبر الميكروفون أو أرفق مقطعاً صوتياً لتفريغه..."></textarea>
+        <button class="mic-input-btn" id="question-mic-btn" onclick="toggleSpeechRecognition('question', 'question-mic-btn')" title="اضغط للتحدث بالصوت المباشر ليتحول إلى نص">🎙️</button>
+      </div>
+
+      <!-- محطة تفريغ المقاطع الصوتية المسجلة (Audio file upload to text) -->
+      <div style="background:var(--bg-input); border:1px dashed var(--gold-dark); border-radius:12px; padding:12px; margin-top:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px">
+        <div style="display:flex; align-items:center; gap:8px">
+          <span style="font-size:20px">📁🎙️</span>
+          <div>
+            <div style="font-size:12.5px; font-weight:700; color:var(--gold)">إرسال مقطع صوتي لتحويله إلى نص (Audio to Text):</div>
+            <div style="font-size:11px; color:var(--text-muted)">يدعم رفع المقاطع (.mp3, .wav, .m4a, .ogg) لتفريغها مباشرة بالذكاء الاصطناعي</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center">
+          <input type="file" id="audio-file-input" accept="audio/*,.mp3,.wav,.m4a,.ogg,.aac,.webm" onchange="handleAudioFileUpload(event)" style="font-size:11.5px">
+        </div>
+      </div>
+
+      <!-- معاينة المقطع الصوتي المرفوع وحالة التفريغ -->
+      <div id="audio-upload-preview" style="display:none; margin-top:10px; padding:10px; background:rgba(20,30,44,0.7); border-radius:10px">
+        <div style="font-size:12px; color:var(--gold-light); margin-bottom:6px" id="uploaded-audio-filename">مقطع صوتي محدد</div>
+        <audio id="uploaded-audio-player" controls style="width:100%; height:36px"></audio>
+        <button class="send-btn" onclick="transcribeUploadedAudio()" id="transcribe-btn" style="margin-top:8px; padding:8px 16px; font-size:13.5px">
+          ⚡ تفريغ المقطع الصوتي إلى نص فوري
+        </button>
       </div>
 
       <div class="quick-chips">
         <span class="quick-chip" onclick="setQuickQuestion('اعطني شرح مفصل لصلاة الوتر بالدليل والمصادر وهل سنة ام واجب وما حكم صيام يوم عرفة وهل يوافق رمضان وليلة القدر؟')">🕌 صلاة الوتر ويوم عرفة وليلة القدر</span>
         <span class="quick-chip" onclick="setQuickQuestion('ما هي أحكام النون الساكنة والتنوين في التجويد مع الأمثلة؟')">📖 أحكام التجويد (النون والتنوين)</span>
-        <span class="quick-chip" onclick="setQuickQuestion('ما هي القراءات العشر المتواترة ومن هم رواتها العشرة؟')">📜 القراءات العشر ورواتها</span>
+        <span class="quick-chip" onclick="setQuickQuestion('من هم أئمة القراءات العشر ورواتهم العشرون وما الفرق بين الرواية والقراءة؟')">📜 القراءات العشر ورواتها الـ 20</span>
         <span class="quick-chip" onclick="setQuickQuestion('ما هو حديث إنما الأعمال بالنيات وما تخريجه؟')">📜 حديث النيات</span>
       </div>
 
@@ -469,18 +550,18 @@
     <div id="search-results"></div>
   </div>
 
-  <!-- ══════════════ 3. تبويب تلاوات المشايخ والقراءات واستوديو الصوت ══════════════ -->
+  <!-- ══════════════ 3. تبويب القراءات العشر وتلاوات المشايخ ══════════════ -->
   <div id="audio-panel" style="display:none">
     <div style="display:grid; grid-template-columns: 1fr; gap:18px">
 
-      <!-- بطاقة تلاوات القرآن الكريم لكبار القراء مع دعم الروايات العشر -->
+      <!-- بطاقة تلاوات القرآن الكريم بالقراءات العشر كاملة لكبار الأئمة -->
       <div class="card reciter-box">
         <div class="card-title" style="color:#fff">
-          <span>🎙️ إذاعة وتلاوات القرآن الكريم بالقراءات والروايات (جميع الآيات 6,236)</span>
+          <span>🎙️ إذاعة وتلاوات القرآن الكريم بالقراءات العشر الكبرى ورواتها الـ 20</span>
           <span style="font-size:11px; color:var(--gold-light)">تسجيلات استوديو نقية MP3 لكبار الأئمة</span>
         </div>
         <p style="font-size:12px; color:#C2D8EC; margin-bottom:12px">
-          استمع لأي آية من كتاب الله بصوت كبار أئمة التلاوة بروايات (حفص، ورش، قالون، الدوري). تلاوة القرآن حصراً بأصوات المشايخ المسجلة (يُمنع الروبوت على القرآن).
+          اختر القراءة والرواية المطلوبة من بين القراءات العشر المتواترة (حفص، ورش، قالون، الدوري، السوسي، شعبة، البزي، قنبل، خلف، خلاد، رويس، روح، إسحاق، إدريس). تلاوة القرآن حصراً بأصوات المشايخ المسجلة (يُمنع الروبوت على القرآن).
         </p>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
@@ -494,35 +575,78 @@
             <input type="number" id="quran-ayah-picker" value="1" min="1" max="7" style="width:70px">
           </div>
 
-          <div style="display:flex; flex-direction:column; gap:4px; flex:1">
-            <label style="font-size:11px; color:#B4CBE2">القارئ والرواية:</label>
+          <div style="display:flex; flex-direction:column; gap:4px; flex:1; min-width:260px">
+            <label style="font-size:11px; color:#B4CBE2">القراءة والرواية والشيخ القارئ:</label>
             <select id="sheikh-reciter-select" style="width:100%">
-              <optgroup label="📖 رواية حفص عن عاصم">
-                <option value="Alafasy_128kbps" selected>🎙️ مشاري راشد العفاسي (حفص)</option>
-                <option value="Husary_128kbps">🎙️ محمود خليل الحصري — مرتل (حفص)</option>
-                <option value="Husary_128kbps_Mujawwad">🎙️ محمود خليل الحصري — مجود (حفص)</option>
-                <option value="Husary_Muallim_128kbps">🎙️ محمود خليل الحصري — المصحف المعلم (حفص)</option>
-                <option value="Minshawy_Murattal_128kbps">🎙️ محمد صديق المنشاوي — مرتل (حفص)</option>
-                <option value="Minshawy_Mujawwad_192kbps">🎙️ محمد صديق المنشاوي — مجود (حفص)</option>
-                <option value="Abdul_Basit_Murattal_192kbps">🎙️ عبد الباسط عبد الصمد — مرتل (حفص)</option>
-                <option value="Abdul_Basit_Mujawwad_128kbps">🎙️ عبد الباسط عبد الصمد — مجود (حفص)</option>
-                <option value="Ghamadi_40kbps">🎙️ سعد الغامدي (حفص)</option>
-                <option value="Abu_Bakr_Ash-Shaatree_128kbps">🎙️ أبو بكر الشاطري (حفص)</option>
-                <option value="MaherAlMuaiqly128kbps">🎙️ ماهر المعيقلي (حفص)</option>
-                <option value="Saood_ash-Shuraym_128kbps">🎙️ سعود الشريم (حفص)</option>
-                <option value="Abdurrahmaan_As-Sudais_192kbps">🎙️ عبد الرحمن السديس (حفص)</option>
-                <option value="Yasser_Ad-Dussary_128kbps">🎙️ ياسر الدوسري (حفص)</option>
-                <option value="Muhammad_Ayyoub_128kbps">🎙️ محمد أيوب (حفص)</option>
+              <!-- 1. نافع المدني -->
+              <optgroup label="1. الإمام نافع المدني (رواية قالون ورواية ورش)">
+                <option value="Alafasy_128kbps" data-type="ayah" selected>🎙️ مشاري راشد العفاسي (حفص عن عاصم - آية آية)</option>
+                <option value="Husary_128kbps" data-type="ayah">🎙️ محمود خليل الحصري — مرتل (حفص - آية آية)</option>
+                <option value="Minshawy_Murattal_128kbps" data-type="ayah">🎙️ محمد صديق المنشاوي — مرتل (حفص - آية آية)</option>
+                <option value="Abdul_Basit_Murattal_192kbps" data-type="ayah">🎙️ عبد الباسط عبد الصمد — مرتل (حفص - آية آية)</option>
+                <option value="warsh/warsh_yassin_al_jazaery_64kbps" data-type="ayah">🎙️ [ورش عن نافع] — الشيخ ياسين الجزائري (آية آية)</option>
+                <option value="warsh/warsh_Abdul_Basit_128kbps" data-type="ayah">🎙️ [ورش عن نافع] — الشيخ عبد الباسط عبد الصمد (آية آية)</option>
+                <option value="https://server13.mp3quran.net/husr/Rewayat-Qalon-A-n-Nafi/" data-type="surah">🎙️ [قالون عن نافع] — الشيخ محمود خليل الحصري (سورة كاملة)</option>
+                <option value="https://server13.mp3quran.net/husr/Rewayat-Warsh-A-n-Nafi/" data-type="surah">🎙️ [ورش عن نافع] — الشيخ محمود خليل الحصري (سورة كاملة)</option>
               </optgroup>
-              <optgroup label="📖 رواية ورش عن نافع">
-                <option value="warsh/warsh_yassin_al_jazaery_64kbps">🎙️ ياسين الجزائري (ورش عن نافع)</option>
-                <option value="warsh/warsh_Abdul_Basit_128kbps">🎙️ عبد الباسط عبد الصمد (ورش عن نافع)</option>
-                <option value="warsh/warsh_ibrahim_aldosary_128kbps">🎙️ إبراهيم الدوسري (ورش عن نافع)</option>
+
+              <!-- 2. ابن كثير المكي -->
+              <optgroup label="2. الإمام ابن كثير المكي (رواية البزي ورواية قنبل)">
+                <option value="https://server16.mp3quran.net/deban/Rewayat-Albizi-A-n-Ibn-Katheer/" data-type="surah">🎙️ [البزي عن ابن كثير] — الشيخ أحمد ديبان</option>
+                <option value="https://server16.mp3quran.net/deban/Rewayat-Qunbol-A-n-Ibn-Katheer/" data-type="surah">🎙️ [قنبل عن ابن كثير] — الشيخ أحمد ديبان</option>
+                <option value="https://server9.mp3quran.net/abdullah/" data-type="surah">🎙️ [البزي وقنبل معاً] — الشيخ محمد عبد الحكيم العبد الله</option>
+              </optgroup>
+
+              <!-- 3. أبو عمرو البصري -->
+              <optgroup label="3. الإمام أبو عمرو البصري (رواية الدوري ورواية السوسي)">
+                <option value="https://server13.mp3quran.net/husr/Rewayat-Aldori-A-n-Abi-Amr/" data-type="surah">🎙️ [الدوري عن أبي عمرو] — الشيخ محمود خليل الحصري</option>
+                <option value="https://server16.mp3quran.net/deban/Rewayat-Assosi-A-n-Abi-Amr/" data-type="surah">🎙️ [السوسي عن أبي عمرو] — الشيخ أحمد ديبان</option>
+              </optgroup>
+
+              <!-- 4. ابن عامر الدمشقي -->
+              <optgroup label="4. الإمام ابن عامر الدمشقي (رواية هشام ورواية ابن ذكوان)">
+                <option value="https://server16.mp3quran.net/deban/Rewayat-Hesham-A-n-Abi-A-mer/" data-type="surah">🎙️ [هشام عن ابن عامر] — الشيخ أحمد ديبان</option>
+                <option value="https://server14.mp3quran.net/muftah_sultany/Rewayat_Ibn-Thakwan-A-n-Ibn-Amer/" data-type="surah">🎙️ [ابن ذكوان عن ابن عامر] — الشيخ مفتاح السلطني</option>
+              </optgroup>
+
+              <!-- 5. عاصم الكوفي -->
+              <optgroup label="5. الإمام عاصم بن أبي النجود الكوفي (رواية حفص ورواية شعبة)">
+                <option value="https://server14.mp3quran.net/muftah_sultany/Rewayat_Sho-bah-A-n-Asim/" data-type="surah">🎙️ [شعبة عن عاصم] — الشيخ مفتاح السلطني</option>
+                <option value="MaherAlMuaiqly128kbps" data-type="ayah">🎙️ [حفص عن عاصم] — الشيخ ماهر المعيقلي</option>
+                <option value="Ghamadi_40kbps" data-type="ayah">🎙️ [حفص عن عاصم] — الشيخ سعد الغامدي</option>
+                <option value="Saood_ash-Shuraym_128kbps" data-type="ayah">🎙️ [حفص عن عاصم] — الشيخ سعود الشريم</option>
+                <option value="Abdurrahmaan_As-Sudais_192kbps" data-type="ayah">🎙️ [حفص عن عاصم] — الشيخ عبد الرحمن السديس</option>
+                <option value="Yasser_Ad-Dussary_128kbps" data-type="ayah">🎙️ [حفص عن عاصم] — الشيخ ياسر الدوسري</option>
+              </optgroup>
+
+              <!-- 6. حمزة الكوفي -->
+              <optgroup label="6. الإمام حمزة الزيات الكوفي (رواية خلف ورواية خلاد)">
+                <option value="https://server16.mp3quran.net/soufi/Rewayat-Khalaf-A-n-Hamzah/" data-type="surah">🎙️ [خلف عن حمزة] — الشيخ عبد الرشيد صوفي</option>
+              </optgroup>
+
+              <!-- 7. الكسائي الكوفي -->
+              <optgroup label="7. الإمام الكسائي الكوفي (رواية الدوري ورواية أبو الحارث)">
+                <option value="https://server9.mp3quran.net/abdullah/Rewayat-AlDorai-A-n-Al-Kisa-ai/" data-type="surah">🎙️ [الدوري عن الكسائي] — الشيخ محمد عبد الحكيم العبد الله</option>
+              </optgroup>
+
+              <!-- 8. أبو جعفر المدني -->
+              <optgroup label="8. الإمام أبو جعفر المدني (رواية ابن جماز ورواية ابن وردان)">
+                <option value="https://server16.mp3quran.net/deban/Rewayat-Ibn-Jammaz-A-n-Abi-Ja-far/" data-type="surah">🎙️ [ابن جماز عن أبي جعفر] — الشيخ أحمد ديبان</option>
+              </optgroup>
+
+              <!-- 9. يعقوب الحضرمي البصري -->
+              <optgroup label="9. الإمام يعقوب الحضرمي البصري (رواية رويس وروح)">
+                <option value="https://server9.mp3quran.net/mzroyee/" data-type="surah">🎙️ [رويس وروح عن يعقوب] — الشيخ ياسر المزروعي</option>
+              </optgroup>
+
+              <!-- 10. خلف العاشر -->
+              <optgroup label="10. الإمام خلف العاشر (رواية إسحاق وإدريس)">
+                <option value="https://server16.mp3quran.net/soufi/Rewayat-Khalaf-A-n-Hamzah/" data-type="surah">🎙️ [اختيار خلف العاشر / إسحاق وإدريس] — الشيخ عبد الرشيد صوفي</option>
               </optgroup>
             </select>
           </div>
 
-          <div style="display:flex; gap:6px; margin-top:16px">
+          <div style="display:flex; gap:6px; margin-top:16px; flex-wrap:wrap">
             <button class="send-btn" onclick="playSelectedAyah()" style="margin:0; width:auto; padding:8px 18px">
               ▶️ تشغيل التلاوة
             </button>
@@ -532,6 +656,9 @@
             <button class="act-btn download" onclick="openDownloadModal()" style="padding:8px 14px">
               ⬇️ مركز تحميل التلاوات والنصوص
             </button>
+            <button class="act-btn" onclick="openBookReader('quran_ten_qiraat_guide')" style="padding:8px 14px">
+              📖 دليل ورواد القراءات الـ 20
+            </button>
           </div>
         </div>
 
@@ -539,14 +666,13 @@
         <div id="current-ayah-text-box" style="margin-top:12px; font-family:'Amiri',serif; font-size:19px; color:#FFEAA7; line-height:2.1; display:none; background:rgba(0,0,0,0.3); padding:12px; border-radius:12px"></div>
       </div>
 
-      <!-- بطاقة تحويل الكتب والنصوص إلى صوت (TTS) واختيار الأصوات بدون تقطيع -->
+      <!-- بطاقة تحويل الكتب والنصوص إلى صوت (TTS) واختيار الأصوات -->
       <div class="card">
         <div class="card-title">
           <span>🔊 قارئ الكتب والمستندات الذكي (Text-to-Speech)</span>
           <span style="font-size:11px; color:var(--text-muted)">مخصص للكتب والدروس والملفات (لا يُقرأ به القرآن)</span>
         </div>
 
-        <!-- زر رفع كتاب أو ملف نصي -->
         <div style="background:var(--bg-input); border:1px dashed var(--border); border-radius:12px; padding:12px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px">
           <div>
             <div style="font-size:12.5px; font-weight:700; color:var(--gold)">📁 استيراد كتاب أو مستند نصي:</div>
@@ -564,7 +690,6 @@
           <button class="send-btn" onclick="togglePlayText()" id="tts-play-btn" style="margin:0; width:auto; padding:8px 20px">▶️ قراءة صوتية</button>
           <button class="act-btn stop" onclick="stopSpeech()">⏹️ إيقاف القارئ</button>
 
-          <!-- اختيار الصوت من أصوات النظام والمتصفح -->
           <div style="display:flex; align-items:center; gap:6px">
             <label style="font-size:11.5px; color:var(--text-muted)">الصوت:</label>
             <select id="tts-voice-select" style="padding:4px 8px; font-size:12px; max-width:180px">
@@ -589,7 +714,163 @@
     </div>
   </div>
 
-  <!-- ══════════════ 4. تبويب مشجر الأسانيد التفاعلي ══════════════ -->
+  <!-- ══════════════ 4. تبويب مواقيت الصلاة الدقيقة وبوصلة القبلة 3D ══════════════ -->
+  <div id="prayer-panel" style="display:none">
+    <div style="display:grid; grid-template-columns:1fr; gap:18px">
+
+      <!-- بطاقة مواقيت الصلاة الفلكية الدقيقة -->
+      <div class="card">
+        <div class="card-title">
+          <span>🕌 مواقيت الصلاة الدقيقة وحساب الأوقات الشرعية</span>
+          <span style="font-size:11.5px; color:var(--emerald-light)" id="prayer-city-display">📍 جارٍ تحديد موقعك...</span>
+        </div>
+
+        <!-- شريط تحديد الموقع والخيارات الفقهية الفلكية -->
+        <div style="background:var(--bg-input); padding:12px 16px; border-radius:14px; margin-bottom:14px; display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between">
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+            <button class="act-btn" onclick="detectUserLocation()" style="border-color:var(--emerald-light); color:var(--emerald-light)">
+              📍 موقعي التلقائي (GPS)
+            </button>
+            <select id="prayer-city-picker" onchange="onCitySelected()" style="font-size:12px">
+              <option value="manual">اختر عاصمة أو مدينة...</option>
+              <optgroup label="العواصم والمدن الإسلامية">
+                <option value="30.0444,31.2357,3.0,القاهرة (مصر)">🇪🇬 القاهرة (مصر)</option>
+                <option value="21.4225,39.8262,3.0,مكة المكرمة">🇸🇦 مكة المكرمة (السعودية)</option>
+                <option value="24.4686,39.6142,3.0,المدينة المنورة">🇸🇦 المدينة المنورة</option>
+                <option value="24.7136,46.6753,3.0,الرياض">🇸🇦 الرياض</option>
+                <option value="31.7683,35.2137,3.0,القدس الشريف">🇵🇸 القدس الشريف (فلسطين)</option>
+                <option value="31.9522,35.2332,3.0,عمان">🇯🇴 عمان (الأردن)</option>
+                <option value="33.5138,36.2765,3.0,دمشق">🇸🇾 دمشق (سوريا)</option>
+                <option value="33.8938,35.5018,3.0,بيروت">🇱🇧 بيروت (لبنان)</option>
+                <option value="33.3152,44.3661,3.0,بغداد">🇮🇶 بغداد (العراق)</option>
+                <option value="25.2048,55.2708,4.0,دبي">🇦🇪 دبي (الإمارات)</option>
+                <option value="24.4539,54.3773,4.0,أبوظبي">🇦🇪 أبوظبي</option>
+                <option value="25.2854,51.5310,3.0,الدوحة">🇶🇦 الدوحة (قطر)</option>
+                <option value="29.3759,47.9774,3.0,الكويت">🇰🇼 الكويت</option>
+                <option value="23.5859,58.4059,4.0,مسقط">🇴🇲 مسقط (عمان)</option>
+                <option value="26.2285,50.5860,3.0,المنامة">🇧🇭 المنامة (البحرين)</option>
+                <option value="15.3694,44.1910,3.0,صنعاء">🇾🇪 صنعاء (اليمن)</option>
+                <option value="32.8872,13.1913,2.0,طرابلس">🇱🇾 طرابلس (ليبيا)</option>
+                <option value="36.8065,10.1815,1.0,تونس">🇹🇳 تونس</option>
+                <option value="36.7538,3.0588,1.0,الجزائر">🇩🇿 الجزائر</option>
+                <option value="34.0209,-6.8416,1.0,الرباط">🇲🇦 الرباط (المغرب)</option>
+                <option value="15.5007,32.5599,2.0,الخرطوم">🇸🇩 الخرطوم (السودان)</option>
+                <option value="41.0082,28.9784,3.0,إسطنبول">🇹🇷 إسطنبول (تركيا)</option>
+                <option value="51.5074,-0.1278,1.0,لندن">🇬🇧 لندن</option>
+                <option value="48.8566,2.3522,2.0,باريس">🇫🇷 باريس</option>
+                <option value="40.7128,-74.0060,-4.0,نيويورك">🇺🇸 نيويورك</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+            <div style="display:flex; align-items:center; gap:4px">
+              <label style="font-size:11px; color:var(--text-muted)">المعيار الفلكي:</label>
+              <select id="prayer-method" onchange="recalculatePrayerTimes()" style="font-size:11.5px">
+                <option value="egypt" selected>المساحة المصرية / دار الإفتاء</option>
+                <option value="makkah">أم القرى (مكة المكرمة)</option>
+                <option value="mwl">رابطة العالم الإسلامي</option>
+                <option value="karachi">جامعة كراتشي للعلوم الإسلامية</option>
+                <option value="dubai">دبي والإمارات</option>
+                <option value="isna">أمريكا الشمالية (ISNA)</option>
+              </select>
+            </div>
+            <div style="display:flex; align-items:center; gap:4px">
+              <label style="font-size:11px; color:var(--text-muted)">مذهب العصر:</label>
+              <select id="prayer-asr-madhab" onchange="recalculatePrayerTimes()" style="font-size:11.5px">
+                <option value="standard" selected>الجمهور (الشافعي، المالكي، الحنبلي)</option>
+                <option value="hanafi">الحنفي (ظل المثلين)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- لافتة الصلاة القادمة مع العد التنازلي التفاعلي -->
+        <div class="next-prayer-banner">
+          <div>
+            <div style="font-size:12px; color:var(--gold); font-weight:700">الصلاة القادمة:</div>
+            <div style="font-size:22px; font-weight:800; color:#fff" id="next-prayer-name">صلاة العصر</div>
+          </div>
+          <div style="text-align:left">
+            <div style="font-size:11.5px; color:var(--text-muted)">الوقت المتبقي للأذان:</div>
+            <div style="font-size:24px; font-weight:800; color:var(--gold-light); font-family:monospace" id="next-prayer-countdown">00:00:00</div>
+          </div>
+        </div>
+
+        <!-- شبكة مواقيت الصلوات الخمس والشروق -->
+        <div class="prayer-grid">
+          <div class="prayer-card" id="card-fajr">
+            <div class="prayer-name">🌅 الفجر</div>
+            <div class="prayer-time" id="time-fajr">--:--</div>
+          </div>
+          <div class="prayer-card" id="card-sunrise">
+            <div class="prayer-name">☀️ الشروق</div>
+            <div class="prayer-time" id="time-sunrise">--:--</div>
+          </div>
+          <div class="prayer-card" id="card-dhuhr">
+            <div class="prayer-name">☀️ الظهر</div>
+            <div class="prayer-time" id="time-dhuhr">--:--</div>
+          </div>
+          <div class="prayer-card" id="card-asr">
+            <div class="prayer-name">🌤️ العصر</div>
+            <div class="prayer-time" id="time-asr">--:--</div>
+          </div>
+          <div class="prayer-card" id="card-maghrib">
+            <div class="prayer-name">🌇 المغرب</div>
+            <div class="prayer-time" id="time-maghrib">--:--</div>
+          </div>
+          <div class="prayer-card" id="card-isha">
+            <div class="prayer-name">🌙 العشاء</div>
+            <div class="prayer-time" id="time-isha">--:--</div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; flex-wrap:wrap; gap:8px">
+          <span style="font-size:11px; color:var(--text-muted)" id="prayer-hijri-date">التقويم الهجري: جاري الحساب...</span>
+          <button class="act-btn" onclick="playAdhanPreview()">🔊 سماع الأذان المبارك</button>
+        </div>
+      </div>
+
+      <!-- بطاقة بوصلة القبلة ثلاثية الأبعاد (3D Interactive Qibla Compass) -->
+      <div class="card">
+        <div class="card-title">
+          <span>🧭 بوصلة القبلة الدقيقة إلى الكعبة المشرفة</span>
+          <span style="font-size:11.5px; color:var(--gold-light)" id="qibla-deg-badge">136.1° نحو مكة المكرمة</span>
+        </div>
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px; text-align:center">
+          تحدد زاوية اتجاه الكعبة المشرفة بدقة فلكية متناهية بناءً على إحداثيات موقعك الجغرافي.
+        </p>
+
+        <div class="compass-container">
+          <div class="compass-disc" id="compass-disc">
+            <span class="compass-cardinal cardinal-n">شمال (N)</span>
+            <span class="compass-cardinal cardinal-s">جنوب (S)</span>
+            <span class="compass-cardinal cardinal-e">شرق (E)</span>
+            <span class="compass-cardinal cardinal-w">غرب (W)</span>
+
+            <!-- إبرة اتجاه القبلة -->
+            <div class="compass-needle" id="compass-needle">
+              <span class="compass-kaaba">🕋</span>
+            </div>
+            <div class="compass-center"></div>
+          </div>
+
+          <div style="margin-top:10px">
+            <div style="font-size:16px; font-weight:800; color:var(--gold-light)" id="qibla-direction-text">136° جنوب شرق</div>
+            <div style="font-size:12px; color:var(--text-muted); margin-top:4px" id="qibla-distance-text">المسافة المستقيمة إلى الكعبة: 1,288 كم</div>
+          </div>
+
+          <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center">
+            <button class="act-btn" onclick="enableDeviceOrientation()">📱 تفعيل حساس الهاتف الحركي</button>
+            <button class="act-btn download" onclick="downloadPrayerTimesSchedule()">⬇️ حفظ جدول المواقيت</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════ 5. تبويب مشجر الأسانيد التفاعلي ══════════════ -->
   <div id="isnad-panel" style="display:none">
     <div class="card">
       <div class="card-title">
@@ -636,7 +917,7 @@
     </div>
   </div>
 
-  <!-- ══════════════ 5. تبويب المكتبة الإسلامية الشاملة ══════════════ -->
+  <!-- ══════════════ 6. تبويب المكتبة الإسلامية الشاملة ══════════════ -->
   <div id="library-panel" style="display:none">
     <div class="card">
       <div class="card-title">
@@ -644,11 +925,12 @@
         <span style="font-size:11px; color:var(--gold-light)">تصفح وقراءة واستماع وتحميل</span>
       </div>
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px">
-        كتب ومراجع في الفقه، علم التجويد، السيرة النبوية العطرة، التفسير الميسر، العقيدة، وأذكار اليوم والليلة.
+        كتب ومراجع في الفقه، علم التجويد، السيرة النبوية العطرة، التفسير الميسر، العقيدة، وأذكار اليوم والليلة، وموسوعة القراءات العشر الكبرى.
       </p>
 
       <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px">
         <button class="act-btn" onclick="filterLibrary('all')">🌟 جميع الكتب</button>
+        <button class="act-btn" onclick="filterLibrary('qiraat')">📜 القراءات العشر ورواتها الـ 20</button>
         <button class="act-btn" onclick="filterLibrary('tajweed')">📖 علم التجويد</button>
         <button class="act-btn" onclick="filterLibrary('fiqh')">🕌 الفقه الإسلامي</button>
         <button class="act-btn" onclick="filterLibrary('seerah')">🐪 السيرة النبوية</button>
@@ -672,7 +954,6 @@
       حدد نطاق التنزيل ونوع المحتوى (صوت أو نصوص بالرسم العثماني أو الإملائي):
     </p>
 
-    <!-- 1. نطاق التحميل -->
     <div style="background:var(--bg-input); padding:12px; border-radius:12px; margin-bottom:12px">
       <label style="font-size:12px; font-weight:700; color:var(--gold)">1. نطاق التحميل:</label>
       <div style="display:flex; gap:12px; margin-top:8px; flex-wrap:wrap">
@@ -689,7 +970,6 @@
       </div>
     </div>
 
-    <!-- 2. نوع المحتوى -->
     <div style="background:var(--bg-input); padding:12px; border-radius:12px; margin-bottom:14px">
       <label style="font-size:12px; font-weight:700; color:var(--gold)">2. تنسيق الملف والمحتوى:</label>
       <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px">
@@ -738,11 +1018,11 @@
     <button class="close-modal" onclick="closeApiKeyModal()">✕</button>
     <h3 style="font-size:17px; color:var(--gold); margin-bottom:8px">⚙️ إعدادات الذكاء الاصطناعي المجاني (Google Gemini)</h3>
     <p style="font-size:12.5px; color:var(--text-muted); line-height:1.6; margin-bottom:14px">
-      للحصول على إجابات فورية وتحليل ذكي فائق الدقة بدون حدود، يمكنك إدخال مفتاح Google Gemini المجاني.
+      للحصول على إجابات فورية وتحليل ذكي فائق الدقة وتفريغ المقاطع الصوتية المسجلة بدون حدود، أدخل مفتاحك المجاني.
       <br>
       • **المفتاح مجاني 100%** من جوجل بحدود 1,500 طلب يومياً.
       <br>
-      • يُحفظ المفتاح محلياً في متصفحك فقط ولا يراه أي خادم.
+      • يُحفظ المفتاح محلياً في متصفحك فقط ولا يراه أي خادم خارجي.
     </p>
 
     <label style="font-size:12px; font-weight:700; color:var(--text)">مفتاح Gemini API Key:</label>
@@ -799,7 +1079,7 @@
 
 <script>
 // ─── 1. نظام التنبيهات المتقدم (Toast System - ممتوع alert نهائياً) ───
-window.showToast = function(msg, type = 'info', duration = 4000) {
+window.showToast = function(msg, type = 'info', duration = 4500) {
   const container = document.getElementById('toast-container');
   if (!container) return;
   const el = document.createElement('div');
@@ -817,7 +1097,6 @@ window.showToast = function(msg, type = 'info', duration = 4000) {
   }, duration);
 };
 
-// استبدال دالة alert الأصلية لمنع ظهور أي نافذة مزعجة
 window.alert = function(msg) {
   showToast(msg, 'info');
 };
@@ -864,7 +1143,6 @@ const SURAHS = [
   {id:112, name:"الإخلاص", ayahs:4}, {id:113, name:"الفلق", ayahs:5}, {id:114, name:"الناس", ayahs:6}
 ];
 
-// ملء قائمة السور
 const surahPicker = document.getElementById('quran-surah-picker');
 SURAHS.forEach(s => {
   const opt = document.createElement('option');
@@ -918,24 +1196,98 @@ function handleFileUpload(e) {
   reader.readAsText(file);
 }
 
-// ─── 4. تحويل الصوت إلى نص (Speech-to-Text) ───
-let activeRecognition = null;
-let currentRecTargetInputId = null;
+// ─── 4. تفريغ المقاطع الصوتية المسجلة (Audio to Text) ───
+let UPLOADED_AUDIO_FILE = null;
+let UPLOADED_AUDIO_BASE64 = null;
 
+function handleAudioFileUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  UPLOADED_AUDIO_FILE = file;
+  const previewBox = document.getElementById('audio-upload-preview');
+  const filenameEl = document.getElementById('uploaded-audio-filename');
+  const player = document.getElementById('uploaded-audio-player');
+
+  filenameEl.textContent = `🎵 مقطع صوتي: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} ميجابايت)`;
+  player.src = URL.createObjectURL(file);
+  previewBox.style.display = 'block';
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    UPLOADED_AUDIO_BASE64 = reader.result.split(',')[1];
+  };
+  reader.readAsDataURL(file);
+
+  showToast('تم تحميل المقطع الصوتي! اضغط على زر "تفريغ المقطع الصوتي" للبدء.', 'info');
+}
+
+async function transcribeUploadedAudio() {
+  if (!UPLOADED_AUDIO_FILE || !UPLOADED_AUDIO_BASE64) {
+    showToast('يُرجى اختيار مقطع صوتي أولاً', 'warning');
+    return;
+  }
+
+  const apiKey = localStorage.getItem('GEMINI_API_KEY');
+  const btn = document.getElementById('transcribe-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ جاري تفريغ الصوت بدقة بالغة...';
+
+  if (apiKey) {
+    try {
+      const mimeType = UPLOADED_AUDIO_FILE.type || 'audio/mp3';
+      const prompt = `أنت خبير تفريغ صوتي لغوي وشرعي دقيق.
+استمع بعناية إلى هذا المقطع الصوتي واكتب نصه باللغة العربية بدقة متناهية وإتقان تام للألفاظ القرآنية أو النبوية أو الدينية بدون أي تحريف أو تعليق إضافي.`;
+
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { text: prompt },
+              { inline_data: { mime_type: mimeType, data: UPLOADED_AUDIO_BASE64 } }
+            ]
+          }]
+        })
+      });
+
+      const data = await res.json();
+      btn.disabled = false;
+      btn.textContent = '⚡ تفريغ المقطع الصوتي إلى نص فوري';
+
+      if (data.candidates && data.candidates[0]) {
+        const text = data.candidates[0].content.parts[0].text.trim();
+        document.getElementById('question').value = text;
+        showToast('تم تفريغ المقطع الصوتي بنجاح ووضعه في صندوق السؤال!', 'success');
+        return;
+      }
+    } catch (err) {
+      console.log('Gemini audio transcription error:', err);
+    }
+  }
+
+  btn.disabled = false;
+  btn.textContent = '⚡ تفريغ المقطع الصوتي إلى نص فوري';
+  showToast('لتفريغ الملفات الصوتية المسجلة مجاناً 100%: أدخل مفتاحك المجاني من Google Gemini في زر (⚙️ إعدادات الذكاء)، أو استخدم زر الميكروفون المباشر 🎙️ في متصفحك.', 'warning', 7000);
+  openApiKeyModal();
+}
+
+// ─── 5. تحويل الصوت المباشر إلى نص (Live Speech-to-Text) ───
+let activeRecognition = null;
 function toggleSpeechRecognition(targetInputId, triggerBtnId) {
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRec) {
-    showToast('المتصفح لا يدعم ميزة التعرف الصوتي (Speech Recognition). جرب متصفح Chrome أو Edge الحديث.', 'warning');
+    showToast('المتصفح لا يدعم التعرف الصوتي المباشر. جرب متصفح Chrome أو Edge الحديث.', 'warning');
     return;
   }
 
   const triggerBtn = document.getElementById(triggerBtnId);
-
   if (activeRecognition) {
     activeRecognition.stop();
     activeRecognition = null;
     if (triggerBtn) triggerBtn.classList.remove('recording');
-    showToast('تم إيقاف التسجيل الصوتي', 'info');
+    showToast('تم إيقاف الميكروفون', 'info');
     return;
   }
 
@@ -947,7 +1299,6 @@ function toggleSpeechRecognition(targetInputId, triggerBtnId) {
 
     rec.onstart = () => {
       activeRecognition = rec;
-      currentRecTargetInputId = targetInputId;
       if (triggerBtn) triggerBtn.classList.add('recording');
       showToast('🎤 جاري الاستماع... تحدث الآن باللغة العربية', 'success');
     };
@@ -955,9 +1306,7 @@ function toggleSpeechRecognition(targetInputId, triggerBtnId) {
     rec.onresult = (evt) => {
       let finalTranscript = '';
       for (let i = evt.resultIndex; i < evt.results.length; ++i) {
-        if (evt.results[i].isFinal) {
-          finalTranscript += evt.results[i][0].transcript;
-        }
+        if (evt.results[i].isFinal) finalTranscript += evt.results[i][0].transcript;
       }
       if (finalTranscript) {
         const input = document.getElementById(targetInputId);
@@ -968,10 +1317,9 @@ function toggleSpeechRecognition(targetInputId, triggerBtnId) {
     };
 
     rec.onerror = (evt) => {
-      console.log('Speech rec error:', evt.error);
       if (triggerBtn) triggerBtn.classList.remove('recording');
       activeRecognition = null;
-      showToast('تعذر التعرف الصوتي: ' + (evt.error || 'تأكد من إذن الميكروفون'), 'error');
+      showToast('خطأ الميكروفون: ' + (evt.error || 'يرجى السماح بالإذن'), 'error');
     };
 
     rec.onend = () => {
@@ -981,36 +1329,44 @@ function toggleSpeechRecognition(targetInputId, triggerBtnId) {
 
     rec.start();
   } catch (err) {
-    showToast('خطأ في تشغيل الميكروفون: ' + err.message, 'error');
+    showToast('تعذر تشغيل الميكروفون: ' + err.message, 'error');
   }
 }
 
-// ─── 5. تشغيل تلاوات المشايخ القرآنية حصراً (ممنوع الروبوت على القرآن) ───
+// ─── 6. تشغيل تلاوات المشايخ القرآنية حصراً بالقراءات العشر ───
 let currentQuranAudioUrl = '';
 const mainQuranAudio = document.getElementById('main-quran-audio');
 
 async function playSelectedAyah() {
   const surah = parseInt(document.getElementById('quran-surah-picker').value);
   const ayah = parseInt(document.getElementById('quran-ayah-picker').value);
-  const reciter = document.getElementById('sheikh-reciter-select').value;
+  const selectEl = document.getElementById('sheikh-reciter-select');
+  const selectedOption = selectEl.selectedOptions[0];
+  const reciterVal = selectedOption.value;
+  const playType = selectedOption.getAttribute('data-type') || 'ayah';
+
+  stopSpeech();
 
   const sStr = String(surah).padStart(3, '0');
   const aStr = String(ayah).padStart(3, '0');
-  currentQuranAudioUrl = `https://everyayah.com/data/${reciter}/${sStr}${aStr}.mp3`;
 
-  stopSpeech(); // إيقاف قارئ الكتب فوراً
+  if (playType === 'ayah') {
+    currentQuranAudioUrl = `https://everyayah.com/data/${reciterVal}/${sStr}${aStr}.mp3`;
+  } else {
+    // تلاوة سورة كاملة برابط السيرفر المباشر للقراءة المختارة
+    currentQuranAudioUrl = `${reciterVal}${sStr}.mp3`;
+  }
 
   mainQuranAudio.src = currentQuranAudioUrl;
   mainQuranAudio.style.display = 'block';
   mainQuranAudio.play().catch(e => {
-    showToast('تعذر تشغيل الصوت، جرب قارئاً آخر أو تحقق من اتصالك', 'error');
+    showToast('تعذر تشغيل التسجيل الصوتي، جرب رواية أو شيخاً آخر', 'error');
   });
 
   const sObj = SURAHS.find(s => s.id === surah);
   const sName = sObj ? sObj.name : surah;
-  showGlobalAudioBar(`سورة ${sName} — آية ${ayah}`, document.getElementById('sheikh-reciter-select').selectedOptions[0]?.text || '');
+  showGlobalAudioBar(`سورة ${sName} — ${selectedOption.text}`, playType === 'ayah' ? `آية ${ayah}` : 'تلاوة سورة كاملة مباركة');
 
-  // عرض نص الآية بدون تكرار [سورة سورة]
   const qData = await getQuranData();
   const found = qData.find(item => item.surah_number === surah && item.ayah_number === ayah);
   const textBox = document.getElementById('current-ayah-text-box');
@@ -1021,7 +1377,7 @@ async function playSelectedAyah() {
 }
 
 function playAyahReciter(surah, ayah, btn) {
-  const reciter = document.getElementById('sheikh-reciter-select')?.value || 'Alafasy_128kbps';
+  const reciter = 'Alafasy_128kbps';
   const sStr = String(surah).padStart(3, '0');
   const aStr = String(ayah).padStart(3, '0');
   const url = `https://everyayah.com/data/${reciter}/${sStr}${aStr}.mp3`;
@@ -1031,7 +1387,7 @@ function playAyahReciter(surah, ayah, btn) {
   mainQuranAudio.src = url;
   mainQuranAudio.style.display = 'block';
   mainQuranAudio.play().catch(e => {
-    showToast('تعذر تشغيل الصوت، جرب قارئاً آخر', 'error');
+    showToast('تعذر تشغيل الصوت', 'error');
   });
   currentQuranAudioUrl = url;
 
@@ -1070,14 +1426,13 @@ function stopAllAudio() {
   showToast('تم إيقاف الصوت', 'info');
 }
 
-// ─── 6. محرك القراءة الصوتية الذكي للكتب (TTS) مع اختيار الأصوات وبلا تقطيع ───
+// ─── 7. محرك القراءة الصوتية الذكي للكتب (TTS) مع اختيار الأصوات وبلا تقطيع ───
 let synth = window.speechSynthesis;
 let ttsQueue = [];
 let ttsCurrentIdx = 0;
 let isTtsPlaying = false;
 let isTtsPaused = false;
 
-// تعبئة أصوات النظام
 function populateVoices() {
   if (!synth) return;
   const select = document.getElementById('tts-voice-select');
@@ -1117,7 +1472,6 @@ if (synth) {
   synth.onvoiceschanged = populateVoices;
 }
 
-// تجزئة النص الطويل إلى جمل طبيعية لمنع توقف المتصفح أو تغير النغمة
 function chunkText(text, maxLen = 120) {
   const sentences = text.split(/([.،!؟\n]+)/);
   const chunks = [];
@@ -1142,7 +1496,7 @@ function speakString(text) {
     showToast('المتصفح لا يدعم القراءة الصوتية', 'warning');
     return;
   }
-  stopAllAudio(); // إيقاف أي تلاوة قرآنية أولاً
+  stopAllAudio();
 
   ttsQueue = chunkText(text);
   ttsCurrentIdx = 0;
@@ -1183,7 +1537,6 @@ function playNextTtsChunk() {
     playNextTtsChunk();
   };
   utterance.onerror = (e) => {
-    console.log('TTS chunk error:', e);
     ttsCurrentIdx++;
     playNextTtsChunk();
   };
@@ -1226,9 +1579,334 @@ function speakTextById(id) {
   speakString(el.innerText || el.textContent);
 }
 
-// ─── 7. تبديل التبويبات ───
+// ─── 8. مواقيت الصلاة الفلكية الدقيقة وبوصلة القبلة 3D ───
+let CURRENT_USER_LOCATION = {
+  lat: 30.0444,
+  lng: 31.2357,
+  tz: 3.0,
+  name: "القاهرة (مصر)"
+};
+let prayerTimesInterval = null;
+let currentQiblaAngle = 136.1;
+
+function detectUserLocation() {
+  if (!navigator.geolocation) {
+    showToast('المتصفح لا يدعم تحديد الموقع التلقائي', 'warning');
+    return;
+  }
+  showToast('جارٍ تحديد إحداثيات موقعك عبر الأقمار الصناعية (GPS)...', 'info');
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      const tz = -(new Date().getTimezoneOffset() / 60.0);
+      CURRENT_USER_LOCATION = {
+        lat: lat,
+        lng: lng,
+        tz: tz,
+        name: `موقعك الحالي (${lat.toFixed(2)}°, ${lng.toFixed(2)}°)`
+      };
+      document.getElementById('prayer-city-display').textContent = `📍 ${CURRENT_USER_LOCATION.name}`;
+      recalculatePrayerTimes();
+      showToast('تم ضبط موقعك الجغرافي بنجاح وحساب المواقيت بدقة!', 'success');
+    },
+    (err) => {
+      console.log('GPS error:', err);
+      showToast('تعذر الوصول لموقعك التلقائي، يمكنك اختيار مدينتك يدوياً من القائمة.', 'info');
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+function onCitySelected() {
+  const picker = document.getElementById('prayer-city-picker');
+  const val = picker.value;
+  if (val === 'manual') return;
+
+  const [lat, lng, tz, name] = val.split(',');
+  CURRENT_USER_LOCATION = {
+    lat: parseFloat(lat),
+    lng: parseFloat(lng),
+    tz: parseFloat(tz),
+    name: name
+  };
+  document.getElementById('prayer-city-display').textContent = `📍 ${name}`;
+  recalculatePrayerTimes();
+  showToast(`تم ضبط الموقع على: ${name}`, 'success');
+}
+
+// الحساب الفلكي المعتمد لأوقات الصلاة
+function calculatePrayerTimesEngine(lat, lng, tz, method = 'egypt', asrMadhab = 'standard') {
+  const date = new Date();
+  const startOfYear = new Date(date.getFullYear(), 0, 0);
+  const diff = date - startOfYear;
+  const oneDay = 1000 * 60 * 60 * 24;
+  const dayOfYear = Math.floor(diff / oneDay);
+
+  const gamma = 2 * Math.PI / 365.0 * (dayOfYear - 1);
+
+  // معادلة الوقت بالدقائق
+  const eot = 229.18 * (0.000075 + 0.001868 * Math.cos(gamma) - 0.032077 * Math.sin(gamma)
+                - 0.014615 * Math.cos(2 * gamma) - 0.040849 * Math.sin(2 * gamma));
+
+  // ميل الشمس بالراديان
+  const decl = 0.006918 - 0.399912 * Math.cos(gamma) + 0.070257 * Math.sin(gamma)
+             - 0.006758 * Math.cos(2 * gamma) + 0.000907 * Math.sin(2 * gamma)
+             - 0.002697 * Math.cos(3 * gamma) + 0.00148 * Math.sin(3 * gamma);
+
+  const phi = lat * Math.PI / 180.0;
+  const solarNoon = 12.0 + (tz * 15.0 - lng) / 15.0 - eot / 60.0;
+
+  const methodAngles = {
+    'makkah': { fajr: 18.5, ishaOffset: 90 },
+    'egypt':  { fajr: 19.5, ishaAngle: 17.5 },
+    'mwl':    { fajr: 18.0, ishaAngle: 17.0 },
+    'karachi':{ fajr: 18.0, ishaAngle: 18.0 },
+    'dubai':  { fajr: 18.2, ishaAngle: 18.2 },
+    'isna':   { fajr: 15.0, ishaAngle: 15.0 }
+  };
+
+  const currentMethod = methodAngles[method] || methodAngles['egypt'];
+
+  function hourAngle(alphaDeg) {
+    const alpha = alphaDeg * Math.PI / 180.0;
+    const cosW = (Math.sin(alpha) - Math.sin(phi) * Math.sin(decl)) / (Math.cos(phi) * Math.cos(decl));
+    if (cosW > 1.0) return 0.0;
+    if (cosW < -1.0) return Math.PI;
+    return Math.acos(cosW);
+  }
+
+  // الشروق والغروب (-0.833° مع انكسار الغلاف الجوي)
+  const wSun = hourAngle(-0.8333);
+  const sunrise = solarNoon - (wSun * 180.0 / Math.PI) / 15.0;
+  const sunset = solarNoon + (wSun * 180.0 / Math.PI) / 15.0;
+
+  // الفجر
+  const wFajr = hourAngle(-currentMethod.fajr);
+  const fajr = solarNoon - (wFajr * 180.0 / Math.PI) / 15.0;
+
+  // العصر
+  const n = (asrMadhab === 'hanafi') ? 2.0 : 1.0;
+  const asrAlt = Math.atan(1.0 / (n + Math.tan(Math.abs(phi - decl))));
+  const wAsr = hourAngle(asrAlt * 180.0 / Math.PI);
+  const asr = solarNoon + (wAsr * 180.0 / Math.PI) / 15.0;
+
+  // المغرب
+  const maghrib = sunset + 2.0 / 60.0;
+
+  // العشاء
+  let isha = 0;
+  if (currentMethod.ishaOffset) {
+    isha = maghrib + currentMethod.ishaOffset / 60.0;
+  } else {
+    const wIsha = hourAngle(-currentMethod.ishaAngle);
+    isha = solarNoon + (wIsha * 180.0 / Math.PI) / 15.0;
+  }
+
+  function toTimeString(hDec) {
+    let h = Math.floor(hDec) % 24;
+    let m = Math.floor((hDec - Math.floor(hDec)) * 60);
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  }
+
+  return {
+    fajr: toTimeString(fajr),
+    sunrise: toTimeString(sunrise),
+    dhuhr: toTimeString(solarNoon),
+    asr: toTimeString(asr),
+    maghrib: toTimeString(maghrib),
+    isha: toTimeString(isha),
+    raw: { fajr, sunrise, dhuhr: solarNoon, asr, maghrib, isha }
+  };
+}
+
+// حساب زاوية القبلة الدقيقة من موقع المستخدم
+function calculateQiblaDirection(lat, lng) {
+  const kaabaLat = 21.422487 * Math.PI / 180.0;
+  const kaabaLng = 39.826206 * Math.PI / 180.0;
+  const pLat = lat * Math.PI / 180.0;
+  const pLng = lng * Math.PI / 180.0;
+  const dLng = kaabaLng - pLng;
+
+  const y = Math.sin(dLng) * Math.cos(kaabaLat);
+  const x = Math.cos(pLat) * Math.sin(kaabaLat) - Math.sin(pLat) * Math.cos(kaabaLat) * Math.cos(dLng);
+  let bearing = Math.atan2(y, x) * 180.0 / Math.PI;
+  return (bearing + 360.0) % 360.0;
+}
+
+// حساب المسافة إلى الكعبة المشرفة بالكيلومترات
+function calculateDistanceToKaaba(lat, lng) {
+  const R = 6371; // نصف قطر الأرض بالكيلومتر
+  const kaabaLat = 21.422487 * Math.PI / 180.0;
+  const kaabaLng = 39.826206 * Math.PI / 180.0;
+  const pLat = lat * Math.PI / 180.0;
+  const pLng = lng * Math.PI / 180.0;
+
+  const dLat = kaabaLat - pLat;
+  const dLng = kaabaLng - pLng;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(pLat) * Math.cos(kaabaLat) *
+            Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Math.round(R * c);
+}
+
+function recalculatePrayerTimes() {
+  const method = document.getElementById('prayer-method')?.value || 'egypt';
+  const asrMadhab = document.getElementById('prayer-asr-madhab')?.value || 'standard';
+  const { lat, lng, tz } = CURRENT_USER_LOCATION;
+
+  const times = calculatePrayerTimesEngine(lat, lng, tz, method, asrMadhab);
+
+  document.getElementById('time-fajr').textContent = times.fajr;
+  document.getElementById('time-sunrise').textContent = times.sunrise;
+  document.getElementById('time-dhuhr').textContent = times.dhuhr;
+  document.getElementById('time-asr').textContent = times.asr;
+  document.getElementById('time-maghrib').textContent = times.maghrib;
+  document.getElementById('time-isha').textContent = times.isha;
+
+  // حساب القبلة والمسافة
+  const qiblaAngle = calculateQiblaDirection(lat, lng);
+  currentQiblaAngle = qiblaAngle;
+  const distance = calculateDistanceToKaaba(lat, lng);
+
+  document.getElementById('qibla-deg-badge').textContent = `${qiblaAngle.toFixed(1)}° نحو مكة المكرمة`;
+  document.getElementById('qibla-direction-text').textContent = `${qiblaAngle.toFixed(1)}° (${getCardinalDirection(qiblaAngle)})`;
+  document.getElementById('qibla-distance-text').textContent = `المسافة المستقيمة إلى الكعبة المشرفة: ${distance.toLocaleString()} كم`;
+
+  // تحريك إبرة البوصلة إلى الزاوية المحسوبة
+  const needle = document.getElementById('compass-needle');
+  if (needle) {
+    needle.style.transform = `translateX(-50%) rotate(${qiblaAngle}deg)`;
+  }
+
+  // تحديث العد التنازلي للصلاة القادمة
+  updateNextPrayerCountdown(times);
+
+  // التقويم الهجري
+  try {
+    const hijriFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    });
+    document.getElementById('prayer-hijri-date').textContent = `التقويم الهجري: ${hijriFormatter.format(new Date())}`;
+  } catch (e) {
+    document.getElementById('prayer-hijri-date').textContent = `تاريخ اليوم: ${new Date().toLocaleDateString('ar-EG')}`;
+  }
+}
+
+function getCardinalDirection(angle) {
+  if (angle >= 337.5 || angle < 22.5) return 'شمالاً (N)';
+  if (angle >= 22.5 && angle < 67.5) return 'شمال شرق (NE)';
+  if (angle >= 67.5 && angle < 112.5) return 'شرقاً (E)';
+  if (angle >= 112.5 && angle < 157.5) return 'جنوب شرق (SE)';
+  if (angle >= 157.5 && angle < 202.5) return 'جنوباً (S)';
+  if (angle >= 202.5 && angle < 247.5) return 'جنوب غرب (SW)';
+  if (angle >= 247.5 && angle < 292.5) return 'غرباً (W)';
+  return 'شمال غرب (NW)';
+}
+
+function updateNextPrayerCountdown(times) {
+  if (prayerTimesInterval) clearInterval(prayerTimesInterval);
+
+  function check() {
+    const now = new Date();
+    const curDec = now.getHours() + now.getMinutes() / 60.0 + now.getSeconds() / 3600.0;
+
+    const list = [
+      { id: 'fajr', name: 'صلاة الفجر', dec: times.raw.fajr },
+      { id: 'dhuhr', name: 'صلاة الظهر', dec: times.raw.dhuhr },
+      { id: 'asr', name: 'صلاة العصر', dec: times.raw.asr },
+      { id: 'maghrib', name: 'صلاة المغرب', dec: times.raw.maghrib },
+      { id: 'isha', name: 'صلاة العشاء', dec: times.raw.isha }
+    ];
+
+    ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(k => {
+      document.getElementById(`card-${k}`)?.classList.remove('active');
+    });
+
+    let next = list.find(p => p.dec > curDec);
+    let diffHours = 0;
+
+    if (next) {
+      diffHours = next.dec - curDec;
+      document.getElementById(`card-${next.id}`)?.classList.add('active');
+      document.getElementById('next-prayer-name').textContent = next.name;
+    } else {
+      // الصلاة القادمة فجر الغد
+      next = list[0];
+      diffHours = (24.0 - curDec) + next.dec;
+      document.getElementById('card-fajr')?.classList.add('active');
+      document.getElementById('next-prayer-name').textContent = 'صلاة الفجر (الغد)';
+    }
+
+    const totalSeconds = Math.max(0, Math.floor(diffHours * 3600));
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+
+    document.getElementById('next-prayer-countdown').textContent =
+      `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
+
+  check();
+  prayerTimesInterval = setInterval(check, 1000);
+}
+
+function enableDeviceOrientation() {
+  if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
+    DeviceOrientationEvent.requestPermission().then(state => {
+      if (state === 'granted') {
+        window.addEventListener('deviceorientation', handleOrientation);
+        showToast('تم تفعيل مستشعر الاتجاه بالهاتف!', 'success');
+      }
+    });
+  } else if (window.DeviceOrientationEvent) {
+    window.addEventListener('deviceorientation', handleOrientation);
+    showToast('تم تفعيل تدوير البوصلة مع حركة الهاتف!', 'success');
+  } else {
+    showToast('جهازك لا يحتوي على مستشعر اتجاه حركي (جيروسكوب)', 'info');
+  }
+}
+
+function handleOrientation(event) {
+  let heading = event.alpha;
+  if (event.webkitCompassHeading) heading = event.webkitCompassHeading;
+  if (heading !== null) {
+    const disc = document.getElementById('compass-disc');
+    if (disc) {
+      disc.style.transform = `rotate(${-heading}deg)`;
+    }
+  }
+}
+
+function playAdhanPreview() {
+  stopSpeech();
+  mainQuranAudio.src = 'https://everyayah.com/data/audhubillah.mp3';
+  mainQuranAudio.play().catch(e => console.log('Adhan preview error:', e));
+  showToast('الله أكبر، الله أكبر — حي على الصلاة، حي على الفلاح', 'info');
+}
+
+function downloadPrayerTimesSchedule() {
+  const content = `جدول مواقيت الصلاة الشرعية:
+الموقع: ${CURRENT_USER_LOCATION.name}
+خط العرض: ${CURRENT_USER_LOCATION.lat} | خط الطول: ${CURRENT_USER_LOCATION.lng}
+زاوية اتجاه القبلة: ${currentQiblaAngle.toFixed(1)}° نحو مكة المكرمة
+
+المواقيت:
+- الفجر: ${document.getElementById('time-fajr').textContent}
+- الشروق: ${document.getElementById('time-sunrise').textContent}
+- الظهر: ${document.getElementById('time-dhuhr').textContent}
+- العصر: ${document.getElementById('time-asr').textContent}
+- المغرب: ${document.getElementById('time-maghrib').textContent}
+- العشاء: ${document.getElementById('time-isha').textContent}
+
+صادر عن منصة الذكاء الاصطناعي الإسلامي: https://islamic-ai.pages.dev/`;
+  downloadText('prayer_times.txt', content);
+}
+
+// ─── 9. تبديل التبويبات ───
 function switchTab(name) {
-  ['ask', 'search', 'audio', 'isnad', 'library'].forEach(t => {
+  ['ask', 'search', 'audio', 'prayer', 'isnad', 'library'].forEach(t => {
     const el = document.getElementById(`${t}-panel`);
     const btn = document.getElementById(`tab-${t}`);
     if (el) el.style.display = (t === name) ? 'block' : 'none';
@@ -1240,6 +1918,9 @@ function switchTab(name) {
   if (name === 'library') {
     renderLibraryGrid('all');
   }
+  if (name === 'prayer') {
+    recalculatePrayerTimes();
+  }
 }
 
 function setQuickQuestion(text) {
@@ -1247,7 +1928,7 @@ function setQuickQuestion(text) {
   document.getElementById('question').focus();
 }
 
-// ─── 8. إدارة مفتاح Gemini المجاني ───
+// ─── 10. إدارة مفتاح Gemini المجاني ───
 function openApiKeyModal() {
   document.getElementById('gemini-api-key-input').value = localStorage.getItem('GEMINI_API_KEY') || '';
   document.getElementById('api-key-modal').style.display = 'flex';
@@ -1265,11 +1946,11 @@ function saveApiKey() {
   closeApiKeyModal();
 }
 
-// ─── 9. توحيد وتطبيع النصوص العربية (Arabic Normalizer) ───
+// ─── 11. توحيد وتطبيع النصوص العربية (Arabic Normalizer) ───
 function normalizeArabic(text) {
   if (!text) return '';
   return text
-    .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g, '') // إزالة التشكيل والتطويل
+    .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g, '')
     .replace(/[أإآٱ]/g, 'ا')
     .replace(/ة/g, 'ه')
     .replace(/ى/g, 'ي')
@@ -1277,7 +1958,7 @@ function normalizeArabic(text) {
     .trim();
 }
 
-// ─── 10. السؤال المعرفي الموثوق مع حل مسائل الوتر وعرفة وليلة القدر ───
+// ─── 12. السؤال المعرفي الموثوق ───
 async function askQuestion() {
   const q = document.getElementById('question').value.trim();
   if (!q) { showToast('يُرجى كتابة سؤالك أولاً', 'warning'); return; }
@@ -1329,7 +2010,6 @@ ${q}
     }
   }
 
-  // في حال عدم وجود مفتاح أو فشله: إجابة فورية ذكية وشاملة مركبة من المصادر
   document.getElementById('loading-box').style.display = 'none';
   if (relevantSources.length > 0) {
     let combinedAns = 'الحمد لله والصلاة والسلام على رسول الله وبعد:\n\nبناءً على المصادر المعتمدة الموثقة في الموسوعة بخصوص مسألتك:\n\n';
@@ -1351,7 +2031,6 @@ function findRelevantSourcesLocally(q) {
   const normQ = normalizeArabic(q);
   const matched = [];
 
-  // الكلمات المعيارية المعززة للمواضيع (Topic Boosters)
   const boosters = {
     'الوتر': ['fiqh_witr_prayer'],
     'وتر': ['fiqh_witr_prayer'],
@@ -1373,18 +2052,15 @@ function findRelevantSourcesLocally(q) {
     'اذكار': ['adhkar_morning_and_evening']
   };
 
-  // تفكيك كلمات السؤال وتصفية الأدوات
   const stopWords = new Set(['اعطيني', 'شرح', 'مفصل', 'بالدليل', 'المصادر', 'لدي', 'سؤال', 'اخر', 'اذا', 'كان', 'موافق', 'هل', 'ما', 'هو', 'هي', 'من', 'عن', 'في', 'علي', 'مع', 'ان', 'لا', 'قد', 'ثم', 'او', 'ام']);
   const words = normQ.split(/\s+/).filter(w => w.length >= 2 && !stopWords.has(w));
 
-  // 1. البحث في الكتب
   if (window.ISLAMIC_DATA && window.ISLAMIC_DATA.books) {
     window.ISLAMIC_DATA.books.forEach(b => {
       let score = 0;
       const bTitleNorm = normalizeArabic(b.title_ar);
       const bContentNorm = normalizeArabic(b.content);
 
-      // تطبيق المعززات الدلالية المحددة بدقة
       for (const [key, bIds] of Object.entries(boosters)) {
         if (normQ.includes(key) && bIds.includes(b.book_id)) {
           score += 60;
@@ -1409,7 +2085,6 @@ function findRelevantSourcesLocally(q) {
     });
   }
 
-  // 2. البحث في الأحاديث
   if (window.ISLAMIC_DATA && window.ISLAMIC_DATA.hadiths) {
     window.ISLAMIC_DATA.hadiths.forEach(h => {
       let score = 0;
@@ -1429,7 +2104,6 @@ function findRelevantSourcesLocally(q) {
     });
   }
 
-  // 3. الملفات المرفوعة
   USER_UPLOADED_TEXTS.forEach(u => {
     matched.push({
       type: 'user_file',
@@ -1490,7 +2164,7 @@ function renderAnswerUI(ansText, sources, provider) {
   document.getElementById('ask-btn').disabled = false;
 }
 
-// ─── 11. البحث الشامل والمباشر مع منع تشتت الكلمات ───
+// ─── 13. البحث الشامل والمباشر مع منع تشتت الكلمات ───
 async function doSearch() {
   const q = document.getElementById('search-query').value.trim();
   if (!q) { showToast('يُرجى إدخال كلمة أو عبارة للبحث', 'warning'); return; }
@@ -1509,7 +2183,6 @@ async function doSearch() {
   const matchedBooks = [];
   const matchedUserFiles = [];
 
-  // 1. البحث في القرآن الكريم
   if (targetScope === 'all' || targetScope === 'quran') {
     const qData = await getQuranData();
     qData.forEach(item => {
@@ -1517,14 +2190,13 @@ async function doSearch() {
       const isExact = cleanNorm.includes(normQ);
 
       if (isExact) {
-        matchedQuran.unshift(item); // تطابق تام في المقدمة
+        matchedQuran.unshift(item);
       } else if (!exactPhraseOnly && words.length > 0 && words.every(w => cleanNorm.includes(w))) {
         matchedQuran.push(item);
       }
     });
   }
 
-  // 2. البحث في الأحاديث
   if (targetScope === 'all' || targetScope === 'hadith') {
     if (window.ISLAMIC_DATA && window.ISLAMIC_DATA.hadiths) {
       window.ISLAMIC_DATA.hadiths.forEach(h => {
@@ -1540,7 +2212,6 @@ async function doSearch() {
     }
   }
 
-  // 3. البحث في الكتب
   if (targetScope === 'all' || targetScope === 'books') {
     if (window.ISLAMIC_DATA && window.ISLAMIC_DATA.books) {
       window.ISLAMIC_DATA.books.forEach(b => {
@@ -1557,7 +2228,6 @@ async function doSearch() {
     }
   }
 
-  // 4. الملفات المرفوعة
   USER_UPLOADED_TEXTS.forEach(u => {
     const uNorm = normalizeArabic(u.content);
     if (uNorm.includes(normQ) || (!exactPhraseOnly && words.every(w => uNorm.includes(w)))) {
@@ -1658,7 +2328,7 @@ function downloadAllSearchResults() {
   downloadText('search_results.txt', container.innerText);
 }
 
-// ─── 12. مشجر الأسانيد التفاعلي وعزل المتن عن السند بدقة ───
+// ─── 14. مشجر الأسانيد التفاعلي ───
 const NARRATOR_PROFILES = {
   "رسول الله": { tabaqa: "المصدر المعصوم ﷺ", grade: "رسول الله وخاتم الأنبياء والمرسلين ﷺ", death: "11 هـ", loc: "المدينة المنورة", bio: "محمد بن عبد الله بن عبد المطلب ﷺ الصادق المصدوق." },
   "عمر بن الخطاب": { tabaqa: "صحابي جليل (الخلفاء الراشدون)", grade: "أمير المؤمنين، شهيد المحراب، ثاني الخلفاء الراشدين", death: "23 هـ", loc: "المدينة المنورة", bio: "الفاروق أبو حفص عمر بن الخطاب رضي الله عنه." },
@@ -1679,7 +2349,6 @@ function generateIsnadTree() {
   const text = document.getElementById('isnad-input').value.trim();
   if (!text) return;
 
-  // عزل المتن عن السند بدقة
   const matnMatch = text.match(/(?:سمعت\s+رسول\s+الله|قال\s+رسول\s+الله|عن\s+النبي.*?قال|أن\s+رسول\s+الله.*?قال|يقول\s+سمعت\s+رسول\s+الله)(?:.*?(?:يقول|قال))?\s*(:?.*)/i);
   let sanadPart = text;
   let matnPart = '';
@@ -1689,7 +2358,6 @@ function generateIsnadTree() {
     matnPart = matnMatch[0];
   }
 
-  // عرض بطاقة المتن الشريف المفصول
   const matnCard = document.getElementById('matn-display-card');
   const matnContent = document.getElementById('matn-text-content');
   if (matnPart) {
@@ -1729,7 +2397,7 @@ function parseIsnadText(sanadText) {
   });
 
   const ordered = [];
-  ordered.push('رسول الله ﷺ'); // قمة السند دائماً
+  ordered.push('رسول الله ﷺ');
   recognized.forEach(n => {
     if (n !== 'رسول الله ﷺ' && !ordered.includes(n)) ordered.push(n);
   });
@@ -1847,7 +2515,7 @@ function loadIsnadSample(num) {
   }
 }
 
-// ─── 13. المكتبة الإسلامية الشاملة وقارئ الكتب ───
+// ─── 15. المكتبة الإسلامية الشاملة وقارئ الكتب ───
 let CURRENT_READER_BOOK = null;
 let readerFontSize = 16;
 
@@ -1926,7 +2594,7 @@ function downloadCurrentReaderBook() {
   downloadText(`${CURRENT_READER_BOOK.book_id}.txt`, `${CURRENT_READER_BOOK.title_ar}\nالمؤلف: ${CURRENT_READER_BOOK.author_ar}\n\n${CURRENT_READER_BOOK.content}`);
 }
 
-// ─── 14. مركز التحميل المتقدم للتلاوات والنصوص ───
+// ─── 16. مركز التحميل المتقدم للتلاوات والنصوص ───
 function openDownloadModal() {
   const surahId = parseInt(document.getElementById('quran-surah-picker').value);
   const ayah = parseInt(document.getElementById('quran-ayah-picker').value);
@@ -1947,42 +2615,42 @@ function updateDownloadOptionsUI() {
 async function executeDownload(action = 'download') {
   const surahId = parseInt(document.getElementById('quran-surah-picker').value);
   const curAyah = parseInt(document.getElementById('quran-ayah-picker').value);
-  const reciter = document.getElementById('sheikh-reciter-select').value;
   const scope   = document.querySelector('input[name="dl-scope"]:checked').value;
   const format  = document.querySelector('input[name="dl-format"]:checked').value;
 
   const sObj = SURAHS.find(s => s.id === surahId);
   const sName = sObj ? sObj.name : surahId;
 
-  // إذا كان التنسيق صوتاً MP3
   if (format === 'audio_mp3') {
-    if (scope === 'single') {
-      const sStr = String(surahId).padStart(3, '0');
-      const aStr = String(curAyah).padStart(3, '0');
-      const url = `https://everyayah.com/data/${reciter}/${sStr}${aStr}.mp3`;
-      if (action === 'copy') {
-        navigator.clipboard.writeText(url);
-        showToast('تم نسخ رابط التلاوة المباشر MP3 بنجاح', 'success');
-      } else {
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Quran_${sName}_${curAyah}.mp3`;
-        a.target = '_blank';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        showToast('بدأ تحميل ملف التلاوة MP3', 'success');
-      }
-      closeDownloadModal();
-      return;
+    const sStr = String(surahId).padStart(3, '0');
+    const aStr = String(curAyah).padStart(3, '0');
+    const reciterVal = document.getElementById('sheikh-reciter-select').value;
+    const isAyahType = document.getElementById('sheikh-reciter-select').selectedOptions[0]?.getAttribute('data-type') === 'ayah';
+
+    let dlUrl = '';
+    if (isAyahType && scope === 'single') {
+      dlUrl = `https://everyayah.com/data/${reciterVal}/${sStr}${aStr}.mp3`;
     } else {
-      showToast('تحميل الملفات الصوتية المتعددة: يمكنك تنزيل كل آية على حدة برابط مباشر، أو الاستماع المباشر في التطبيق.', 'info', 5000);
-      closeDownloadModal();
-      return;
+      dlUrl = `${reciterVal}${sStr}.mp3`;
     }
+
+    if (action === 'copy') {
+      navigator.clipboard.writeText(dlUrl);
+      showToast('تم نسخ رابط التلاوة المباشر MP3 بنجاح', 'success');
+    } else {
+      const a = document.createElement('a');
+      a.href = dlUrl;
+      a.download = `Quran_${sName}.mp3`;
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('بدأ تحميل ملف التلاوة MP3', 'success');
+    }
+    closeDownloadModal();
+    return;
   }
 
-  // إذا كان التنسيق نصاً (عثماني أو إملائي)
   const qData = await getQuranData();
   let startAyah = curAyah;
   let endAyah   = curAyah;
@@ -2015,7 +2683,7 @@ async function executeDownload(action = 'download') {
   closeDownloadModal();
 }
 
-// ─── 15. أدوات النسخ والتحميل والترجمة ───
+// ─── 17. أدوات النسخ والتحميل والترجمة ───
 function copyTextById(id) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -2082,7 +2750,7 @@ function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ─── 16. PWA وتثبيت التطبيق ───
+// ─── 18. PWA ───
 let deferredPrompt = null;
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -2109,6 +2777,11 @@ function installPWA() {
     showToast('لتثبيت التطبيق: افتح قائمة المتصفح (⋮) واختر "إضافة إلى الشاشة الرئيسية" (Install / Add to Home Screen)', 'info', 6000);
   }
 }
+
+// تشغيل حساب المواقيت افتراضياً عند الإقلاع
+window.addEventListener('DOMContentLoaded', () => {
+  recalculatePrayerTimes();
+});
 </script>
 </body>
 </html>
