@@ -231,9 +231,9 @@ def search_books(
     البحث في موسوعة الكتب والمراجع الإسلامية (السيرة، الفقه، العقيدة، الأذكار، التفسير)
     """
     query_clean = remove_diacritics(query.strip())
-    query_fts = re.sub(r'[*"\(\)]', '', query_clean).strip()
-    if not query_fts:
+    if not query_clean:
         return []
+    query_fts = re.sub(r'[*"()؟?!.,،]', '', query_clean).strip()
 
     conn = get_conn()
     results = []
@@ -271,32 +271,88 @@ def search_books(
 
         # 2. إذا لم يعطِ FTS نتائج، بحث LIKE مباشر في المحتوى والعنوان
         if not rows:
-            tokens = [t for t in query_fts.split() if len(t) > 2]
-            for token in tokens[:3]:
+            # --- المرادفات الإسلامية الشاملة ---
+            SYNONYMS = {
+                "وضوء": ["وضوء", "الوضوء", "توضأ"],
+                "توضأ": ["وضوء", "الوضوء", "توضأ", "وضا"],
+                "اتوضا": ["وضوء", "الوضوء", "توضأ"],
+                "طهارة": ["وضوء", "الوضوء", "طهارة"],
+                "صلاة": ["صلاة", "الصلاة", "ركعة"],
+                "صلي":  ["صلاة", "الصلاة"],
+                "صلى":  ["صلاة", "الصلاة"],
+                "وتر":  ["وتر", "الوتر", "صلاة"],
+                "صوم":  ["صيام", "الصيام", "رمضان"],
+                "صيام": ["صيام", "الصيام", "رمضان"],
+                "رمضان":["رمضان", "صيام"],
+                "زكاة": ["زكاة", "الزكاة"],
+                "حج":   ["حج", "الحج"],
+                "ذكر":  ["اذكار", "الأذكار", "أذكار", "دعاء"],
+                "اذكار":["اذكار", "الأذكار", "أذكار"],
+                "ذكار": ["اذكار", "الأذكار", "أذكار"],
+                "دعاء": ["دعاء", "الدعاء", "اذكار"],
+                "صباح": ["صباح", "الصباح", "اذكار"],
+                "مساء": ["مساء", "المساء", "اذكار"],
+                "سيرة": ["سيرة", "السيرة", "نبي", "محمد"],
+                "نبي":  ["سيرة", "السيرة", "نبي", "محمد"],
+                "محمد": ["سيرة", "السيرة", "نبي", "محمد"],
+                "عقيدة":["عقيدة", "العقيدة", "توحيد", "إيمان"],
+                "توحيد":["عقيدة", "العقيدة", "توحيد"],
+                "إيمان":["عقيدة", "العقيدة", "إيمان"],
+                "تفسير":["تفسير", "التفسير"],
+                "استخارة":["استخارة", "الاستخارة", "دعاء"],
+                "كرب":  ["دعاء", "كرب", "الكرب"],
+                "هم":   ["دعاء", "هم", "الهم"],
+            }
+            STOPWORDS = {"كيف", "ماذا", "لماذا", "هل", "ما", "من", "في", "على", "إلى",
+                        "عن", "مع", "هذا", "هذه", "التي", "الذي", "كم", "أين", "متى",
+                        "هو", "هي", "انا", "انت", "اريد", "اعرف", "اعلم", "اخبرني"}
+            all_tokens = [t.strip("؟?!.,،") for t in query_clean.split()]
+            meaningful = [t for t in all_tokens if len(t) > 1 and t not in STOPWORDS]
+            if not meaningful:
+                meaningful = [t for t in all_tokens if len(t) > 1]
+
+            # بناء قائمة مصطلحات البحث مع المرادفات
+            search_tokens = []
+            for t in meaningful:
+                search_tokens.append(t)
+                t_root = re.sub(r'^(ال|أ|ا|إ|آ)', '', t)
+                if t_root in SYNONYMS:
+                    search_tokens.extend(SYNONYMS[t_root])
+                if t in SYNONYMS:
+                    search_tokens.extend(SYNONYMS[t])
+            # إزالة التكرار
+            seen_t = set()
+            search_tokens = [x for x in search_tokens if not (x in seen_t or seen_t.add(x))]
+
+            for token in search_tokens:
                 like_pat = f"%{token}%"
-                if category:
-                    rows = conn.execute(
-                        """
-                        SELECT id, book_id, title_ar, category, author_ar, summary, content, -1.0 as score
-                        FROM islamic_books
-                        WHERE (title_ar LIKE ? OR content LIKE ? OR summary LIKE ?)
-                          AND category = ?
-                        LIMIT ?
-                        """,
-                        (like_pat, like_pat, like_pat, category, limit)
-                    ).fetchall()
-                else:
-                    rows = conn.execute(
-                        """
-                        SELECT id, book_id, title_ar, category, author_ar, summary, content, -1.0 as score
-                        FROM islamic_books
-                        WHERE title_ar LIKE ? OR content LIKE ? OR summary LIKE ?
-                        LIMIT ?
-                        """,
-                        (like_pat, like_pat, like_pat, limit)
-                    ).fetchall()
-                if rows:
-                    break
+                try:
+                    if category:
+                        rows = conn.execute(
+                            """
+                            SELECT id, book_id, title_ar, category, author_ar, summary, content, -1.0 as score
+                            FROM islamic_books
+                            WHERE (title_ar LIKE ? OR content LIKE ? OR summary LIKE ?)
+                              AND category = ?
+                            LIMIT ?
+                            """,
+                            (like_pat, like_pat, like_pat, category, limit)
+                        ).fetchall()
+                    else:
+                        rows = conn.execute(
+                            """
+                            SELECT id, book_id, title_ar, category, author_ar, summary, content, -1.0 as score
+                            FROM islamic_books
+                            WHERE title_ar LIKE ? OR content LIKE ? OR summary LIKE ?
+                            LIMIT ?
+                            """,
+                            (like_pat, like_pat, like_pat, limit)
+                        ).fetchall()
+                    if rows:
+                        break
+                except Exception:
+                    continue
+
 
         seen_ids = set()
         for r in rows:
