@@ -1,8 +1,9 @@
-const CACHE_NAME = 'islamic-ai-v1';
+const CACHE_NAME = 'islamic-ai-v2';
 const ASSETS_TO_CACHE = [
   '/',
-  '/static/index.html',
-  '/static/manifest.json'
+  'index.html',
+  'manifest.json',
+  'icon.svg'
 ];
 
 self.addEventListener('install', (e) => {
@@ -28,6 +29,9 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  // Ignore non-http requests (e.g., chrome-extension://)
+  if (!e.request.url.startsWith('http')) return;
+
   // للـ API requests: Network first
   if (e.request.url.includes('/api/')) {
     e.respondWith(
@@ -46,7 +50,7 @@ self.addEventListener('fetch', (e) => {
     caches.match(e.request).then((cachedResponse) => {
       return cachedResponse || fetch(e.request).then((networkResponse) => {
         return caches.open(CACHE_NAME).then((cache) => {
-          if (e.request.method === 'GET' && networkResponse.status === 200) {
+          if (e.request.method === 'GET' && networkResponse && networkResponse.status === 200 && e.request.url.startsWith('http')) {
             cache.put(e.request, networkResponse.clone());
           }
           return networkResponse;
