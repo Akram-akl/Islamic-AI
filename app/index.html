@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>الذكاء الاصطناعي الإسلامي — Islamic AI Hub</title>
-  <meta name="description" content="منصة الذكاء الاصطناعي الإسلامي الموثوق — القرآن والسنة وموسوعة الكتب ومشجر الأسانيد وتلاوات المشايخ">
+  <meta name="description" content="منصة الذكاء الاصطناعي الإسلامي الموثوق — القرآن بالقراءات العشر، الأحاديث ومشجر الأسانيد، والمكتبة الشاملة">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1B6B45">
   <meta name="mobile-web-app-capable" content="yes">
@@ -15,23 +15,37 @@
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    // تعريف الدوال العامة مبكراً لتفادي أي خطأ مرجعي في الـ HTML
+    window.onLanguageChange = function() {
+      const select = document.getElementById('user-lang-select');
+      if (!select) return;
+      const lang = select.value;
+      localStorage.setItem('USER_APP_LANG', lang);
+      if (typeof showToast === 'function') {
+        showToast('تم ضبط لغة الترجمة على: ' + lang.toUpperCase(), 'info');
+      }
+    };
+  </script>
+
   <style>
     :root {
-      --gold:       #C9A84C;
-      --gold-light: #E8C97A;
-      --gold-dark:  #9B7B2E;
-      --emerald:    #1B6B45;
+      --gold:          #C9A84C;
+      --gold-light:    #E8C97A;
+      --gold-dark:     #9B7B2E;
+      --emerald:       #1B6B45;
       --emerald-light: #2D9E68;
       --emerald-glow:  rgba(0, 255, 136, 0.25);
-      --bg-dark:    #0A0E14;
-      --bg-card:    #0F1620;
-      --bg-input:   #141E2C;
-      --border:     #1E2E42;
-      --text:       #E8EDF5;
-      --text-muted: #7E93AA;
-      --red:        #FF4D4D;
-      --blue:       #38BDF8;
-      --shadow:     0 8px 40px rgba(0,0,0,0.6);
+      --bg-dark:       #0A0E14;
+      --bg-card:       #0F1620;
+      --bg-input:      #141E2C;
+      --border:        #1E2E42;
+      --text:          #E8EDF5;
+      --text-muted:    #7E93AA;
+      --red:           #FF4D4D;
+      --blue:          #38BDF8;
+      --shadow:        0 8px 40px rgba(0,0,0,0.6);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -42,6 +56,7 @@
       color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
+      padding-bottom: 90px; /* مسافة للبار الصوتي العائم */
     }
 
     body::before {
@@ -121,7 +136,7 @@
     .tabs::-webkit-scrollbar { display: none; }
 
     .tab {
-      flex: 1; min-width: 140px; padding: 11px 14px;
+      flex: 1; min-width: 130px; padding: 11px 14px;
       background: none; border: none; cursor: pointer;
       color: var(--text-muted); font-family: 'Tajawal', sans-serif;
       font-size: 13.5px; font-weight: 600; border-radius: 12px;
@@ -142,18 +157,35 @@
     .card:focus-within { border-color: var(--gold-dark); }
 
     .card-title {
-      font-size: 14px; font-weight: 700; color: var(--gold);
-      margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;
+      font-size: 14.5px; font-weight: 700; color: var(--gold);
+      margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    }
+
+    .textarea-container {
+      position: relative; width: 100%;
     }
 
     textarea {
-      width: 100%; min-height: 90px;
+      width: 100%; min-height: 95px;
       background: var(--bg-input); border: 1px solid var(--border);
-      border-radius: 14px; padding: 14px 18px; color: var(--text);
+      border-radius: 14px; padding: 14px 48px 14px 18px; color: var(--text);
       font-family: 'Tajawal', sans-serif; font-size: 15px; line-height: 1.7;
       resize: vertical; outline: none; transition: border-color 0.25s;
     }
     textarea:focus { border-color: var(--gold-dark); box-shadow: 0 0 0 3px rgba(201,168,76,0.15); }
+
+    .mic-input-btn {
+      position: absolute; top: 12px; left: 12px;
+      background: rgba(27, 107, 69, 0.4); border: 1px solid var(--emerald-light);
+      color: #fff; width: 34px; height: 34px; border-radius: 50%;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 16px; transition: all 0.2s;
+    }
+    .mic-input-btn:hover { background: var(--emerald); transform: scale(1.08); }
+    .mic-input-btn.recording {
+      background: var(--red); border-color: #ff9999;
+      animation: pulse 1s infinite;
+    }
 
     .quick-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
     .quick-chip {
@@ -180,13 +212,14 @@
     }
     .act-btn {
       background: var(--bg-input); border: 1px solid var(--border);
-      color: var(--text-muted); border-radius: 8px; padding: 5px 10px;
+      color: var(--text-muted); border-radius: 8px; padding: 6px 12px;
       font-size: 11.5px; font-family: 'Tajawal', sans-serif;
       cursor: pointer; display: flex; align-items: center; gap: 5px;
       transition: all 0.2s;
     }
     .act-btn:hover { border-color: var(--gold); color: var(--gold-light); background: rgba(201,168,76,0.08); }
     .act-btn.download { border-color: var(--emerald-light); color: var(--emerald-light); }
+    .act-btn.stop { border-color: var(--red); color: #FFA3A3; }
 
     .source-item {
       background: var(--bg-input); border: 1px solid var(--border);
@@ -205,7 +238,7 @@
     .type-book  { background: #142033; }
 
     .source-text {
-      font-family: 'Amiri', serif; font-size: 17.5px;
+      font-family: 'Amiri', serif; font-size: 18px;
       line-height: 2.1; color: #E0D3B4; direction: rtl;
     }
     .source-grade {
@@ -213,30 +246,38 @@
       padding: 2px 10px; border-radius: 10px; background: #1B4020; color: #4CAF50;
     }
 
-    /* ─── قارئ المشايخ ─── */
+    /* ─── قارئ المشايخ والقراءات ─── */
     .reciter-box {
       background: linear-gradient(135deg, rgba(27,107,69,0.25), rgba(15,22,32,0.9));
       border: 1px solid var(--emerald-light); border-radius: 16px;
       padding: 18px; margin-top: 14px;
     }
-    .audio-player-native {
-      width: 100%; margin-top: 12px; height: 38px;
+
+    /* ─── بطاقة المتن الشريف ومشجر الأسانيد ─── */
+    .matn-card {
+      background: linear-gradient(135deg, rgba(201,168,76,0.12), rgba(15,22,32,0.95));
+      border: 2px solid var(--gold); border-radius: 16px;
+      padding: 20px; margin-top: 16px;
+    }
+    .matn-title { font-size: 13.5px; font-weight: 700; color: var(--gold-light); margin-bottom: 8px; }
+    .matn-text {
+      font-family: 'Amiri', serif; font-size: 19px; line-height: 2.2;
+      color: #FFF2D1; direction: rtl;
     }
 
-    /* ─── مشجر الأسانيد ─── */
     .isnad-tree-container {
       margin-top: 16px; display: flex; flex-direction: column;
       align-items: center; gap: 12px;
     }
     .isnad-node {
       background: var(--bg-card); border: 2px solid var(--border);
-      border-radius: 14px; padding: 12px 18px; width: 100%; max-width: 500px;
+      border-radius: 14px; padding: 12px 18px; width: 100%; max-width: 520px;
       cursor: pointer; transition: all 0.25s;
     }
     .isnad-node:hover { border-color: var(--gold); transform: translateY(-2px); }
     .isnad-node.prophet { background: linear-gradient(135deg, #1B4020, #0D2810); border-color: var(--emerald-light); }
-    .isnad-node.sahabi { background: linear-gradient(135deg, #242010, #17150A); border-color: var(--gold); }
-    .isnad-node.author { background: linear-gradient(135deg, #1A1A2E, #0F1320); border-color: var(--blue); }
+    .isnad-node.sahabi  { background: linear-gradient(135deg, #242010, #17150A); border-color: var(--gold); }
+    .isnad-node.author  { background: linear-gradient(135deg, #1A1A2E, #0F1320); border-color: var(--blue); }
 
     .node-header { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 11px; }
     .node-tag { padding: 2px 8px; border-radius: 12px; font-weight: 700; }
@@ -245,19 +286,49 @@
     .tag-tabiee  { background: #2A4060; color: #7DD3FC; }
     .tag-narrator{ background: #223040; color: #94A3B8; }
     .tag-author  { background: #1E3A8A; color: #93C5FD; }
-    .node-name { font-size: 15.5px; font-weight: 700; color: #fff; }
+    .node-name   { font-size: 16px; font-weight: 700; color: #fff; }
 
     .isnad-arrow { color: var(--gold-dark); font-size: 16px; text-align: center; }
+
+    /* ─── بار الصوت العائم (Global Floating Player) ─── */
+    #global-audio-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 500;
+      background: rgba(10, 14, 20, 0.95); backdrop-filter: blur(16px);
+      border-top: 1px solid var(--gold-dark);
+      padding: 10px 20px; display: none; align-items: center; justify-content: space-between;
+      gap: 14px; box-shadow: 0 -8px 25px rgba(0,0,0,0.7);
+    }
+    .audio-info { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; }
+    .audio-title { font-size: 13px; font-weight: 700; color: var(--gold-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .audio-controls { display: flex; align-items: center; gap: 8px; }
+
+    /* ─── نُظم الإشعارات الخالية من alert (Toast) ─── */
+    #toast-container {
+      position: fixed; bottom: 20px; right: 20px; z-index: 2000;
+      display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+    }
+    .toast {
+      pointer-events: auto; padding: 12px 18px; border-radius: 12px;
+      font-size: 13px; font-weight: 600; line-height: 1.5; color: #fff;
+      display: flex; align-items: center; gap: 10px; max-width: 360px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6); animation: toastIn 0.3s ease;
+      transition: all 0.3s;
+    }
+    .toast.success { background: linear-gradient(135deg, #1B6B45, #124029); border: 1px solid #2D9E68; }
+    .toast.info    { background: linear-gradient(135deg, #2A3B50, #141E2C); border: 1px solid var(--gold); }
+    .toast.warning { background: linear-gradient(135deg, #6B4E1B, #3D2C0D); border: 1px solid var(--gold-light); }
+    .toast.error   { background: linear-gradient(135deg, #6B1B1B, #3D0D0D); border: 1px solid var(--red); }
+    @keyframes toastIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
     /* ─── Modal ─── */
     .modal-overlay {
       position: fixed; inset: 0; z-index: 1000;
-      background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.82); backdrop-filter: blur(8px);
       display: none; align-items: center; justify-content: center; padding: 16px;
     }
     .modal-card {
       background: var(--bg-card); border: 1px solid var(--gold-dark);
-      border-radius: 20px; max-width: 580px; width: 100%; padding: 24px;
+      border-radius: 20px; max-width: 600px; width: 100%; padding: 24px;
       position: relative; max-height: 90vh; overflow-y: auto;
     }
     .close-modal {
@@ -280,16 +351,33 @@
 </head>
 <body>
 
+<!-- نُظم التنبيهات الذكية البديلة لـ alert -->
+<div id="toast-container"></div>
+
+<!-- البار الصوتي العائم (Global Audio Bar) -->
+<div id="global-audio-bar">
+  <div class="audio-info">
+    <span style="font-size:18px">🎙️</span>
+    <div>
+      <div class="audio-title" id="global-audio-title">التلاوة القرانية المباركة</div>
+      <div style="font-size:10.5px; color:var(--text-muted)" id="global-audio-sub">صوت نقي من المصحف المرتل</div>
+    </div>
+  </div>
+  <div class="audio-controls">
+    <button class="act-btn" onclick="toggleGlobalAudioPlay()" id="global-play-toggle">⏸️ إيقاف مؤقت</button>
+    <button class="act-btn stop" onclick="stopAllAudio()">⏹️ إيقاف تام</button>
+  </div>
+</div>
+
 <header>
   <div class="logo">☪</div>
   <div class="header-title">
     <h1>الذكاء الاصطناعي الإسلامي</h1>
-    <p>Islamic AI Hub — القرآن · السنة · مشجر الأسانيد · تلاوات المشايخ</p>
+    <p>Islamic AI Hub — القرآن بالقراءات العشر · السنة والمشجر · المكتبة الموثوقة</p>
   </div>
   <div class="header-actions">
-    <!-- زر إعدادات الـ API المجاني -->
     <button class="btn-action" onclick="openApiKeyModal()">⚙️ إعدادات الذكاء (API)</button>
-    <select id="user-lang-select" class="lang-selector" onchange="onLanguageChange()" title="اختر لغة الترجمة">
+    <select id="user-lang-select" class="lang-selector" onchange="window.onLanguageChange()" title="اختر لغة الترجمة">
       <option value="en">🇬🇧 English</option>
       <option value="fr">🇫🇷 Français</option>
       <option value="es">🇪🇸 Español</option>
@@ -310,8 +398,9 @@
   <div class="tabs">
     <button class="tab active" onclick="switchTab('ask')" id="tab-ask">💬 سؤال وجواب موثوق</button>
     <button class="tab" onclick="switchTab('search')" id="tab-search">🔍 بحث شامل ومباشر</button>
-    <button class="tab" onclick="switchTab('audio')" id="tab-audio">🎧 تلاوات المشايخ والكتب</button>
+    <button class="tab" onclick="switchTab('audio')" id="tab-audio">🎧 تلاوات المشايخ والقراءات</button>
     <button class="tab" onclick="switchTab('isnad')" id="tab-isnad">🌳 مشجر الأسانيد</button>
+    <button class="tab" onclick="switchTab('library')" id="tab-library">📚 المكتبة الإسلامية</button>
   </div>
 
   <!-- ══════════════ 1. تبويب السؤال الموثوق ══════════════ -->
@@ -322,15 +411,19 @@
         <button class="act-btn" onclick="openApiKeyModal()">⚙️ ربط مفتاح مجاني (Gemini)</button>
       </div>
 
-      <textarea id="question" rows="3" placeholder="مثال: ما هو حكم صلاة الوتر وكيفية صلاتها بالتفصيل؟
-أو: ما حديث إنما الأعمال بالنيات؟
-أو: ما هي أركان الإسلام مع الدليل؟"></textarea>
+      <div class="textarea-container">
+        <textarea id="question" rows="3" placeholder="مثال: اعطني شرحاً مفصلاً لصلاة الوتر بالدليل والمصادر وهل سنة أم واجب؟
+أو: هل يمكن أن يوافق يوم عرفة رمضان أو ليلة القدر وما فضل صيامه؟
+أو: ما هي أحكام النون الساكنة والتنوين في التجويد؟"></textarea>
+        <!-- زر تحويل الصوت إلى نص مباشرة -->
+        <button class="mic-input-btn" id="question-mic-btn" onclick="toggleSpeechRecognition('question', 'question-mic-btn')" title="اضغط للتحدث بالصوت ليتحول إلى نص">🎙️</button>
+      </div>
 
       <div class="quick-chips">
-        <span class="quick-chip" onclick="setQuickQuestion('كيف تصلى صلاة الوتر بالتفصيل؟')">🕌 كيفية صلاة الوتر</span>
+        <span class="quick-chip" onclick="setQuickQuestion('اعطني شرح مفصل لصلاة الوتر بالدليل والمصادر وهل سنة ام واجب وما حكم صيام يوم عرفة وهل يوافق رمضان وليلة القدر؟')">🕌 صلاة الوتر ويوم عرفة وليلة القدر</span>
+        <span class="quick-chip" onclick="setQuickQuestion('ما هي أحكام النون الساكنة والتنوين في التجويد مع الأمثلة؟')">📖 أحكام التجويد (النون والتنوين)</span>
+        <span class="quick-chip" onclick="setQuickQuestion('ما هي القراءات العشر المتواترة ومن هم رواتها العشرة؟')">📜 القراءات العشر ورواتها</span>
         <span class="quick-chip" onclick="setQuickQuestion('ما هو حديث إنما الأعمال بالنيات وما تخريجه؟')">📜 حديث النيات</span>
-        <span class="quick-chip" onclick="setQuickQuestion('ما هي سيرة النبي ﷺ في الهجرة إلى المدينة؟')">🐪 الهجرة النبوية</span>
-        <span class="quick-chip" onclick="setQuickQuestion('ما هي أذكار الصباح والمساء المأثورة؟')">🤲 أذكار الصباح</span>
       </div>
 
       <button class="send-btn" onclick="askQuestion()" id="ask-btn">
@@ -350,38 +443,44 @@
   <!-- ══════════════ 2. تبويب البحث الشامل المباشر ══════════════ -->
   <div id="search-panel" style="display:none">
     <div class="card">
-      <div class="card-title">🔍 بحث نصي فوري في المصادر الإسلامية</div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap">
-        <input type="text" id="search-query"
-          placeholder="ابحث في القرآن، الأحاديث، وكتب السيرة والفقه... مثال: الصبر، الصلاة، النية، الوتر"
-          onkeypress="if(event.key==='Enter') doSearch()" style="flex:1; min-width:200px">
-        <button class="send-btn" onclick="doSearch()" style="margin:0; width:auto; padding:0 24px">⚡ بحث فوري</button>
+      <div class="card-title">🔍 بحث نصي دقيق وفوري في المصادر الإسلامية</div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; position:relative">
+        <div style="position:relative; flex:1; min-width:220px">
+          <input type="text" id="search-query"
+            placeholder="ابحث بدقة في الآيات والأحاديث والكتب... مثال: ألا إن وعد الله حق، صلاة الوتر، عرفة"
+            onkeypress="if(event.key==='Enter') doSearch()" style="width:100%; padding-left:42px">
+          <button class="mic-input-btn" id="search-mic-btn" onclick="toggleSpeechRecognition('search-query', 'search-mic-btn')" style="top:4px; left:4px; width:30px; height:30px; font-size:14px" title="إملاء صوتي للبحث">🎙️</button>
+        </div>
+        <button class="send-btn" onclick="doSearch()" style="margin:0; width:auto; padding:0 24px">⚡ بحث دقيق</button>
       </div>
-      <div style="margin-top:12px; display:flex; gap:10px; align-items:center">
+      <div style="margin-top:12px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
         <label style="font-size:12px; color:var(--text-muted)">نطاق البحث:</label>
         <select id="search-source" style="font-size:12px">
-          <option value="all">الكل (القرآن + الأحاديث + أمهات الكتب)</option>
+          <option value="all">الكل (القرآن + الأحاديث + أمهات الكتب والتجويد)</option>
           <option value="quran">القرآن الكريم فقط</option>
           <option value="hadith">الأحاديث النبوية فقط</option>
-          <option value="books">كتب السيرة والفقه والتفسير</option>
+          <option value="books">كتب السيرة والفقه والتجويد والتفسير</option>
         </select>
+        <label style="font-size:12px; color:var(--gold); display:flex; align-items:center; gap:4px; margin-right:auto">
+          <input type="checkbox" id="search-exact-phrase" checked> مطابقة العبارة بدقة (منع تشتت الحروف)
+        </label>
       </div>
     </div>
     <div id="search-results"></div>
   </div>
 
-  <!-- ══════════════ 3. تبويب تلاوات المشايخ واستوديو الكتب والملفات ══════════════ -->
+  <!-- ══════════════ 3. تبويب تلاوات المشايخ والقراءات واستوديو الصوت ══════════════ -->
   <div id="audio-panel" style="display:none">
     <div style="display:grid; grid-template-columns: 1fr; gap:18px">
 
-      <!-- بطاقة تلاوات القرآن الكريم لكبار القراء -->
+      <!-- بطاقة تلاوات القرآن الكريم لكبار القراء مع دعم الروايات العشر -->
       <div class="card reciter-box">
         <div class="card-title" style="color:#fff">
-          <span>🎙️ إذاعة وتلاوات القرآن الكريم لكبار القراء (جميع الآيات 6,236)</span>
-          <span style="font-size:11px; color:var(--gold-light)">تسجيلات استوديو نقية MP3</span>
+          <span>🎙️ إذاعة وتلاوات القرآن الكريم بالقراءات والروايات (جميع الآيات 6,236)</span>
+          <span style="font-size:11px; color:var(--gold-light)">تسجيلات استوديو نقية MP3 لكبار الأئمة</span>
         </div>
         <p style="font-size:12px; color:#C2D8EC; margin-bottom:12px">
-          استمع لأي آية من كتاب الله بصوت القارئ الذي تفضله مع إمكانية تحميل التلاوة برابط مباشر.
+          استمع لأي آية من كتاب الله بصوت كبار أئمة التلاوة بروايات (حفص، ورش، قالون، الدوري). تلاوة القرآن حصراً بأصوات المشايخ المسجلة (يُمنع الروبوت على القرآن).
         </p>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
@@ -396,84 +495,115 @@
           </div>
 
           <div style="display:flex; flex-direction:column; gap:4px; flex:1">
-            <label style="font-size:11px; color:#B4CBE2">القارئ المعتمد:</label>
+            <label style="font-size:11px; color:#B4CBE2">القارئ والرواية:</label>
             <select id="sheikh-reciter-select" style="width:100%">
-              <option value="Alafasy_128kbps" selected>🎙️ مشاري راشد العفاسي</option>
-              <option value="Husary_128kbps">🎙️ محمود خليل الحصري (مرتل)</option>
-              <option value="Abdul_Basit_Murattal_192kbps">🎙️ عبد الباسط عبد الصمد (مرتل)</option>
-              <option value="Minshawy_Murattal_128kbps">🎙️ محمد صديق المنشاوي (مرتل)</option>
-              <option value="Ghamadi_40kbps">🎙️ سعد الغامدي</option>
-              <option value="Abu_Bakr_Ash-Shaatree_128kbps">🎙️ أبو بكر الشاطري</option>
+              <optgroup label="📖 رواية حفص عن عاصم">
+                <option value="Alafasy_128kbps" selected>🎙️ مشاري راشد العفاسي (حفص)</option>
+                <option value="Husary_128kbps">🎙️ محمود خليل الحصري — مرتل (حفص)</option>
+                <option value="Husary_128kbps_Mujawwad">🎙️ محمود خليل الحصري — مجود (حفص)</option>
+                <option value="Husary_Muallim_128kbps">🎙️ محمود خليل الحصري — المصحف المعلم (حفص)</option>
+                <option value="Minshawy_Murattal_128kbps">🎙️ محمد صديق المنشاوي — مرتل (حفص)</option>
+                <option value="Minshawy_Mujawwad_192kbps">🎙️ محمد صديق المنشاوي — مجود (حفص)</option>
+                <option value="Abdul_Basit_Murattal_192kbps">🎙️ عبد الباسط عبد الصمد — مرتل (حفص)</option>
+                <option value="Abdul_Basit_Mujawwad_128kbps">🎙️ عبد الباسط عبد الصمد — مجود (حفص)</option>
+                <option value="Ghamadi_40kbps">🎙️ سعد الغامدي (حفص)</option>
+                <option value="Abu_Bakr_Ash-Shaatree_128kbps">🎙️ أبو بكر الشاطري (حفص)</option>
+                <option value="MaherAlMuaiqly128kbps">🎙️ ماهر المعيقلي (حفص)</option>
+                <option value="Saood_ash-Shuraym_128kbps">🎙️ سعود الشريم (حفص)</option>
+                <option value="Abdurrahmaan_As-Sudais_192kbps">🎙️ عبد الرحمن السديس (حفص)</option>
+                <option value="Yasser_Ad-Dussary_128kbps">🎙️ ياسر الدوسري (حفص)</option>
+                <option value="Muhammad_Ayyoub_128kbps">🎙️ محمد أيوب (حفص)</option>
+              </optgroup>
+              <optgroup label="📖 رواية ورش عن نافع">
+                <option value="warsh/warsh_yassin_al_jazaery_64kbps">🎙️ ياسين الجزائري (ورش عن نافع)</option>
+                <option value="warsh/warsh_Abdul_Basit_128kbps">🎙️ عبد الباسط عبد الصمد (ورش عن نافع)</option>
+                <option value="warsh/warsh_ibrahim_aldosary_128kbps">🎙️ إبراهيم الدوسري (ورش عن نافع)</option>
+              </optgroup>
             </select>
           </div>
 
-          <button class="send-btn" onclick="playSelectedAyah()" style="margin:0; width:auto; padding:8px 18px; margin-top:16px">
-            ▶️ تشغيل التلاوة
-          </button>
-          <button class="act-btn download" id="ayah-download-btn" onclick="downloadCurrentAyahMp3()" style="margin-top:16px; padding:8px 14px">
-            ⬇️ تحميل التلاوة MP3
-          </button>
+          <div style="display:flex; gap:6px; margin-top:16px">
+            <button class="send-btn" onclick="playSelectedAyah()" style="margin:0; width:auto; padding:8px 18px">
+              ▶️ تشغيل التلاوة
+            </button>
+            <button class="act-btn stop" onclick="stopAllAudio()" style="padding:8px 14px">
+              ⏹️ إيقاف
+            </button>
+            <button class="act-btn download" onclick="openDownloadModal()" style="padding:8px 14px">
+              ⬇️ مركز تحميل التلاوات والنصوص
+            </button>
+          </div>
         </div>
 
-        <audio id="main-quran-audio" controls class="audio-player-native" style="display:none"></audio>
-        <div id="current-ayah-text-box" style="margin-top:12px; font-family:'Amiri',serif; font-size:19px; color:#FFEAA7; line-height:2; display:none"></div>
+        <audio id="main-quran-audio" controls class="audio-player-native" style="display:none; width:100%; margin-top:12px"></audio>
+        <div id="current-ayah-text-box" style="margin-top:12px; font-family:'Amiri',serif; font-size:19px; color:#FFEAA7; line-height:2.1; display:none; background:rgba(0,0,0,0.3); padding:12px; border-radius:12px"></div>
       </div>
 
-      <!-- بطاقة تحويل الكتب والنصوص إلى صوت (TTS) وقراءة الملفات -->
+      <!-- بطاقة تحويل الكتب والنصوص إلى صوت (TTS) واختيار الأصوات بدون تقطيع -->
       <div class="card">
         <div class="card-title">
-          <span>🔊 قارئ الكتب الذكي واستخراج الملفات (Text-to-Speech)</span>
-          <span style="font-size:11px; color:var(--text-muted)">يعمل محلياً في متصفحك</span>
+          <span>🔊 قارئ الكتب والمستندات الذكي (Text-to-Speech)</span>
+          <span style="font-size:11px; color:var(--text-muted)">مخصص للكتب والدروس والملفات (لا يُقرأ به القرآن)</span>
         </div>
 
         <!-- زر رفع كتاب أو ملف نصي -->
         <div style="background:var(--bg-input); border:1px dashed var(--border); border-radius:12px; padding:12px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px">
           <div>
-            <div style="font-size:12.5px; font-weight:700; color:var(--gold)">📁 استيراد ملف كتاب أو مستند:</div>
+            <div style="font-size:12.5px; font-weight:700; color:var(--gold)">📁 استيراد كتاب أو مستند نصي:</div>
             <div style="font-size:11px; color:var(--text-muted)">يدعم ملفات (.txt, .json, .md) لقراءتها صوتياً والبحث داخلها</div>
           </div>
           <input type="file" id="book-file-input" accept=".txt,.json,.md,.text" onchange="handleFileUpload(event)" style="font-size:11.5px">
         </div>
 
-        <textarea id="speech-text-input" rows="3" placeholder="الصق أو اكتب نص أي كتاب هنا للاستماع إليه فوراً..."></textarea>
+        <div class="textarea-container">
+          <textarea id="speech-text-input" rows="3" placeholder="الصق أو اكتب نص أي كتاب أو شرح هنا للاستماع إليه فوراً بصوت واضح بدون تقطيع..."></textarea>
+          <button class="mic-input-btn" id="tts-mic-btn" onclick="toggleSpeechRecognition('speech-text-input', 'tts-mic-btn')" title="إملاء صوتي">🎙️</button>
+        </div>
 
         <div style="display:flex; gap:10px; align-items:center; margin-top:12px; flex-wrap:wrap">
           <button class="send-btn" onclick="togglePlayText()" id="tts-play-btn" style="margin:0; width:auto; padding:8px 20px">▶️ قراءة صوتية</button>
-          <button class="act-btn" onclick="stopSpeech()">⏹️ إيقاف</button>
-          
-          <div style="display:flex; align-items:center; gap:6px; margin-right:auto">
-            <label style="font-size:11.5px; color:var(--text-muted)">السرعة:</label>
-            <select id="tts-rate" style="padding:4px 8px; font-size:12px">
-              <option value="0.75">0.75x</option>
-              <option value="1.0" selected>1.0x</option>
-              <option value="1.25">1.25x</option>
-              <option value="1.5">1.5x</option>
-              <option value="2.0">2.0x</option>
+          <button class="act-btn stop" onclick="stopSpeech()">⏹️ إيقاف القارئ</button>
+
+          <!-- اختيار الصوت من أصوات النظام والمتصفح -->
+          <div style="display:flex; align-items:center; gap:6px">
+            <label style="font-size:11.5px; color:var(--text-muted)">الصوت:</label>
+            <select id="tts-voice-select" style="padding:4px 8px; font-size:12px; max-width:180px">
+              <option value="">(الصوت الافتراضي)</option>
             </select>
           </div>
 
-          <button class="act-btn download" onclick="downloadText('book-text.txt', document.getElementById('speech-text-input').value)">⬇️ تحميل النص كملف</button>
+          <div style="display:flex; align-items:center; gap:6px">
+            <label style="font-size:11.5px; color:var(--text-muted)">السرعة:</label>
+            <select id="tts-rate" style="padding:4px 8px; font-size:12px">
+              <option value="0.75">0.75x</option>
+              <option value="1.0" selected>1.0x (معتدل)</option>
+              <option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option>
+            </select>
+          </div>
+
+          <button class="act-btn download" onclick="downloadText('book-text.txt', document.getElementById('speech-text-input').value)">⬇️ حفظ النص</button>
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- ══════════════ 4. تبويب مشجر الأسانيد ══════════════ -->
+  <!-- ══════════════ 4. تبويب مشجر الأسانيد التفاعلي ══════════════ -->
   <div id="isnad-panel" style="display:none">
     <div class="card">
       <div class="card-title">
-        <span>🌳 مصور مشجر الأسانيد وسلاسل الرواة التفاعلي</span>
+        <span>🌳 مصور مشجر الأسانيد وسلاسل الرواة (فصل السند عن المتن)</span>
         <button class="act-btn download" onclick="downloadIsnadSummary()">⬇️ تحميل المشجر كنص</button>
       </div>
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px">
-        يقوم بتحليل ألفاظ التحمل والأداء ورسم شجرة الرواة من رسول الله ﷺ إلى المصنف. انقر على أي راوٍ لعرض بطاقته التوثيقية.
+        يقوم بتحليل ألفاظ التحمل والأداء وعزل لفظ النبوة (المتن) في بطاقة مستقلة، ثم رسم شجرة الرواة من رسول الله ﷺ إلى المصنف.
       </p>
 
       <div style="display:flex; gap:10px; flex-wrap:wrap">
         <input type="text" id="isnad-input"
           placeholder="الصق نص الحديث أو سنده هنا..." style="flex:1"
-          value="حدثنا عبد الله بن يوسف قال أخبرنا مالك عن يحيى بن سعيد عن محمد بن إبراهيم التيمي أنه سمع علقمة بن وقاص الليثي يقول سمعت عمر بن الخطاب رضي الله عنه يقول سمعت رسول الله صلى الله عليه وسلم يقول إنما الأعمال بالنيات">
+          value="حدثنا عبد الله بن يوسف قال أخبرنا مالك عن يحيى بن سعيد عن محمد بن إبراهيم التيمي أنه سمع علقمة بن وقاص الليثي يقول سمعت عمر بن الخطاب رضي الله عنه يقول سمعت رسول الله صلى الله عليه وسلم يقول إنما الأعمال بالنيات وإنما لكل امرئ ما نوى">
         <button class="send-btn" onclick="generateIsnadTree()" style="margin:0; width:auto; padding:0 20px">🌳 رسم المشجر</button>
       </div>
 
@@ -482,37 +612,143 @@
         <span class="quick-chip" onclick="loadIsnadSample(2)">📜 حديث بني الإسلام على خمس</span>
         <span class="quick-chip" onclick="loadIsnadSample(3)">📜 حديث جبريل في الإيمان والإسلام</span>
         <span class="quick-chip" onclick="loadIsnadSample(4)">📜 حديث لا يؤمن أحدكم حتى يحب لأخيه</span>
+        <span class="quick-chip" onclick="loadIsnadSample(5)">📜 حديث كلمتان خفيفتان على اللسان</span>
       </div>
     </div>
 
+    <!-- بطاقة المتن الشريف المفصول -->
+    <div id="matn-display-card" class="matn-card" style="display:none">
+      <div class="matn-title">📜 متن الحديث الشريف (لفظ النبوة المعصوم):</div>
+      <div class="matn-text" id="matn-text-content"></div>
+      <div class="action-bar" style="margin-top:10px; border-top-color:rgba(201,168,76,0.3)">
+        <button class="act-btn" onclick="speakTextById('matn-text-content')">🔊 قراءة صوتية للمتن</button>
+        <button class="act-btn" onclick="copyTextById('matn-text-content')">📋 نسخ المتن</button>
+      </div>
+    </div>
+
+    <!-- بطاقة مشجر السند -->
     <div id="isnad-display-card" class="card" style="margin-top:16px; display:none">
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px">
-        <div class="card-title" style="margin:0">🌳 السلسلة المباركة المتصلة</div>
-        <span id="isnad-count-badge" class="header-badge">6 حلقات إسنادية</span>
+        <div class="card-title" style="margin:0">🌳 السلسلة المباركة المتصلة (سند الحديث)</div>
+        <span id="isnad-count-badge" class="header-badge">7 حلقات إسنادية</span>
       </div>
       <div class="isnad-tree-container" id="isnad-tree-root"></div>
     </div>
   </div>
 
+  <!-- ══════════════ 5. تبويب المكتبة الإسلامية الشاملة ══════════════ -->
+  <div id="library-panel" style="display:none">
+    <div class="card">
+      <div class="card-title">
+        <span>📚 المكتبة الإسلامية الموثوقة الشاملة (16 مؤلفاً ومرجعاً معتمداً)</span>
+        <span style="font-size:11px; color:var(--gold-light)">تصفح وقراءة واستماع وتحميل</span>
+      </div>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px">
+        كتب ومراجع في الفقه، علم التجويد، السيرة النبوية العطرة، التفسير الميسر، العقيدة، وأذكار اليوم والليلة.
+      </p>
+
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px">
+        <button class="act-btn" onclick="filterLibrary('all')">🌟 جميع الكتب</button>
+        <button class="act-btn" onclick="filterLibrary('tajweed')">📖 علم التجويد</button>
+        <button class="act-btn" onclick="filterLibrary('fiqh')">🕌 الفقه الإسلامي</button>
+        <button class="act-btn" onclick="filterLibrary('seerah')">🐪 السيرة النبوية</button>
+        <button class="act-btn" onclick="filterLibrary('tafseer')">📜 التفسير الميسر</button>
+        <button class="act-btn" onclick="filterLibrary('aqeeda')">💎 العقيدة والتوحيد</button>
+        <button class="act-btn" onclick="filterLibrary('adhkar')">🤲 الأذكار والأدعية</button>
+      </div>
+
+      <div id="library-books-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(310px, 1fr)); gap:14px"></div>
+    </div>
+  </div>
+
 </main>
 
-<!-- ══════════════ Modal مفتاح الذكاء الاصطناعي (API Settings) ══════════════ -->
+<!-- ══════════════ Modal مركز تحميل التلاوات والنصوص المتقدم ══════════════ -->
+<div class="modal-overlay" id="download-hub-modal" onclick="if(event.target===this) closeDownloadModal()">
+  <div class="modal-card">
+    <button class="close-modal" onclick="closeDownloadModal()">✕</button>
+    <h3 style="font-size:17px; color:var(--gold); margin-bottom:6px">📥 مركز تحميل التلاوات والنصوص القرآنية</h3>
+    <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px">
+      حدد نطاق التنزيل ونوع المحتوى (صوت أو نصوص بالرسم العثماني أو الإملائي):
+    </p>
+
+    <!-- 1. نطاق التحميل -->
+    <div style="background:var(--bg-input); padding:12px; border-radius:12px; margin-bottom:12px">
+      <label style="font-size:12px; font-weight:700; color:var(--gold)">1. نطاق التحميل:</label>
+      <div style="display:flex; gap:12px; margin-top:8px; flex-wrap:wrap">
+        <label><input type="radio" name="dl-scope" value="single" checked onchange="updateDownloadOptionsUI()"> آية واحدة فقط</label>
+        <label><input type="radio" name="dl-scope" value="range" onchange="updateDownloadOptionsUI()"> نطاق آيات</label>
+        <label><input type="radio" name="dl-scope" value="surah" onchange="updateDownloadOptionsUI()"> السورة كاملة</label>
+      </div>
+
+      <div id="dl-range-inputs" style="display:none; gap:8px; margin-top:10px; align-items:center">
+        <span style="font-size:11.5px">من آية:</span>
+        <input type="number" id="dl-ayah-from" value="1" min="1" style="width:65px">
+        <span style="font-size:11.5px">إلى آية:</span>
+        <input type="number" id="dl-ayah-to" value="7" min="1" style="width:65px">
+      </div>
+    </div>
+
+    <!-- 2. نوع المحتوى -->
+    <div style="background:var(--bg-input); padding:12px; border-radius:12px; margin-bottom:14px">
+      <label style="font-size:12px; font-weight:700; color:var(--gold)">2. تنسيق الملف والمحتوى:</label>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px">
+        <label><input type="radio" name="dl-format" value="audio_mp3" checked> 🎧 تلاوة صوتية MP3 (برابط مباشر)</label>
+        <label><input type="radio" name="dl-format" value="text_uthmani"> 📜 نص قرآني بالرسم العثماني (المصحفي)</label>
+        <label><input type="radio" name="dl-format" value="text_clean"> 📝 نص قرآني إملائي مبسط (بدون تشكيل لتسهيل النسخ والبحث)</label>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:10px; justify-content:flex-end">
+      <button class="act-btn" onclick="executeDownload('copy')">📋 نسخ للحافظة</button>
+      <button class="send-btn" onclick="executeDownload('download')" style="margin:0; width:auto; padding:8px 24px">⬇️ تحميل الملف</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ Modal قارئ الكتب المكتبي ══════════════ -->
+<div class="modal-overlay" id="book-reader-modal" onclick="if(event.target===this) closeBookReader()">
+  <div class="modal-card" style="max-width:760px">
+    <button class="close-modal" onclick="closeBookReader()">✕</button>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--border)">
+      <div>
+        <h3 id="reader-book-title" style="font-size:18px; color:var(--gold)">عنوان الكتاب</h3>
+        <p id="reader-book-author" style="font-size:12px; color:var(--text-muted)">المؤلف والمرجع</p>
+      </div>
+      <div style="display:flex; gap:6px">
+        <button class="act-btn" onclick="zoomReaderText(1)" title="تكبير الخط">A+</button>
+        <button class="act-btn" onclick="zoomReaderText(-1)" title="تصغير الخط">A-</button>
+      </div>
+    </div>
+
+    <div id="reader-book-content" style="font-size:16px; line-height:2.2; color:#E3EDF7; max-height:60vh; overflow-y:auto; padding:10px; white-space:pre-wrap; background:rgba(20,30,44,0.5); border-radius:12px"></div>
+
+    <div class="action-bar" style="margin-top:14px">
+      <button class="send-btn" onclick="readCurrentBookAudio()" id="reader-audio-btn" style="margin:0; width:auto; padding:7px 18px">🔊 استماع صوتي</button>
+      <button class="act-btn stop" onclick="stopSpeech()">⏹️ إيقاف الصوت</button>
+      <button class="act-btn" onclick="copyReaderText()">📋 نسخ النص</button>
+      <button class="act-btn download" onclick="downloadCurrentReaderBook()">⬇️ تحميل الكتاب كملف</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ Modal إعدادات مفتاح Gemini المجاني ══════════════ -->
 <div class="modal-overlay" id="api-key-modal" onclick="if(event.target===this) closeApiKeyModal()">
   <div class="modal-card">
     <button class="close-modal" onclick="closeApiKeyModal()">✕</button>
     <h3 style="font-size:17px; color:var(--gold); margin-bottom:8px">⚙️ إعدادات الذكاء الاصطناعي المجاني (Google Gemini)</h3>
     <p style="font-size:12.5px; color:var(--text-muted); line-height:1.6; margin-bottom:14px">
-      للحصول على إجابات فورية وتحليل ذكي بدون حدود لسؤالك، يمكنك إدخال مفتاح Google Gemini المجاني.
+      للحصول على إجابات فورية وتحليل ذكي فائق الدقة بدون حدود، يمكنك إدخال مفتاح Google Gemini المجاني.
       <br>
       • **المفتاح مجاني 100%** من جوجل بحدود 1,500 طلب يومياً.
       <br>
-      • يُحفظ المفتاح محلياً في جهازك فقط ولا يراه أي خادم.
+      • يُحفظ المفتاح محلياً في متصفحك فقط ولا يراه أي خادم.
     </p>
 
     <label style="font-size:12px; font-weight:700; color:var(--text)">مفتاح Gemini API Key:</label>
     <input type="text" id="gemini-api-key-input" placeholder="AIzaSy..." style="width:100%; margin-top:6px; font-family:monospace">
 
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; flex-wrap:wrap; gap:8px">
       <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:12px; color:var(--blue); text-decoration:none">
         🔗 احصل على مفتاح مجاني في ثوانٍ من Google AI Studio
       </a>
@@ -562,7 +798,31 @@
 </div>
 
 <script>
-// ─── سور القرآن الكريم الـ 114 مع أعداد آياتها ───
+// ─── 1. نظام التنبيهات المتقدم (Toast System - ممتوع alert نهائياً) ───
+window.showToast = function(msg, type = 'info', duration = 4000) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  let icon = 'ℹ️';
+  if (type === 'success') icon = '✅';
+  if (type === 'warning') icon = '⚠️';
+  if (type === 'error')   icon = '❌';
+  el.innerHTML = `<span>${icon}</span> <span>${escHtml(msg)}</span>`;
+  container.appendChild(el);
+  setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(10px)';
+    setTimeout(() => el.remove(), 300);
+  }, duration);
+};
+
+// استبدال دالة alert الأصلية لمنع ظهور أي نافذة مزعجة
+window.alert = function(msg) {
+  showToast(msg, 'info');
+};
+
+// ─── 2. سور القرآن الكريم الـ 114 ───
 const SURAHS = [
   {id:1, name:"الفاتحة", ayahs:7}, {id:2, name:"البقرة", ayahs:286}, {id:3, name:"آل عمران", ayahs:200},
   {id:4, name:"النساء", ayahs:176}, {id:5, name:"المائدة", ayahs:120}, {id:6, name:"الأنعام", ayahs:165},
@@ -617,13 +877,13 @@ function updateMaxAyah() {
   const surahId = parseInt(document.getElementById('quran-surah-picker').value);
   const surah = SURAHS.find(s => s.id === surahId);
   const ayahInput = document.getElementById('quran-ayah-picker');
-  if (surah) {
+  if (surah && ayahInput) {
     ayahInput.max = surah.ayahs;
     if (parseInt(ayahInput.value) > surah.ayahs) ayahInput.value = 1;
   }
 }
 
-// ─── بيانات القرآن العربية في الذاكرة (Lazy Load) ───
+// ─── 3. بيانات القرآن الكريم (6,236 آية) ───
 let QURAN_AR_DATA = null;
 async function getQuranData() {
   if (QURAN_AR_DATA) return QURAN_AR_DATA;
@@ -638,15 +898,12 @@ async function getQuranData() {
   }
   return [];
 }
-getQuranData(); // بدء التحميل مسبقاً في الخلفية
+getQuranData();
 
-// ملفات مرفوعة من المستخدم
 let USER_UPLOADED_TEXTS = [];
-
 function handleFileUpload(e) {
   const file = e.target.files[0];
   if (!file) return;
-
   const reader = new FileReader();
   reader.onload = (event) => {
     const content = event.target.result;
@@ -656,13 +913,82 @@ function handleFileUpload(e) {
       content: content,
       summary: `ملف مرفوع: ${file.name}`
     });
-    alert(`تم تحميل وقراءة محتوى الملف "${file.name}" بنجاح! يمكنك الآن الاستماع إليه أو البحث داخل محتواه.`);
+    showToast(`تم استيراد الملف "${file.name}" بنجاح! يمكنك الآن الاستماع إليه أو البحث داخله.`, 'success');
   };
   reader.readAsText(file);
 }
 
-// ─── تشغيل تلاوة الآية المختارة ───
-let currentAudioUrl = '';
+// ─── 4. تحويل الصوت إلى نص (Speech-to-Text) ───
+let activeRecognition = null;
+let currentRecTargetInputId = null;
+
+function toggleSpeechRecognition(targetInputId, triggerBtnId) {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) {
+    showToast('المتصفح لا يدعم ميزة التعرف الصوتي (Speech Recognition). جرب متصفح Chrome أو Edge الحديث.', 'warning');
+    return;
+  }
+
+  const triggerBtn = document.getElementById(triggerBtnId);
+
+  if (activeRecognition) {
+    activeRecognition.stop();
+    activeRecognition = null;
+    if (triggerBtn) triggerBtn.classList.remove('recording');
+    showToast('تم إيقاف التسجيل الصوتي', 'info');
+    return;
+  }
+
+  try {
+    const rec = new SpeechRec();
+    rec.lang = 'ar-SA';
+    rec.continuous = true;
+    rec.interimResults = true;
+
+    rec.onstart = () => {
+      activeRecognition = rec;
+      currentRecTargetInputId = targetInputId;
+      if (triggerBtn) triggerBtn.classList.add('recording');
+      showToast('🎤 جاري الاستماع... تحدث الآن باللغة العربية', 'success');
+    };
+
+    rec.onresult = (evt) => {
+      let finalTranscript = '';
+      for (let i = evt.resultIndex; i < evt.results.length; ++i) {
+        if (evt.results[i].isFinal) {
+          finalTranscript += evt.results[i][0].transcript;
+        }
+      }
+      if (finalTranscript) {
+        const input = document.getElementById(targetInputId);
+        if (input) {
+          input.value = (input.value ? input.value + ' ' : '') + finalTranscript.trim();
+        }
+      }
+    };
+
+    rec.onerror = (evt) => {
+      console.log('Speech rec error:', evt.error);
+      if (triggerBtn) triggerBtn.classList.remove('recording');
+      activeRecognition = null;
+      showToast('تعذر التعرف الصوتي: ' + (evt.error || 'تأكد من إذن الميكروفون'), 'error');
+    };
+
+    rec.onend = () => {
+      if (triggerBtn) triggerBtn.classList.remove('recording');
+      activeRecognition = null;
+    };
+
+    rec.start();
+  } catch (err) {
+    showToast('خطأ في تشغيل الميكروفون: ' + err.message, 'error');
+  }
+}
+
+// ─── 5. تشغيل تلاوات المشايخ القرآنية حصراً (ممنوع الروبوت على القرآن) ───
+let currentQuranAudioUrl = '';
+const mainQuranAudio = document.getElementById('main-quran-audio');
+
 async function playSelectedAyah() {
   const surah = parseInt(document.getElementById('quran-surah-picker').value);
   const ayah = parseInt(document.getElementById('quran-ayah-picker').value);
@@ -670,58 +996,239 @@ async function playSelectedAyah() {
 
   const sStr = String(surah).padStart(3, '0');
   const aStr = String(ayah).padStart(3, '0');
-  currentAudioUrl = `https://everyayah.com/data/${reciter}/${sStr}${aStr}.mp3`;
+  currentQuranAudioUrl = `https://everyayah.com/data/${reciter}/${sStr}${aStr}.mp3`;
 
-  const audio = document.getElementById('main-quran-audio');
-  audio.src = currentAudioUrl;
-  audio.style.display = 'block';
-  audio.play();
+  stopSpeech(); // إيقاف قارئ الكتب فوراً
 
-  // عرض نص الآية
+  mainQuranAudio.src = currentQuranAudioUrl;
+  mainQuranAudio.style.display = 'block';
+  mainQuranAudio.play().catch(e => {
+    showToast('تعذر تشغيل الصوت، جرب قارئاً آخر أو تحقق من اتصالك', 'error');
+  });
+
+  const sObj = SURAHS.find(s => s.id === surah);
+  const sName = sObj ? sObj.name : surah;
+  showGlobalAudioBar(`سورة ${sName} — آية ${ayah}`, document.getElementById('sheikh-reciter-select').selectedOptions[0]?.text || '');
+
+  // عرض نص الآية بدون تكرار [سورة سورة]
   const qData = await getQuranData();
   const found = qData.find(item => item.surah_number === surah && item.ayah_number === ayah);
   const textBox = document.getElementById('current-ayah-text-box');
   if (found) {
-    textBox.innerHTML = `۝ ${escHtml(found.ayah_text_ar)} ۝ [سورة ${found.surah_name_ar}:${ayah}]`;
+    textBox.innerHTML = `۝ ${escHtml(found.ayah_text_ar)} ۝ [سورة ${sName}:${ayah}]`;
     textBox.style.display = 'block';
   }
 }
 
-function downloadCurrentAyahMp3() {
-  if (!currentAudioUrl) {
-    playSelectedAyah();
-  }
-  const a = document.createElement('a');
-  a.href = currentAudioUrl;
-  a.download = `quran_ayah_${Date.now()}.mp3`;
-  a.target = '_blank';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
-
-// ─── تشغيل تلاوة الشيخ من أي بطاقة ───
 function playAyahReciter(surah, ayah, btn) {
   const reciter = document.getElementById('sheikh-reciter-select')?.value || 'Alafasy_128kbps';
   const sStr = String(surah).padStart(3, '0');
   const aStr = String(ayah).padStart(3, '0');
   const url = `https://everyayah.com/data/${reciter}/${sStr}${aStr}.mp3`;
 
-  const audio = document.getElementById('main-quran-audio');
-  audio.src = url;
-  audio.style.display = 'block';
-  audio.play();
-  currentAudioUrl = url;
+  stopSpeech();
 
-  switchTab('audio');
-  document.getElementById('quran-surah-picker').value = surah;
-  updateMaxAyah();
-  document.getElementById('quran-ayah-picker').value = ayah;
+  mainQuranAudio.src = url;
+  mainQuranAudio.style.display = 'block';
+  mainQuranAudio.play().catch(e => {
+    showToast('تعذر تشغيل الصوت، جرب قارئاً آخر', 'error');
+  });
+  currentQuranAudioUrl = url;
+
+  const sObj = SURAHS.find(s => s.id === surah);
+  const sName = sObj ? sObj.name : surah;
+  showGlobalAudioBar(`سورة ${sName} — آية ${ayah}`, 'تلاوة مباركة');
 }
 
-// ─── تبديل التبويبات ───
+function showGlobalAudioBar(title, sub) {
+  const bar = document.getElementById('global-audio-bar');
+  document.getElementById('global-audio-title').textContent = title;
+  document.getElementById('global-audio-sub').textContent = sub;
+  bar.style.display = 'flex';
+  document.getElementById('global-play-toggle').textContent = '⏸️ إيقاف مؤقت';
+}
+
+function toggleGlobalAudioPlay() {
+  if (mainQuranAudio.src) {
+    if (mainQuranAudio.paused) {
+      mainQuranAudio.play();
+      document.getElementById('global-play-toggle').textContent = '⏸️ إيقاف مؤقت';
+    } else {
+      mainQuranAudio.pause();
+      document.getElementById('global-play-toggle').textContent = '▶️ استئناف';
+    }
+  }
+}
+
+function stopAllAudio() {
+  if (mainQuranAudio) {
+    mainQuranAudio.pause();
+    mainQuranAudio.currentTime = 0;
+  }
+  stopSpeech();
+  document.getElementById('global-audio-bar').style.display = 'none';
+  showToast('تم إيقاف الصوت', 'info');
+}
+
+// ─── 6. محرك القراءة الصوتية الذكي للكتب (TTS) مع اختيار الأصوات وبلا تقطيع ───
+let synth = window.speechSynthesis;
+let ttsQueue = [];
+let ttsCurrentIdx = 0;
+let isTtsPlaying = false;
+let isTtsPaused = false;
+
+// تعبئة أصوات النظام
+function populateVoices() {
+  if (!synth) return;
+  const select = document.getElementById('tts-voice-select');
+  if (!select) return;
+  const voices = synth.getVoices();
+  select.innerHTML = '<option value="">(الصوت الافتراضي)</option>';
+
+  const arVoices = voices.filter(v => v.lang && v.lang.startsWith('ar'));
+  const otherVoices = voices.filter(v => !v.lang || !v.lang.startsWith('ar'));
+
+  if (arVoices.length > 0) {
+    const grp = document.createElement('optgroup');
+    grp.label = '🇸🇦 أصوات اللغة العربية';
+    arVoices.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.name;
+      opt.textContent = `${v.name} (${v.lang})`;
+      grp.appendChild(opt);
+    });
+    select.appendChild(grp);
+  }
+
+  if (otherVoices.length > 0) {
+    const grp2 = document.createElement('optgroup');
+    grp2.label = '🌐 أصوات أخرى';
+    otherVoices.slice(0, 15).forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.name;
+      opt.textContent = `${v.name} (${v.lang})`;
+      grp2.appendChild(opt);
+    });
+    select.appendChild(grp2);
+  }
+}
+if (synth) {
+  populateVoices();
+  synth.onvoiceschanged = populateVoices;
+}
+
+// تجزئة النص الطويل إلى جمل طبيعية لمنع توقف المتصفح أو تغير النغمة
+function chunkText(text, maxLen = 120) {
+  const sentences = text.split(/([.،!؟\n]+)/);
+  const chunks = [];
+  let buffer = '';
+
+  for (let i = 0; i < sentences.length; i++) {
+    const part = sentences[i];
+    if (!part) continue;
+    if (buffer.length + part.length < maxLen) {
+      buffer += part;
+    } else {
+      if (buffer.trim()) chunks.push(buffer.trim());
+      buffer = part;
+    }
+  }
+  if (buffer.trim()) chunks.push(buffer.trim());
+  return chunks.length ? chunks : [text];
+}
+
+function speakString(text) {
+  if (!synth) {
+    showToast('المتصفح لا يدعم القراءة الصوتية', 'warning');
+    return;
+  }
+  stopAllAudio(); // إيقاف أي تلاوة قرآنية أولاً
+
+  ttsQueue = chunkText(text);
+  ttsCurrentIdx = 0;
+  isTtsPlaying = true;
+  isTtsPaused = false;
+  document.getElementById('tts-play-btn').textContent = '⏸️ إيقاف مؤقت';
+  showGlobalAudioBar('قارئ الكتب والمراجع', 'قراءة صوتية للأدلة والدروس');
+
+  playNextTtsChunk();
+}
+
+function playNextTtsChunk() {
+  if (!isTtsPlaying || isTtsPaused) return;
+  if (ttsCurrentIdx >= ttsQueue.length) {
+    isTtsPlaying = false;
+    document.getElementById('tts-play-btn').textContent = '▶️ قراءة صوتية';
+    document.getElementById('global-audio-bar').style.display = 'none';
+    return;
+  }
+
+  const chunk = ttsQueue[ttsCurrentIdx];
+  const utterance = new SpeechSynthesisUtterance(chunk);
+  const rate = parseFloat(document.getElementById('tts-rate')?.value) || 1.0;
+  utterance.rate = rate;
+  utterance.lang = 'ar-SA';
+
+  const voiceName = document.getElementById('tts-voice-select')?.value;
+  if (voiceName) {
+    const v = synth.getVoices().find(x => x.name === voiceName);
+    if (v) utterance.voice = v;
+  } else {
+    const arVoice = synth.getVoices().find(v => v.lang && v.lang.startsWith('ar'));
+    if (arVoice) utterance.voice = arVoice;
+  }
+
+  utterance.onend = () => {
+    ttsCurrentIdx++;
+    playNextTtsChunk();
+  };
+  utterance.onerror = (e) => {
+    console.log('TTS chunk error:', e);
+    ttsCurrentIdx++;
+    playNextTtsChunk();
+  };
+
+  synth.speak(utterance);
+}
+
+function togglePlayText() {
+  if (isTtsPlaying) {
+    if (isTtsPaused) {
+      isTtsPaused = false;
+      document.getElementById('tts-play-btn').textContent = '⏸️ إيقاف مؤقت';
+      synth.resume();
+    } else {
+      isTtsPaused = true;
+      document.getElementById('tts-play-btn').textContent = '▶️ استئناف';
+      synth.pause();
+    }
+  } else {
+    const text = document.getElementById('speech-text-input').value.trim();
+    if (!text) {
+      showToast('يُرجى إدخال نص أولاً للاستماع إليه', 'warning');
+      return;
+    }
+    speakString(text);
+  }
+}
+
+function stopSpeech() {
+  if (synth) synth.cancel();
+  isTtsPlaying = false;
+  isTtsPaused = false;
+  const btn = document.getElementById('tts-play-btn');
+  if (btn) btn.textContent = '▶️ قراءة صوتية';
+}
+
+function speakTextById(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  speakString(el.innerText || el.textContent);
+}
+
+// ─── 7. تبديل التبويبات ───
 function switchTab(name) {
-  ['ask', 'search', 'audio', 'isnad'].forEach(t => {
+  ['ask', 'search', 'audio', 'isnad', 'library'].forEach(t => {
     const el = document.getElementById(`${t}-panel`);
     const btn = document.getElementById(`tab-${t}`);
     if (el) el.style.display = (t === name) ? 'block' : 'none';
@@ -730,6 +1237,9 @@ function switchTab(name) {
   if (name === 'isnad' && document.getElementById('isnad-tree-root').children.length === 0) {
     generateIsnadTree();
   }
+  if (name === 'library') {
+    renderLibraryGrid('all');
+  }
 }
 
 function setQuickQuestion(text) {
@@ -737,7 +1247,7 @@ function setQuickQuestion(text) {
   document.getElementById('question').focus();
 }
 
-// ─── إدارة مفتاح الذكاء الاصطناعي (Gemini API Key) ───
+// ─── 8. إدارة مفتاح Gemini المجاني ───
 function openApiKeyModal() {
   document.getElementById('gemini-api-key-input').value = localStorage.getItem('GEMINI_API_KEY') || '';
   document.getElementById('api-key-modal').style.display = 'flex';
@@ -747,33 +1257,42 @@ function saveApiKey() {
   const key = document.getElementById('gemini-api-key-input').value.trim();
   if (key) {
     localStorage.setItem('GEMINI_API_KEY', key);
-    alert('تم حفظ مفتاح الذكاء الاصطناعي بنجاح في متصفحك!');
+    showToast('تم حفظ مفتاح Gemini بنجاح في متصفحك!', 'success');
   } else {
     localStorage.removeItem('GEMINI_API_KEY');
-    alert('تمت إزالة المفتاح، سيعتمد التطبيق على الإجابات الموثوقة المباشرة.');
+    showToast('تمت إزالة المفتاح، وسيعتمد التطبيق على الإجابات الموثوقة المباشرة.', 'info');
   }
   closeApiKeyModal();
 }
 
-// ─── 1. السؤال الذكي الموثوق (بدون هلوسة وبلا أخطاء 405) ───
+// ─── 9. توحيد وتطبيع النصوص العربية (Arabic Normalizer) ───
+function normalizeArabic(text) {
+  if (!text) return '';
+  return text
+    .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g, '') // إزالة التشكيل والتطويل
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// ─── 10. السؤال المعرفي الموثوق مع حل مسائل الوتر وعرفة وليلة القدر ───
 async function askQuestion() {
   const q = document.getElementById('question').value.trim();
-  if (!q) { alert('يُرجى كتابة سؤالك أولاً'); return; }
+  if (!q) { showToast('يُرجى كتابة سؤالك أولاً', 'warning'); return; }
 
   document.getElementById('results').style.display = 'block';
   document.getElementById('loading-box').style.display = 'flex';
   document.getElementById('answer-box').innerHTML = '';
   document.getElementById('ask-btn').disabled = true;
 
-  // البحث عن الأدلة في الموسوعة المدمجة
   const relevantSources = findRelevantSourcesLocally(q);
-
   const apiKey = localStorage.getItem('GEMINI_API_KEY');
 
   if (apiKey) {
-    // استدعاء Google Gemini Flash API مباشرة من المتصفح (حدود 1500 يومياً مجاناً)
     try {
-      const contextText = relevantSources.map(s => `[مصدر: ${s.title || s.ref}] ${s.text}`).join('\n\n');
+      const contextText = relevantSources.map(s => `[مصدر: ${s.title || s.ref}]\n${s.text}`).join('\n\n');
       const prompt = `أنت مساعد ذكاء اصطناعي إسلامي موثوق وفائق الدقة.
 أجب عن سؤال السائل باللغة العربية بأسلوب علمي رصين وموثق حصراً، بالاستناد إلى المصادر الإسلامية المرفقة أدناه دون أي اجتهاد أو هلوسة:
 
@@ -784,9 +1303,10 @@ ${contextText}
 ${q}
 
 المطلوب:
-1. الإجابة المباشرة والواضحة.
-2. ذكر الأدلة من القرآن والحديث مع التخريج.
-3. الإحالة إلى كتب أهل العلم المعتمدة.`;
+1. الإجابة المباشرة والواضحة والشاملة لجميع أجزاء السؤال.
+2. إذا سأل عن مسألة فلكية كاجتماع يوم عرفة في رمضان أو ليلة القدر، بين له استحالة ذلك فلكياً وشرعياً لأن عرفة في ذي الحجة ورمضان شهر منفصل بينهما شهران.
+3. ذكر الأدلة من القرآن والحديث مع التخريج.
+4. الإحالة إلى كتب أهل العلم المعتمدة.`;
 
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
         method: 'POST',
@@ -801,20 +1321,22 @@ ${q}
 
       if (data.candidates && data.candidates[0]) {
         const ans = data.candidates[0].content.parts[0].text;
-        renderAnswerUI(ans, relevantSources, "Google Gemini 1.5 Flash (مفتاحك المجاني)");
+        renderAnswerUI(ans, relevantSources, "Google Gemini 1.5 Flash (مستند للمصادر)");
         return;
       }
     } catch (err) {
-      console.log('Gemini API call failed, falling back to local ruling:', err);
+      console.log('Gemini API call failed, falling back:', err);
     }
   }
 
-  // إذا لم يكن هناك مفتاح أو فشل الاتصال: إجابة فورية من نصوص الموسوعة الموثقة مباشرة!
+  // في حال عدم وجود مفتاح أو فشله: إجابة فورية ذكية وشاملة مركبة من المصادر
   document.getElementById('loading-box').style.display = 'none';
   if (relevantSources.length > 0) {
-    const mainSrc = relevantSources[0];
-    const ans = `الحمد لله والصلاة والسلام على رسول الله:\n\nبناءً على المصادر المعتمدة الموثقة في الموسوعة بخصوص سؤالك:\n\n${mainSrc.text}\n\n[المصدر: ${mainSrc.title || mainSrc.ref}]`;
-    renderAnswerUI(ans, relevantSources, "الموسوعة الموثقة المباشرة (صفر هلوسة)");
+    let combinedAns = 'الحمد لله والصلاة والسلام على رسول الله وبعد:\n\nبناءً على المصادر المعتمدة الموثقة في الموسوعة بخصوص مسألتك:\n\n';
+    relevantSources.slice(0, 3).forEach((src, idx) => {
+      combinedAns += `📌 [${src.title || src.ref}]:\n${src.text}\n\n`;
+    });
+    renderAnswerUI(combinedAns, relevantSources, "الموسوعة الإسلامية الموثقة المباشرة (صفر هلوسة)");
   } else {
     renderAnswerUI(
       "لم يُعثر على نص مطابق تماماً في الموسوعة المدمجة. يُرجى مراجعة صياغة السؤال أو البحث في تبويب (البحث الشامل والمباشر)، أو ربط مفتاح Gemini API من زر الإعدادات أعلاه لإجابة تحليلية أوسع.",
@@ -826,25 +1348,60 @@ ${q}
 }
 
 function findRelevantSourcesLocally(q) {
-  const normQ = q.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '');
-  const words = normQ.split(/\s+/).filter(w => w.length > 2);
+  const normQ = normalizeArabic(q);
   const matched = [];
 
-  // بحث في الكتب الإسلامية (window.ISLAMIC_DATA.books)
+  // الكلمات المعيارية المعززة للمواضيع (Topic Boosters)
+  const boosters = {
+    'الوتر': ['fiqh_witr_prayer'],
+    'وتر': ['fiqh_witr_prayer'],
+    'عرفه': ['fiqh_fasting_arafah_qadr'],
+    'ليله القدر': ['fiqh_fasting_arafah_qadr'],
+    'القدر': ['fiqh_fasting_arafah_qadr'],
+    'تجويد': ['tajweed_complete_rules'],
+    'ادغام': ['tajweed_complete_rules'],
+    'اخفاء': ['tajweed_complete_rules'],
+    'مدود': ['tajweed_complete_rules'],
+    'قراءات': ['quran_ten_qiraat_guide'],
+    'وضوء': ['fiqh_wudu_rules'],
+    'طهاره': ['fiqh_wudu_rules'],
+    'صلاه': ['fiqh_prayer_how_to', 'fiqh_witr_prayer'],
+    'صيام': ['fiqh_fasting_rules', 'fiqh_fasting_arafah_qadr'],
+    'زكاه': ['fiqh_zakat_rules'],
+    'ايمان': ['aqeedah_pillars_of_faith'],
+    'توحيد': ['aqeedah_pillars_of_faith'],
+    'اذكار': ['adhkar_morning_and_evening']
+  };
+
+  // تفكيك كلمات السؤال وتصفية الأدوات
+  const stopWords = new Set(['اعطيني', 'شرح', 'مفصل', 'بالدليل', 'المصادر', 'لدي', 'سؤال', 'اخر', 'اذا', 'كان', 'موافق', 'هل', 'ما', 'هو', 'هي', 'من', 'عن', 'في', 'علي', 'مع', 'ان', 'لا', 'قد', 'ثم', 'او', 'ام']);
+  const words = normQ.split(/\s+/).filter(w => w.length >= 2 && !stopWords.has(w));
+
+  // 1. البحث في الكتب
   if (window.ISLAMIC_DATA && window.ISLAMIC_DATA.books) {
     window.ISLAMIC_DATA.books.forEach(b => {
       let score = 0;
+      const bTitleNorm = normalizeArabic(b.title_ar);
+      const bContentNorm = normalizeArabic(b.content);
+
+      // تطبيق المعززات الدلالية المحددة بدقة
+      for (const [key, bIds] of Object.entries(boosters)) {
+        if (normQ.includes(key) && bIds.includes(b.book_id)) {
+          score += 60;
+        }
+      }
+
       words.forEach(w => {
-        if (b.title_ar && b.title_ar.includes(w)) score += 3;
-        if (b.summary && b.summary.includes(w)) score += 2;
-        if (b.content && b.content.includes(w)) score += 1;
+        if (bTitleNorm.includes(w)) score += 8;
+        if (bContentNorm.includes(w)) score += 2;
       });
+
       if (score > 0) {
         matched.push({
           type: 'book',
           title: b.title_ar,
           author: b.author_ar,
-          text: b.content.slice(0, 700) + '...',
+          text: b.content.slice(0, 900) + '...',
           fullText: b.content,
           score: score
         });
@@ -852,15 +1409,15 @@ function findRelevantSourcesLocally(q) {
     });
   }
 
-  // بحث في الأحاديث
+  // 2. البحث في الأحاديث
   if (window.ISLAMIC_DATA && window.ISLAMIC_DATA.hadiths) {
     window.ISLAMIC_DATA.hadiths.forEach(h => {
       let score = 0;
+      const hTextNorm = normalizeArabic(h.text_ar);
       words.forEach(w => {
-        if (h.text_ar && h.text_ar.includes(w)) score += 2;
-        if (h.chapter_name_ar && h.chapter_name_ar.includes(w)) score += 1;
+        if (hTextNorm.includes(w)) score += 4;
       });
-      if (score > 0) {
+      if (score >= 4) {
         matched.push({
           type: 'hadith',
           title: `${h.collection} — حديث ${h.hadith_number}`,
@@ -872,13 +1429,13 @@ function findRelevantSourcesLocally(q) {
     });
   }
 
-  // بحث في الملفات المرفوعة
+  // 3. الملفات المرفوعة
   USER_UPLOADED_TEXTS.forEach(u => {
     matched.push({
       type: 'user_file',
       title: u.title_ar,
       text: u.content.slice(0, 600) + '...',
-      score: 5
+      score: 10
     });
   });
 
@@ -891,16 +1448,17 @@ function renderAnswerUI(ansText, sources, provider) {
   let html = `
     <div class="card" style="border-color:var(--gold-dark); animation: slideIn 0.3s ease">
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:14px">
-        <span class="header-badge">✅ موثق ومتحقق</span>
+        <span class="header-badge">✅ موثق ومتحقق بالأدلة</span>
         <span style="font-size:11px; color:var(--text-muted)">${escHtml(provider)}</span>
       </div>
       
-      <div id="${ansId}" style="font-size:15.5px; line-height:1.9; white-space:pre-wrap; color:var(--text)">${escHtml(ansText)}</div>
+      <div id="${ansId}" style="font-size:15.5px; line-height:2.0; white-space:pre-wrap; color:var(--text)">${escHtml(ansText)}</div>
 
       <div class="action-bar">
         <button class="act-btn" onclick="speakTextById('${ansId}')">🔊 استماع صوتي</button>
+        <button class="act-btn stop" onclick="stopSpeech()">⏹️ إيقاف</button>
         <button class="act-btn" onclick="translateCard('${ansId}', 'trans-${ansId}')">🌐 ترجمة فورية</button>
-        <button class="act-btn" onclick="copyTextById('${ansId}')">📋 نسخ</button>
+        <button class="act-btn" onclick="copyTextById('${ansId}')">📋 نسخ النص الأصلي</button>
         <button class="act-btn download" onclick="downloadText('answer.txt', document.getElementById('${ansId}').innerText)">⬇️ تحميل الإجابة</button>
       </div>
       <div id="trans-${ansId}" style="display:none; margin-top:10px; padding:12px; background:rgba(20,30,44,0.7); border-radius:10px"></div>
@@ -914,11 +1472,13 @@ function renderAnswerUI(ansText, sources, provider) {
         <div class="source-item">
           <div class="source-ref">
             <span class="type-icon ${s.type==='hadith'?'type-hadith':'type-book'}">${s.type==='hadith'?'📜':'📚'}</span>
-            ${escHtml(s.title || s.ref || '')} ${s.author ? `— ${escHtml(s.author)}` : ''}
+            ${escHtml(s.title || s.ref || '')} ${s.author ? `— [${escHtml(s.author)}]` : ''}
           </div>
-          <div id="${sId}" style="font-size:14px; line-height:1.8; color:#D4C5A0">${escHtml(s.text)}</div>
+          <div id="${sId}" style="font-size:14px; line-height:1.9; color:#D4C5A0">${escHtml(s.text)}</div>
           <div class="action-bar">
-            <button class="act-btn" onclick="speakTextById('${sId}')">🔊 قراءة</button>
+            <button class="act-btn" onclick="speakTextById('${sId}')">🔊 قراءة المصدر</button>
+            <button class="act-btn stop" onclick="stopSpeech()">⏹️ إيقاف</button>
+            <button class="act-btn" onclick="copyTextById('${sId}')">📋 نسخ</button>
             <button class="act-btn download" onclick="downloadText('source_${idx}.txt', document.getElementById('${sId}').innerText)">⬇️ تحميل النص</button>
           </div>
         </div>`;
@@ -930,17 +1490,19 @@ function renderAnswerUI(ansText, sources, provider) {
   document.getElementById('ask-btn').disabled = false;
 }
 
-// ─── 2. البحث الشامل والمباشر (Client-Side Search - 0% Error 405) ───
+// ─── 11. البحث الشامل والمباشر مع منع تشتت الكلمات ───
 async function doSearch() {
   const q = document.getElementById('search-query').value.trim();
-  if (!q) return;
+  if (!q) { showToast('يُرجى إدخال كلمة أو عبارة للبحث', 'warning'); return; }
 
   const targetScope = document.getElementById('search-source').value;
+  const exactPhraseOnly = document.getElementById('search-exact-phrase').checked;
   const resultsContainer = document.getElementById('search-results');
   resultsContainer.innerHTML = `<div class="card loading"><div class="spinner"></div><div style="font-size:13px; color:var(--text-muted)">جار البحث الفوري في المصادر والكتب...</div></div>`;
 
-  const normQ = q.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '');
-  const words = normQ.split(/\s+/).filter(w => w.length >= 2);
+  const normQ = normalizeArabic(q);
+  const stopWords = new Set(['من', 'في', 'عن', 'علي', 'الي', 'مع', 'ما', 'هل', 'هو', 'هي', 'ان', 'ثم', 'او']);
+  const words = normQ.split(/\s+/).filter(w => w.length >= 2 && !stopWords.has(w));
 
   const matchedQuran = [];
   const matchedHadiths = [];
@@ -951,8 +1513,12 @@ async function doSearch() {
   if (targetScope === 'all' || targetScope === 'quran') {
     const qData = await getQuranData();
     qData.forEach(item => {
-      const clean = item.ayah_text_clean || item.ayah_text_ar;
-      if (words.every(w => clean.includes(w))) {
+      const cleanNorm = normalizeArabic(item.ayah_text_clean || item.ayah_text_ar);
+      const isExact = cleanNorm.includes(normQ);
+
+      if (isExact) {
+        matchedQuran.unshift(item); // تطابق تام في المقدمة
+      } else if (!exactPhraseOnly && words.length > 0 && words.every(w => cleanNorm.includes(w))) {
         matchedQuran.push(item);
       }
     });
@@ -962,27 +1528,39 @@ async function doSearch() {
   if (targetScope === 'all' || targetScope === 'hadith') {
     if (window.ISLAMIC_DATA && window.ISLAMIC_DATA.hadiths) {
       window.ISLAMIC_DATA.hadiths.forEach(h => {
-        if (words.some(w => h.text_ar && h.text_ar.includes(w))) {
+        const hNorm = normalizeArabic(h.text_ar);
+        const isExact = hNorm.includes(normQ);
+
+        if (isExact) {
+          matchedHadiths.unshift(h);
+        } else if (!exactPhraseOnly && words.length > 0 && words.every(w => hNorm.includes(w))) {
           matchedHadiths.push(h);
         }
       });
     }
   }
 
-  // 3. البحث في الكتب والمراجع (13 كتاب موثق)
+  // 3. البحث في الكتب
   if (targetScope === 'all' || targetScope === 'books') {
     if (window.ISLAMIC_DATA && window.ISLAMIC_DATA.books) {
       window.ISLAMIC_DATA.books.forEach(b => {
-        if (words.some(w => (b.title_ar && b.title_ar.includes(w)) || (b.content && b.content.includes(w)))) {
+        const bTitleNorm = normalizeArabic(b.title_ar);
+        const bContentNorm = normalizeArabic(b.content);
+        const isExact = bTitleNorm.includes(normQ) || bContentNorm.includes(normQ);
+
+        if (isExact) {
+          matchedBooks.unshift(b);
+        } else if (!exactPhraseOnly && words.length > 0 && words.every(w => bTitleNorm.includes(w) || bContentNorm.includes(w))) {
           matchedBooks.push(b);
         }
       });
     }
   }
 
-  // 4. البحث في الملفات المرفوعة من المستخدم
+  // 4. الملفات المرفوعة
   USER_UPLOADED_TEXTS.forEach(u => {
-    if (words.some(w => u.content.includes(w))) {
+    const uNorm = normalizeArabic(u.content);
+    if (uNorm.includes(normQ) || (!exactPhraseOnly && words.every(w => uNorm.includes(w)))) {
       matchedUserFiles.push(u);
     }
   });
@@ -990,7 +1568,7 @@ async function doSearch() {
   const total = matchedQuran.length + matchedHadiths.length + matchedBooks.length + matchedUserFiles.length;
   renderSearchResultsUI({
     total,
-    quran: matchedQuran.slice(0, 15),
+    quran: matchedQuran.slice(0, 20),
     hadiths: matchedHadiths.slice(0, 15),
     books: matchedBooks.slice(0, 10),
     userFiles: matchedUserFiles
@@ -1008,15 +1586,17 @@ function renderSearchResultsUI(d) {
     html += `<div style="font-size:13px; font-weight:700; color:var(--gold); margin:16px 0 10px">📖 آيات القرآن الكريم (${d.quran.length}):</div>`;
     d.quran.forEach((r, idx) => {
       const qId = `qres-${idx}-${Date.now()}`;
+      const sObj = SURAHS.find(s => s.id === r.surah_number);
+      const sName = sObj ? sObj.name : r.surah_name_ar.replace(/^سورة\s*/, '');
       html += `
         <div class="source-item">
-          <div class="source-ref"><span class="type-icon type-quran">📖</span> سورة ${r.surah_name_ar} [آية ${r.ayah_number}]</div>
+          <div class="source-ref"><span class="type-icon type-quran">📖</span> سورة ${sName} [آية ${r.ayah_number}]</div>
           <div class="source-text" id="${qId}">۝ ${escHtml(r.ayah_text_ar)} ۝</div>
           <div class="action-bar">
-            <button class="act-btn" onclick="playAyahReciter(${r.surah_number}, ${r.ayah_number}, this)">🎙️ تلاوة الشيخ</button>
-            <button class="act-btn" onclick="speakTextById('${qId}')">🔊 قراءة صوتية</button>
+            <button class="act-btn" onclick="playAyahReciter(${r.surah_number}, ${r.ayah_number}, this)">🎙️ تلاوة الشيخ المرتلة</button>
+            <button class="act-btn stop" onclick="stopAllAudio()">⏹️ إيقاف</button>
             <button class="act-btn" onclick="translateCard('${qId}', 'trans-${qId}')">🌐 ترجمة</button>
-            <button class="act-btn" onclick="copyTextById('${qId}')">📋 نسخ</button>
+            <button class="act-btn" onclick="copyTextById('${qId}')">📋 نسخ الآية</button>
             <button class="act-btn download" onclick="downloadText('ayah_${r.surah_number}_${r.ayah_number}.txt', document.getElementById('${qId}').innerText)">⬇️ تحميل الآية</button>
           </div>
           <div class="translated-box" id="trans-${qId}" style="display:none; margin-top:8px"></div>
@@ -1035,6 +1615,7 @@ function renderSearchResultsUI(d) {
           ${r.grade ? `<span class="source-grade">${escHtml(r.grade)}</span>` : ''}
           <div class="action-bar">
             <button class="act-btn" onclick="speakTextById('${hId}')">🔊 استماع للحديث</button>
+            <button class="act-btn stop" onclick="stopSpeech()">⏹️ إيقاف</button>
             <button class="act-btn" onclick="openIsnadFromText('${encodeURIComponent(r.text_ar || '')}')">🌳 مشجر السند</button>
             <button class="act-btn" onclick="translateCard('${hId}', 'trans-${hId}')">🌐 ترجمة</button>
             <button class="act-btn" onclick="copyTextById('${hId}')">📋 نسخ</button>
@@ -1046,36 +1627,27 @@ function renderSearchResultsUI(d) {
   }
 
   if (d.books && d.books.length) {
-    html += `<div style="font-size:13px; font-weight:700; color:var(--gold); margin:16px 0 10px">📚 كتب ومراجع السيرة والفقه والتفسير (${d.books.length}):</div>`;
+    html += `<div style="font-size:13px; font-weight:700; color:var(--gold); margin:16px 0 10px">📚 كتب السيرة والفقه والتجويد والتفسير (${d.books.length}):</div>`;
     d.books.forEach((b, idx) => {
       const bId = `bres-${idx}-${Date.now()}`;
       html += `
         <div class="source-item">
           <div class="source-ref"><span class="type-icon type-book">📚</span> ${escHtml(b.title_ar)} ${b.author_ar ? `— [${escHtml(b.author_ar)}]` : ''}</div>
-          <div id="${bId}" style="font-size:14.5px; line-height:1.8; color:#D4C5A0; white-space:pre-wrap">${escHtml(b.content.slice(0, 500))}...</div>
+          <div id="${bId}" style="font-size:14.5px; line-height:1.9; color:#D4C5A0; white-space:pre-wrap">${escHtml(b.content.slice(0, 500))}...</div>
           <div class="action-bar">
             <button class="act-btn" onclick="speakTextById('${bId}')">🔊 قراءة صوتية</button>
+            <button class="act-btn stop" onclick="stopSpeech()">⏹️ إيقاف</button>
+            <button class="act-btn" onclick="openBookReader('${b.book_id}')">📖 قراءة الكتاب كاملاً</button>
             <button class="act-btn" onclick="translateCard('${bId}', 'trans-${bId}')">🌐 ترجمة</button>
             <button class="act-btn" onclick="copyTextById('${bId}')">📋 نسخ</button>
-            <button class="act-btn download" onclick="downloadText('${b.book_id || 'book'}.txt', \`${b.title_ar}\\n\\n${b.content}\`)">⬇️ تحميل الفصل كاملاً</button>
+            <button class="act-btn download" onclick="downloadText('${b.book_id || 'book'}.txt', \`${b.title_ar}\\n\\n${b.content}\`)">⬇️ تحميل الفصل</button>
           </div>
           <div class="translated-box" id="trans-${bId}" style="display:none; margin-top:8px"></div>
         </div>`;
     });
   }
 
-  if (d.userFiles && d.userFiles.length) {
-    html += `<div style="font-size:13px; font-weight:700; color:var(--blue); margin:16px 0 10px">📁 نتائج في ملفاتك المرفوعة:</div>`;
-    d.userFiles.forEach((u, idx) => {
-      html += `
-        <div class="source-item">
-          <div class="source-ref">📁 ${escHtml(u.title_ar)}</div>
-          <div style="font-size:14px; color:#D4C5A0">${escHtml(u.content.slice(0, 300))}...</div>
-        </div>`;
-    });
-  }
-
-  if (!d.total) html += `<p style="color:var(--text-muted); text-align:center; padding:24px">لم يتم العثور على نتائج لهذه الكلمة في الموسوعة. جرب كلمة أخرى.</p>`;
+  if (!d.total) html += `<p style="color:var(--text-muted); text-align:center; padding:24px">لم يتم العثور على نتائج لهذه العبارة. جرب كلمات أخرى أو قم بإلغاء خيار (مطابقة العبارة بدقة).</p>`;
   html += '</div>';
   document.getElementById('search-results').innerHTML = html;
 }
@@ -1086,66 +1658,9 @@ function downloadAllSearchResults() {
   downloadText('search_results.txt', container.innerText);
 }
 
-// ─── قارئ النصوص الذكي (TTS) مع ضبط السرعة ───
-let synth = window.speechSynthesis;
-let isSpeaking = false;
-
-function togglePlayText() {
-  if (isSpeaking) {
-    synth.cancel();
-    isSpeaking = false;
-    document.getElementById('tts-play-btn').textContent = '▶️ قراءة صوتية';
-  } else {
-    const text = document.getElementById('speech-text-input').value.trim();
-    if (!text) { alert('يُرجى إدخال أو اختيار نص للاستماع إليه'); return; }
-    speakString(text);
-  }
-}
-
-function speakString(text) {
-  if (!synth) { alert('المتصفح لا يدعم القراءة الصوتية'); return; }
-  synth.cancel();
-
-  const utterance = new SpeechSynthesisUtterance(text);
-  const rate = parseFloat(document.getElementById('tts-rate').value) || 1.0;
-  utterance.rate = rate;
-  utterance.lang = 'ar-SA';
-
-  const voices = synth.getVoices();
-  const arVoice = voices.find(v => v.lang.startsWith('ar'));
-  if (arVoice) utterance.voice = arVoice;
-
-  utterance.onstart = () => {
-    isSpeaking = true;
-    document.getElementById('tts-play-btn').textContent = '⏸️ إيقاف مؤقت';
-  };
-  utterance.onend = () => {
-    isSpeaking = false;
-    document.getElementById('tts-play-btn').textContent = '▶️ قراءة صوتية';
-  };
-  utterance.onerror = () => {
-    isSpeaking = false;
-    document.getElementById('tts-play-btn').textContent = '▶️ قراءة صوتية';
-  };
-
-  synth.speak(utterance);
-}
-
-function stopSpeech() {
-  if (synth) synth.cancel();
-  isSpeaking = false;
-  document.getElementById('tts-play-btn').textContent = '▶️ قراءة صوتية';
-}
-
-function speakTextById(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  speakString(el.innerText || el.textContent);
-}
-
-// ─── 4. مشجر الأسانيد التفاعلي ───
+// ─── 12. مشجر الأسانيد التفاعلي وعزل المتن عن السند بدقة ───
 const NARRATOR_PROFILES = {
-  "رسول الله": { tabaqa: "المصدر المعصوم", grade: "رسول الله وخاتم الأنبياء والمرسلين ﷺ", death: "11 هـ", loc: "المدينة المنورة", bio: "محمد بن عبد الله بن عبد المطلب ﷺ الصادق المصدوق." },
+  "رسول الله": { tabaqa: "المصدر المعصوم ﷺ", grade: "رسول الله وخاتم الأنبياء والمرسلين ﷺ", death: "11 هـ", loc: "المدينة المنورة", bio: "محمد بن عبد الله بن عبد المطلب ﷺ الصادق المصدوق." },
   "عمر بن الخطاب": { tabaqa: "صحابي جليل (الخلفاء الراشدون)", grade: "أمير المؤمنين، شهيد المحراب، ثاني الخلفاء الراشدين", death: "23 هـ", loc: "المدينة المنورة", bio: "الفاروق أبو حفص عمر بن الخطاب رضي الله عنه." },
   "علقمة بن وقاص": { tabaqa: "كبار التابعين", grade: "ثقة ثبت، قليل الحديث، جليل القدر", death: "في خلافة عبد الملك بن مروان", loc: "المدينة المنورة", bio: "علقمة بن وقاص بن محصن الليثي المدني." },
   "محمد بن إبراهيم": { tabaqa: "الطبقة الرابعة (أوساط التابعين)", grade: "ثقة مأمون حافظ متقن", death: "120 هـ", loc: "المدينة المنورة", bio: "محمد بن إبراهيم بن الحارث بن خالد التيمي القرشي." },
@@ -1154,7 +1669,8 @@ const NARRATOR_PROFILES = {
   "عبد الله بن يوسف": { tabaqa: "الطبقة العاشرة (شيوخ البخاري)", grade: "ثقة متقن، أثبت الناس في الموطأ", death: "218 هـ", loc: "دمشق / مصر", bio: "عبد الله بن يوسف التنيسي الكلاعي." },
   "الإمام البخاري": { tabaqa: "المصنف وصاحب الصحيح", grade: "أمير المؤمنين في الحديث وسيد الحفاظ", death: "256 هـ", loc: "بخارى", bio: "أبو عبد الله محمد بن إسماعيل البخاري الجعفي." },
   "عبد الله بن عمر": { tabaqa: "صحابي جليل (المكثرون من الحديث)", grade: "فقيه الصحابة وعابدها المتبع للسنة", death: "73 هـ", loc: "مكة المكرمة", bio: "عبد الله بن عمر بن الخطاب رضي الله عنهما." },
-  "أنس بن مالك": { tabaqa: "صحابي جليل (خادم الرسول ﷺ)", grade: "مكثر من الرواية، دعا له النبي ﷺ بالبركة", death: "93 هـ", loc: "البصرة", bio: "أنس بن مالك بن النضر الخزرجي الأنصاري رضي الله عنه." }
+  "أنس بن مالك": { tabaqa: "صحابي جليل (خادم الرسول ﷺ)", grade: "مكثر من الرواية، دعا له النبي ﷺ بالبركة", death: "93 هـ", loc: "البصرة", bio: "أنس بن مالك بن النضر الخزرجي الأنصاري رضي الله عنه." },
+  "أبو هريرة": { tabaqa: "صحابي جليل (أحفظ الصحابة)", grade: "سيد الحفاظ وصاحب رسول الله ﷺ", death: "57 هـ", loc: "المدينة المنورة", bio: "عبد الرحمن بن صخر الدوسي رضي الله عنه." }
 };
 
 let CURRENT_ISNAD_CHAIN = [];
@@ -1163,13 +1679,33 @@ function generateIsnadTree() {
   const text = document.getElementById('isnad-input').value.trim();
   if (!text) return;
 
-  const narrators = parseIsnadText(text);
+  // عزل المتن عن السند بدقة
+  const matnMatch = text.match(/(?:سمعت\s+رسول\s+الله|قال\s+رسول\s+الله|عن\s+النبي.*?قال|أن\s+رسول\s+الله.*?قال|يقول\s+سمعت\s+رسول\s+الله)(?:.*?(?:يقول|قال))?\s*(:?.*)/i);
+  let sanadPart = text;
+  let matnPart = '';
+
+  if (matnMatch) {
+    sanadPart = text.slice(0, matnMatch.index);
+    matnPart = matnMatch[0];
+  }
+
+  // عرض بطاقة المتن الشريف المفصول
+  const matnCard = document.getElementById('matn-display-card');
+  const matnContent = document.getElementById('matn-text-content');
+  if (matnPart) {
+    matnContent.textContent = '« ' + matnPart.replace(/^(?:سمعت\s+رسول\s+الله|قال\s+رسول\s+الله|عن\s+النبي.*?قال|أن\s+رسول\s+الله.*?قال|يقول\s+سمعت\s+رسول\s+الله)(?:.*?(?:يقول|قال))?\s*:?\s*/i, '') + ' »';
+    matnCard.style.display = 'block';
+  } else {
+    matnCard.style.display = 'none';
+  }
+
+  const narrators = parseIsnadText(sanadPart);
   CURRENT_ISNAD_CHAIN = narrators;
   renderIsnadNodes(narrators);
 }
 
-function parseIsnadText(rawText) {
-  let clean = rawText.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '');
+function parseIsnadText(sanadText) {
+  let clean = sanadText.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '');
   const tokens = clean.split(/(?:حدثنا|حدثني|أخبرنا|أخبرني|أنبأنا|عن|سمعت|أنه سمع|قال سمعت|يقول سمعت|قال)/gi)
     .map(s => s.trim()).filter(s => s.length > 2);
 
@@ -1185,17 +1721,17 @@ function parseIsnadText(rawText) {
     else if (name.includes('عبد الله بن يوسف')) name = 'عبد الله بن يوسف';
     else if (name.includes('ابن عمر')) name = 'عبد الله بن عمر';
     else if (name.includes('أنس بن مالك') || name.includes('أنس')) name = 'أنس بن مالك';
+    else if (name.includes('أبو هريرة')) name = 'أبو هريرة';
 
-    if (name.length > 3 && !recognized.includes(name)) recognized.push(name);
+    if (name.length > 3 && !recognized.includes(name) && !name.includes('إنما الأعمال')) {
+      recognized.push(name);
+    }
   });
 
-  if (!recognized.some(n => n.includes('رسول الله'))) recognized.push('رسول الله ﷺ');
-
   const ordered = [];
-  const prophet = recognized.find(n => n.includes('رسول الله'));
-  if (prophet) ordered.push(prophet);
+  ordered.push('رسول الله ﷺ'); // قمة السند دائماً
   recognized.forEach(n => {
-    if (n !== prophet && !ordered.includes(n)) ordered.push(n);
+    if (n !== 'رسول الله ﷺ' && !ordered.includes(n)) ordered.push(n);
   });
   return ordered;
 }
@@ -1207,9 +1743,9 @@ function renderIsnadNodes(narrators) {
   document.getElementById('isnad-count-badge').textContent = `${narrators.length} حلقات إسنادية متصلة`;
 
   narrators.forEach((name, idx) => {
-    const isProphet = name.includes('رسول الله');
-    const isSahabi = idx === 1 || name.includes('عمر') || name.includes('أنس') || name.includes('ابن عمر');
-    const isAuthor = idx === narrators.length - 1;
+    const isProphet = idx === 0;
+    const isSahabi  = idx === 1;
+    const isAuthor  = idx === narrators.length - 1 && narrators.length > 2;
 
     let nodeClass = 'isnad-node';
     let tagClass = 'tag-narrator';
@@ -1217,7 +1753,7 @@ function renderIsnadNodes(narrators) {
 
     if (isProphet) { nodeClass += ' prophet'; tagClass = 'tag-prophet'; tagText = 'المصدر المعصوم ﷺ'; }
     else if (isSahabi) { nodeClass += ' sahabi'; tagClass = 'tag-sahabi'; tagText = 'صحابي جليل (عدل)'; }
-    else if (isAuthor) { nodeClass += ' author'; tagClass = 'tag-author'; tagText = 'المصنف وصاحب الكتاب'; }
+    else if (isAuthor) { nodeClass += ' author'; tagClass = 'tag-author'; tagText = 'المصنف والمخرج'; }
     else if (idx === 2) { tagClass = 'tag-tabiee'; tagText = 'كبار التابعين'; }
 
     const nodeEl = document.createElement('div');
@@ -1250,7 +1786,7 @@ function showNarratorInfo(rawName) {
     grade: "ثقة ثبت، محتج به في أصول السنة.",
     death: "معلوم في كتب الطبقات",
     loc: "الحجاز / الشام / العراق",
-    bio: "من الأعلام الثقات الذين حملوا أمانة الرواية وضبطوا الأحاديث."
+    bio: "من الأعلام الثقات الذين حملوا أمانة الرواية وضبطوا الأحاديث في القرون الفاضلة."
   };
 
   CURRENT_NARRATOR_DATA = { name: rawName, ...info };
@@ -1282,7 +1818,10 @@ function downloadIsnadSummary() {
   const content = `مشجر السند ومسار الرواية:
 ${CURRENT_ISNAD_CHAIN.join(' ➔ ')}
 
-الحديث:
+المتن:
+${document.getElementById('matn-text-content')?.innerText || ''}
+
+الحديث كاملاً:
 ${document.getElementById('isnad-input').value}`;
   downloadText('isnad_tree.txt', content);
 }
@@ -1299,7 +1838,8 @@ function loadIsnadSample(num) {
     1: "حدثنا عبد الله بن يوسف قال أخبرنا مالك عن يحيى بن سعيد عن محمد بن إبراهيم التيمي أنه سمع علقمة بن وقاص الليثي يقول سمعت عمر بن الخطاب رضي الله عنه يقول سمعت رسول الله صلى الله عليه وسلم يقول إنما الأعمال بالنيات",
     2: "حدثنا عبيد الله بن موسى قال أخبرنا حنظلة بن أبي سفيان عن عكرمة بن خالد عن ابن عمر رضي الله عنهما قال قال رسول الله صلى الله عليه وسلم بني الإسلام على خمس",
     3: "حدثني زهير بن حرب قال حدثنا إسماعيل بن إبراهيم عن أبي حيان عن الشعبي عن أبي هريرة رضي الله عنه أن رسول الله صلى الله عليه وسلم كان يوما بارزا للناس فأتاه رجل فقال ما الإيمان",
-    4: "حدثنا مسدد قال حدثنا يحيى عن شعبة عن قتادة عن أنس بن مالك رضي الله عنه عن النبي صلى الله عليه وسلم قال لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه"
+    4: "حدثنا مسدد قال حدثنا يحيى عن شعبة عن قتادة عن أنس بن مالك رضي الله عنه عن النبي صلى الله عليه وسلم قال لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه",
+    5: "حدثنا أحمد بن إشكاب قال حدثنا محمد بن فضيل عن عمارة بن القعقاع عن أبي زرعة عن أبي هريرة رضي الله عنه قال قال رسول الله صلى الله عليه وسلم كلمتان خفيفتان على اللسان ثقيلتان في الميزان حبيبتان إلى الرحمن سبحان الله وبحمده سبحان الله العظيم"
   };
   if (samples[num]) {
     document.getElementById('isnad-input').value = samples[num];
@@ -1307,16 +1847,192 @@ function loadIsnadSample(num) {
   }
 }
 
-// ─── أدوات عامة: نسخ وتحميل وترجمة ───
+// ─── 13. المكتبة الإسلامية الشاملة وقارئ الكتب ───
+let CURRENT_READER_BOOK = null;
+let readerFontSize = 16;
+
+function renderLibraryGrid(filterCategory = 'all') {
+  const container = document.getElementById('library-books-grid');
+  if (!container || !window.ISLAMIC_DATA || !window.ISLAMIC_DATA.books) return;
+  container.innerHTML = '';
+
+  const books = window.ISLAMIC_DATA.books.filter(b => {
+    if (filterCategory === 'all') return true;
+    return b.category === filterCategory;
+  });
+
+  books.forEach(b => {
+    const card = document.createElement('div');
+    card.className = 'source-item';
+    card.style.display = 'flex';
+    card.style.flexDirection = 'column';
+    card.style.justifyContent = 'space-between';
+    card.innerHTML = `
+      <div>
+        <div class="source-ref">
+          <span class="type-icon type-book">📚</span>
+          ${escHtml(b.title_ar)}
+        </div>
+        <div style="font-size:11.5px; color:var(--gold-light); margin-bottom:8px">${escHtml(b.author_ar || 'الفقه والتراث المعتمد')}</div>
+        <p style="font-size:12.5px; color:var(--text-muted); line-height:1.6; margin-bottom:12px">${escHtml(b.summary || '')}</p>
+      </div>
+      <div class="action-bar" style="margin-top:auto">
+        <button class="act-btn" onclick="openBookReader('${b.book_id}')">📖 قراءة الكتاب</button>
+        <button class="act-btn download" onclick="downloadText('${b.book_id}.txt', \`${b.title_ar}\\n\\n${b.content}\`)">⬇️ تحميل</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function filterLibrary(cat) {
+  renderLibraryGrid(cat);
+}
+
+function openBookReader(bookId) {
+  if (!window.ISLAMIC_DATA || !window.ISLAMIC_DATA.books) return;
+  const book = window.ISLAMIC_DATA.books.find(b => b.book_id === bookId);
+  if (!book) return;
+
+  CURRENT_READER_BOOK = book;
+  document.getElementById('reader-book-title').textContent = book.title_ar;
+  document.getElementById('reader-book-author').textContent = book.author_ar || 'مرجع إسلامي موثق';
+  document.getElementById('reader-book-content').textContent = book.content;
+  document.getElementById('book-reader-modal').style.display = 'flex';
+}
+function closeBookReader() {
+  document.getElementById('book-reader-modal').style.display = 'none';
+  stopSpeech();
+}
+
+function zoomReaderText(delta) {
+  readerFontSize = Math.max(12, Math.min(26, readerFontSize + delta * 2));
+  document.getElementById('reader-book-content').style.fontSize = readerFontSize + 'px';
+}
+
+function readCurrentBookAudio() {
+  if (!CURRENT_READER_BOOK) return;
+  speakString(CURRENT_READER_BOOK.content);
+}
+
+function copyReaderText() {
+  if (!CURRENT_READER_BOOK) return;
+  navigator.clipboard.writeText(CURRENT_READER_BOOK.content);
+  showToast('تم نسخ نص الكتاب بالكامل إلى الحافظة', 'success');
+}
+
+function downloadCurrentReaderBook() {
+  if (!CURRENT_READER_BOOK) return;
+  downloadText(`${CURRENT_READER_BOOK.book_id}.txt`, `${CURRENT_READER_BOOK.title_ar}\nالمؤلف: ${CURRENT_READER_BOOK.author_ar}\n\n${CURRENT_READER_BOOK.content}`);
+}
+
+// ─── 14. مركز التحميل المتقدم للتلاوات والنصوص ───
+function openDownloadModal() {
+  const surahId = parseInt(document.getElementById('quran-surah-picker').value);
+  const ayah = parseInt(document.getElementById('quran-ayah-picker').value);
+  const surah = SURAHS.find(s => s.id === surahId);
+
+  document.getElementById('dl-ayah-from').value = ayah;
+  document.getElementById('dl-ayah-to').value = Math.min((surah ? surah.ayahs : 7), ayah + 5);
+  document.getElementById('download-hub-modal').style.display = 'flex';
+}
+function closeDownloadModal() { document.getElementById('download-hub-modal').style.display = 'none'; }
+
+function updateDownloadOptionsUI() {
+  const scope = document.querySelector('input[name="dl-scope"]:checked').value;
+  const rangeBox = document.getElementById('dl-range-inputs');
+  rangeBox.style.display = (scope === 'range') ? 'flex' : 'none';
+}
+
+async function executeDownload(action = 'download') {
+  const surahId = parseInt(document.getElementById('quran-surah-picker').value);
+  const curAyah = parseInt(document.getElementById('quran-ayah-picker').value);
+  const reciter = document.getElementById('sheikh-reciter-select').value;
+  const scope   = document.querySelector('input[name="dl-scope"]:checked').value;
+  const format  = document.querySelector('input[name="dl-format"]:checked').value;
+
+  const sObj = SURAHS.find(s => s.id === surahId);
+  const sName = sObj ? sObj.name : surahId;
+
+  // إذا كان التنسيق صوتاً MP3
+  if (format === 'audio_mp3') {
+    if (scope === 'single') {
+      const sStr = String(surahId).padStart(3, '0');
+      const aStr = String(curAyah).padStart(3, '0');
+      const url = `https://everyayah.com/data/${reciter}/${sStr}${aStr}.mp3`;
+      if (action === 'copy') {
+        navigator.clipboard.writeText(url);
+        showToast('تم نسخ رابط التلاوة المباشر MP3 بنجاح', 'success');
+      } else {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Quran_${sName}_${curAyah}.mp3`;
+        a.target = '_blank';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showToast('بدأ تحميل ملف التلاوة MP3', 'success');
+      }
+      closeDownloadModal();
+      return;
+    } else {
+      showToast('تحميل الملفات الصوتية المتعددة: يمكنك تنزيل كل آية على حدة برابط مباشر، أو الاستماع المباشر في التطبيق.', 'info', 5000);
+      closeDownloadModal();
+      return;
+    }
+  }
+
+  // إذا كان التنسيق نصاً (عثماني أو إملائي)
+  const qData = await getQuranData();
+  let startAyah = curAyah;
+  let endAyah   = curAyah;
+
+  if (scope === 'range') {
+    startAyah = parseInt(document.getElementById('dl-ayah-from').value) || 1;
+    endAyah   = parseInt(document.getElementById('dl-ayah-to').value) || startAyah;
+  } else if (scope === 'surah') {
+    startAyah = 1;
+    endAyah   = sObj ? sObj.ayahs : 7;
+  }
+
+  const selectedAyahs = qData.filter(item =>
+    item.surah_number === surahId && item.ayah_number >= startAyah && item.ayah_number <= endAyah
+  );
+
+  let outputText = `سورة ${sName} (الآيات ${startAyah} - ${endAyah})\n\n`;
+  selectedAyahs.forEach(a => {
+    const txt = (format === 'text_clean') ? (a.ayah_text_clean || a.ayah_text_ar) : a.ayah_text_ar;
+    outputText += `۝ ${txt} ۝ [${a.ayah_number}]\n`;
+  });
+
+  if (action === 'copy') {
+    navigator.clipboard.writeText(outputText);
+    showToast('تم نسخ النص القرآني المختار إلى الحافظة بنجاح', 'success');
+  } else {
+    downloadText(`Quran_${sName}_${startAyah}-${endAyah}.txt`, outputText);
+    showToast('تم تنزيل ملف النص القرآني بنجاح', 'success');
+  }
+  closeDownloadModal();
+}
+
+// ─── 15. أدوات النسخ والتحميل والترجمة ───
 function copyTextById(id) {
   const el = document.getElementById(id);
   if (!el) return;
   navigator.clipboard.writeText(el.innerText || el.textContent);
-  alert('تم نسخ النص بنجاح');
+  showToast('تم نسخ النص بنجاح', 'success');
+}
+
+function copyTranslatedText(transContainerId) {
+  const el = document.getElementById(transContainerId);
+  if (!el) return;
+  const content = el.querySelector('.actual-trans-text')?.innerText || el.innerText;
+  navigator.clipboard.writeText(content);
+  showToast('تم نسخ نص الترجمة بنجاح', 'success');
 }
 
 function downloadText(filename, text) {
-  if (!text) { alert('لا يوجد نص للتحميل'); return; }
+  if (!text) { showToast('لا يوجد نص للتحميل', 'warning'); return; }
   const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -1332,23 +2048,28 @@ async function translateCard(sourceId, targetId) {
   if (!src || !target) return;
   const text = src.innerText || src.textContent;
   const lang = document.getElementById('user-lang-select').value;
+
   if (lang === 'ar') {
     target.style.display = 'block';
     target.innerHTML = `<span style="color:var(--gold); font-size:12px">النص بالأصل عربي. اختر لغة أخرى من القائمة العلوية للترجمة.</span>`;
     return;
   }
+
   target.style.display = 'block';
   target.innerHTML = `<span style="color:var(--text-muted); font-size:12px">جار الترجمة المباشرة إلى (${lang.toUpperCase()})...</span>`;
+
   try {
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(text.slice(0, 1000))}`;
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(text.slice(0, 1200))}`;
     const res = await fetch(url);
     const json = await res.json();
     let trans = '';
     if (json && json[0]) json[0].forEach(item => { if (item[0]) trans += item[0]; });
+
     target.innerHTML = `
       <div style="font-size:11px; color:var(--gold); font-weight:700">🌐 الترجمة (${lang.toUpperCase()}):</div>
-      <div style="direction:ltr; text-align:left; font-size:13.5px; color:#B9D1EA; margin-top:4px">${escHtml(trans)}</div>
-      <div style="display:flex; justify-content:flex-end; margin-top:6px">
+      <div class="actual-trans-text" style="direction:ltr; text-align:left; font-size:13.5px; color:#B9D1EA; margin-top:4px">${escHtml(trans)}</div>
+      <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px">
+        <button class="act-btn" onclick="copyTranslatedText('${targetId}')">📋 نسخ الترجمة</button>
         <button class="act-btn download" onclick="downloadText('translation_${lang}.txt', \`${trans}\`)">⬇️ تحميل الترجمة</button>
       </div>`;
   } catch (e) {
@@ -1361,8 +2082,8 @@ function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ─── PWA ───
-let deferredPrompt;
+// ─── 16. PWA وتثبيت التطبيق ───
+let deferredPrompt = null;
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').catch(err => console.log('SW reg error:', err));
@@ -1374,12 +2095,19 @@ window.addEventListener('beforeinstallprompt', (e) => {
   const btn = document.getElementById('pwa-install-btn');
   if (btn) btn.style.display = 'inline-flex';
 });
+
 function installPWA() {
-  if (!deferredPrompt) {
-    alert("لتثبيت التطبيق: افتح قائمة المتصفح واختر 'إضافة إلى الشاشة الرئيسية' (Add to Home Screen)");
-    return;
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        showToast('جزاكم الله خيراً، تم تثبيت التطبيق بنجاح!', 'success');
+      }
+      deferredPrompt = null;
+    });
+  } else {
+    showToast('لتثبيت التطبيق: افتح قائمة المتصفح (⋮) واختر "إضافة إلى الشاشة الرئيسية" (Install / Add to Home Screen)', 'info', 6000);
   }
-  deferredPrompt.prompt();
 }
 </script>
 </body>
