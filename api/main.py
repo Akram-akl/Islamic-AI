@@ -240,8 +240,11 @@ async def search(req: SearchRequest):
     if req.source in ("hadith", "all"):
         results["hadiths"] = search_hadiths(req.query, req.collections, req.limit)
 
+    if req.source in ("books", "all"):
+        results["books"] = search_books(req.query, limit=req.limit)
+
     results["ms"] = round((time.time() - t0) * 1000)
-    results["total"] = len(results["quran"]) + len(results["hadiths"])
+    results["total"] = len(results["quran"]) + len(results["hadiths"]) + len(results.get("books", []))
     return results
 
 

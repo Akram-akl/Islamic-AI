@@ -13,13 +13,24 @@ from core.db import get_conn, remove_diacritics
 #  البحث في القرآن الكريم
 # ─────────────────────────────────────────────────────────────
 
+def normalize_ar(text: str) -> str:
+    """تطبيع الحروف العربية لتشمل جميع رسوم الألفات والتاء المربوطة"""
+    if not text:
+        return ""
+    text = remove_diacritics(text)
+    text = re.sub(r'[إأآٱ]', 'ا', text)
+    text = re.sub(r'ة', 'ه', text)
+    text = re.sub(r'ى', 'ي', text)
+    return text
+
+
 def search_quran(
     query: str,
     qiraah: str = "hafs",
     limit: int = 10
 ) -> list[dict]:
     """
-    البحث في القرآن الكريم باستخدام FTS5
+    البحث في القرآن الكريم باستخدام FTS5 مع تطبيع الحروف والبحث التوافقي
     يعيد الآيات كما هي في قاعدة البيانات — لا توليد، لا هلوسة
     """
     query_clean = remove_diacritics(query.strip())
@@ -27,36 +38,72 @@ def search_quran(
     conn = get_conn()
     try:
         # 1) بحث FTS5 دلالي (يتجاهل التشكيل)
-        rows = conn.execute(
-            """
-            SELECT q.surah_number, q.surah_name_ar, q.surah_name_en,
-                   q.ayah_number, q.ayah_text_ar, q.surah_type, q.juz,
-                   bm25(quran_fts) AS score
-            FROM quran_fts
-            JOIN quran q ON quran_fts.rowid = q.id
-            WHERE quran_fts MATCH ? AND q.qiraah = ?
-            ORDER BY score
-            LIMIT ?
-            """,
-            (query_clean, qiraah, limit)
-        ).fetchall()
+        try:
+            rows = conn.execute(
+                """
+                SELECT q.surah_number, q.surah_name_ar, q.surah_name_en,
+                       q.ayah_number, q.ayah_text_ar, q.surah_type, q.juz,
+                       bm25(quran_fts) AS score
+                FROM quran_fts
+                JOIN quran q ON quran_fts.rowid = q.id
+                WHERE quran_fts MATCH ? AND q.qiraah = ?
+                ORDER BY score
+                LIMIT ?
+                """,
+                (query_clean, qiraah, limit)
+            ).fetchall()
 
-        for r in rows:
-            results.append({
-                "source":       "quran",
-                "qiraah":       qiraah,
-                "surah_number": r["surah_number"],
-                "surah_name_ar": r["surah_name_ar"],
-                "surah_name_en": r["surah_name_en"],
-                "ayah_number":  r["ayah_number"],
-                "text_ar":      r["ayah_text_ar"],  # النص الأصلي المشكول
-                "surah_type":   r["surah_type"],
-                "juz":          r["juz"],
-                "reference":    f"سورة {r['surah_name_ar']} ({r['surah_number']}:{r['ayah_number']})",
-                "score":        round(abs(r["score"]), 4),
-            })
+            for r in rows:
+                results.append({
+                    "source":       "quran",
+                    "qiraah":       qiraah,
+                    "surah_number": r["surah_number"],
+                    "surah_name_ar": r["surah_name_ar"],
+                    "surah_name_en": r["surah_name_en"],
+                    "ayah_number":  r["ayah_number"],
+                    "text_ar":      r["ayah_text_ar"],
+                    "surah_type":   r["surah_type"],
+                    "juz":          r["juz"],
+                    "reference":    f"سورة {r['surah_name_ar']} ({r['surah_number']}:{r['ayah_number']})",
+                    "score":        round(abs(r["score"]), 4),
+                })
+        except Exception:
+            pass
 
-        # 2) بحث رقمي إذا كان الاستعلام يحتوي على "سورة X:Y"
+        # 2) بحث توافقي متقدم في حال لم يرجع FTS نتائج (مثل حالة ألف الوصل ٱ في المصحف)
+        if not results:
+            q_norm = normalize_ar(query_clean)
+            words = [w for w in q_norm.split() if len(w) >= 2]
+            if words:
+                where_clauses = ["replace(replace(replace(ayah_text_clean, 'ٱ', 'ا'), 'ى', 'ي'), 'ة', 'ه') LIKE ?"] * len(words)
+                params = [f"%{w}%" for w in words]
+                rows = conn.execute(
+                    f"""
+                    SELECT surah_number, surah_name_ar, surah_name_en,
+                           ayah_number, ayah_text_ar, surah_type, juz
+                    FROM quran
+                    WHERE qiraah = ? AND {" AND ".join(where_clauses)}
+                    ORDER BY surah_number, ayah_number
+                    LIMIT ?
+                    """,
+                    (qiraah, *params, limit)
+                ).fetchall()
+                for r in rows:
+                    results.append({
+                        "source":       "quran",
+                        "qiraah":       qiraah,
+                        "surah_number": r["surah_number"],
+                        "surah_name_ar": r["surah_name_ar"],
+                        "surah_name_en": r["surah_name_en"],
+                        "ayah_number":  r["ayah_number"],
+                        "text_ar":      r["ayah_text_ar"],
+                        "surah_type":   r["surah_type"],
+                        "juz":          r["juz"],
+                        "reference":    f"سورة {r['surah_name_ar']} ({r['surah_number']}:{r['ayah_number']})",
+                        "score":        0.95,
+                    })
+
+        # 3) بحث رقمي إذا كان الاستعلام يحتوي على "سورة X:Y"
         m = re.search(r'(\d+)\s*[:،:]\s*(\d+)', query)
         if m and not results:
             s, v = int(m.group(1)), int(m.group(2))
@@ -163,6 +210,45 @@ def search_hadiths(
                 "reference_label": _collection_label(r["collection"], r["hadith_number"]),
                 "score":       round(abs(r["score"]), 4),
             })
+
+        # بحث توافقي بالكلمات في حال عدم العثور عبر FTS
+        if not results:
+            q_norm = normalize_ar(query_clean)
+            words = [w for w in q_norm.split() if len(w) >= 2]
+            if words:
+                where_clauses = ["text_ar_clean LIKE ?"] * len(words)
+                params = [f"%{w}%" for w in words]
+                coll_filter = ""
+                if collections:
+                    placeholders = ",".join("?" * len(collections))
+                    coll_filter = f"AND collection IN ({placeholders})"
+                    params.extend(collections)
+                params.append(limit)
+                fb_rows = conn.execute(
+                    f"""
+                    SELECT id, collection, hadith_number, arabic_number,
+                           book_name_ar, chapter_name_ar,
+                           text_ar, grade, reference
+                    FROM hadiths
+                    WHERE {" AND ".join(where_clauses)} {coll_filter}
+                    LIMIT ?
+                    """,
+                    params
+                ).fetchall()
+                for r in fb_rows:
+                    results.append({
+                        "source":      "hadith",
+                        "collection":  r["collection"],
+                        "hadith_number": r["hadith_number"],
+                        "arabic_number": r["arabic_number"],
+                        "book_name_ar": r["book_name_ar"],
+                        "chapter_name_ar": r["chapter_name_ar"],
+                        "text_ar":     r["text_ar"],
+                        "grade":       r["grade"],
+                        "reference":   r["reference"],
+                        "reference_label": _collection_label(r["collection"], r["hadith_number"]),
+                        "score":       0.95,
+                    })
     finally:
         conn.close()
     return results
