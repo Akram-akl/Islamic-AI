@@ -405,6 +405,82 @@
       animation: spin 0.8s linear infinite;
     }
     .loading { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 24px; }
+  
+    /* ─── التوافق التام مع الهواتف الذكية والأجهزة اللوحية (Mobile Responsiveness) ─── */
+    @media (max-width: 768px) {
+      body { padding-bottom: 75px; }
+      header { padding: 10px 14px; gap: 8px; justify-content: space-between; }
+      .logo { width: 38px; height: 38px; font-size: 18px; border-radius: 10px; }
+      .header-title h1 { font-size: 15px; }
+      .header-title p { display: none; }
+      .header-actions { width: 100%; justify-content: flex-end; gap: 6px; margin-top: 4px; }
+      .lang-selector { padding: 5px 8px; font-size: 11px; }
+      .btn-action { padding: 5px 9px; font-size: 11px; }
+      .header-badge { font-size: 10px; padding: 3px 8px; }
+      
+      main { padding: 12px 10px; gap: 14px; }
+      .tabs { gap: 4px; padding: 4px; -webkit-overflow-scrolling: touch; }
+      .tab { min-width: 95px; padding: 9px 8px; font-size: 11.5px; }
+      
+      .card { padding: 16px 14px; border-radius: 16px; }
+      .card-title { font-size: 13.5px; }
+      
+      textarea { min-height: 85px; font-size: 14px; padding: 12px 42px 12px 12px; }
+      .mic-input-btn { width: 30px; height: 30px; font-size: 14px; top: 10px; left: 10px; }
+      
+      .quick-chips { gap: 5px; }
+      .quick-chip { font-size: 10.5px; padding: 3px 9px; }
+      
+      .send-btn { font-size: 14px; padding: 11px 16px; border-radius: 10px; }
+      
+      .next-prayer-banner { padding: 12px 14px; border-radius: 14px; }
+      #next-prayer-name { font-size: 18px !important; }
+      #next-prayer-countdown { font-size: 21px !important; }
+      
+      .prayer-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+      .prayer-card { padding: 10px 6px; border-radius: 12px; }
+      .prayer-name { font-size: 12px; }
+      .prayer-time { font-size: 16px; }
+      
+      .compass-disc { width: 200px; height: 200px; }
+      
+      .action-bar { gap: 6px; }
+      .act-btn { padding: 5px 9px; font-size: 11px; }
+      
+      .source-text { font-size: 16px; line-height: 1.85; }
+      
+      .modal-card { width: 95% !important; max-width: 95% !important; padding: 18px 14px !important; max-height: 90vh !important; }
+      
+      .isnad-node { padding: 10px 12px; }
+      .node-name { font-size: 14.5px; }
+    }
+
+    @media (max-width: 480px) {
+      .header-actions { flex-wrap: wrap; }
+      .prayer-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 6px !important; }
+      .prayer-card { padding: 8px 4px; }
+      .prayer-time { font-size: 15px; }
+      .compass-disc { width: 175px; height: 175px; }
+      .tab { min-width: 80px; font-size: 10.5px; padding: 7px 5px; }
+      .card-title { font-size: 12.5px; flex-direction: column; align-items: flex-start; }
+      .action-bar { flex-wrap: wrap; }
+      .act-btn { padding: 5px 8px; font-size: 10.5px; }
+      .send-btn { font-size: 13.5px; padding: 10px 14px; }
+      .quick-chip { font-size: 10px; padding: 3px 7px; }
+      #next-prayer-name { font-size: 16px !important; }
+      #next-prayer-countdown { font-size: 18px !important; }
+      .next-prayer-banner { flex-direction: column; gap: 6px; padding: 10px 12px; }
+      .isnad-node { margin: 0 4px; }
+      textarea { font-size: 13px; }
+      .modal-card { padding: 14px 10px !important; }
+    }
+
+    /* Prevent horizontal overflow everywhere */
+    * { max-width: 100%; }
+    img, video, iframe, canvas, svg { max-width: 100%; }
+    table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    pre, code { white-space: pre-wrap; word-break: break-all; }
+
   </style>
   <script src="encyclopedia.js"></script>
 </head>
@@ -434,7 +510,6 @@
     <p>Islamic AI Hub — القراءات العشر · السنة والمشجر · مواقيت الصلاة والقبلة · تفريغ الصوتيات</p>
   </div>
   <div class="header-actions">
-    <button class="btn-action" onclick="forceAppRefresh()" title="تحديث فوري ومسح الذاكرة المؤقتة" style="border-color:var(--gold); color:var(--gold)">🔄 تحديث ومسح الكاش</button>
     <button class="btn-action" onclick="openApiKeyModal()">⚙️ إعدادات الذكاء (API)</button>
     <select id="user-lang-select" class="lang-selector" onchange="window.onLanguageChange()" title="اختر لغة الترجمة">
       <option value="en">🇬🇧 English</option>
@@ -773,26 +848,10 @@
           </div>
 
           <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
-            <div style="display:flex; align-items:center; gap:4px">
-              <label style="font-size:11px; color:var(--text-muted)">المعيار الفلكي:</label>
-              <select id="prayer-method" onchange="recalculatePrayerTimes()" style="font-size:11.5px">
-                <option value="egypt" selected>المساحة المصرية / دار الإفتاء</option>
-                <option value="makkah">أم القرى (مكة المكرمة)</option>
-                <option value="mwl">رابطة العالم الإسلامي</option>
-                <option value="karachi">جامعة كراتشي للعلوم الإسلامية</option>
-                <option value="dubai">دبي والإمارات</option>
-                <option value="isna">أمريكا الشمالية (ISNA)</option>
-              </select>
-            </div>
-            <div style="display:flex; align-items:center; gap:4px">
-              <label style="font-size:11px; color:var(--text-muted)">مذهب العصر:</label>
-              <button class="act-btn" onclick="toggleTimeFormat()" id="time-format-toggle-btn" style="font-size:11.5px">🕒 نظام 12 ساعة (ص/م)</button>
-            <select id="prayer-asr-madhab" onchange="recalculatePrayerTimes()" style="font-size:11.5px">
-                <option value="standard" selected>الجمهور (الشافعي، المالكي، الحنبلي)</option>
-                <option value="hanafi">الحنفي (ظل المثلين)</option>
-              </select>
-            </div>
+            <span id="prayer-auto-method-tag" class="header-badge" style="border-color:var(--gold); color:var(--gold-light); font-size:11.5px">⚙️ حساب المعيار الفلكي ومذهب العصر تلقائياً</span>
+            <button class="act-btn" onclick="toggleTimeFormat()" id="time-format-toggle-btn" style="font-size:11.5px">🕒 نظام 12 ساعة (ص/م)</button>
           </div>
+        </div>
         </div>
 
         <!-- لافتة الصلاة القادمة مع العد التنازلي التفاعلي -->
@@ -1673,8 +1732,16 @@ function toggleTimeFormat() {
   showToast(CURRENT_TIME_FORMAT_12H ? 'تم التبديل إلى نظام 12 ساعة (ص/م)' : 'تم التبديل إلى نظام 24 ساعة', 'info');
 }
 
+function toEnglishDigits(str) {
+  if (!str) return '';
+  return String(str).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+                    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+}
+
 function formatPrayerTime(timeStr, is12h = CURRENT_TIME_FORMAT_12H) {
-  if (!timeStr || typeof timeStr !== 'string' || !timeStr.includes(':')) return timeStr;
+  if (!timeStr || typeof timeStr !== 'string') return timeStr;
+  timeStr = toEnglishDigits(timeStr.trim());
+  if (!timeStr.includes(':')) return timeStr;
   const parts = timeStr.split(':');
   let h = parseInt(parts[0], 10);
   const m = parseInt(parts[1], 10);
@@ -1809,51 +1876,83 @@ function calculateDistanceToKaaba(lat, lng) {
   return Math.round(R * c);
 }
 
-async function recalculatePrayerTimes() {
-  const method = document.getElementById('prayer-method')?.value || 'egypt';
-  const asrMadhab = document.getElementById('prayer-asr-madhab')?.value || 'standard';
-  const { lat, lng, tz } = CURRENT_USER_LOCATION;
+// تحديد معيار الحساب ومذهب العصر تلقائياً بحسب البلد أو الإحداثيات دون إزعاج المستخدم
+function getAutoPrayerMethodAndSchool(lat, lng, locationName = '') {
+  const norm = normalizeArabic(locationName);
 
-  // الحساب الفلكي المحلي كخط دفاع أساسي وفوري
-  const localTimes = calculatePrayerTimesEngine(lat, lng, tz, method, asrMadhab);
-  let activeTimes = localTimes;
+  if (norm.includes('مكه') || norm.includes('المدينه') || norm.includes('الرياض') || norm.includes('السعوديه') || norm.includes('اليمن') || norm.includes('عمان') || norm.includes('مسقط') || norm.includes('المنامه') || norm.includes('البحرين') || norm.includes('الدوحه') || norm.includes('قطر') || norm.includes('الكويت')) {
+    return { method: 'makkah', methodId: 4, asrSchool: 0, title: 'أم القرى (مكة المكرمة)' };
+  }
+  if (norm.includes('دبي') || norm.includes('ابوظبي') || norm.includes('الامارات')) {
+    return { method: 'dubai', methodId: 16, asrSchool: 0, title: 'دبي والإمارات' };
+  }
+  if (norm.includes('القاهره') || norm.includes('مصر') || norm.includes('القدس') || norm.includes('فلسطين') || norm.includes('عمان') || norm.includes('الاردن') || norm.includes('دمشق') || norm.includes('سوريا') || norm.includes('بيروت') || norm.includes('لبنان') || norm.includes('طرابلس') || norm.includes('ليبيا') || norm.includes('تونس') || norm.includes('الجزائر') || norm.includes('الرباط') || norm.includes('المغرب') || norm.includes('الخرطوم') || norm.includes('السودان')) {
+    return { method: 'egypt', methodId: 5, asrSchool: 0, title: 'المساحة المصرية / دار الإفتاء' };
+  }
+  if (norm.includes('باكستان') || norm.includes('اسلام اباد') || norm.includes('كراتشي') || norm.includes('الهند') || norm.includes('بنغلاديش') || norm.includes('افغانستان')) {
+    return { method: 'karachi', methodId: 1, asrSchool: 1, title: 'جامعة كراتشي (الحنفي)' };
+  }
+  if (norm.includes('تركيا') || norm.includes('اسطنبول') || norm.includes('انقره')) {
+    return { method: 'turkey', methodId: 13, asrSchool: 1, title: 'رئاسة الشؤون الدينية بتركيا (ديانت)' };
+  }
+  if (norm.includes('روسيا') || norm.includes('موسكو') || norm.includes('المانيا') || norm.includes('برلين') || norm.includes('فرنسا') || norm.includes('باريس') || norm.includes('لندن') || norm.includes('بريطانيا') || norm.includes('النرويج') || norm.includes('اوسلو')) {
+    return { method: 'mwl', methodId: 3, asrSchool: 0, title: 'رابطة العالم الإسلامي' };
+  }
+  if (norm.includes('امريكا') || norm.includes('نيويورك') || norm.includes('كندا') || norm.includes('تورونتو')) {
+    return { method: 'isna', methodId: 2, asrSchool: 0, title: 'الجمعية الإسلامية لأمريكا الشمالية (ISNA)' };
+  }
+
+  // الفرز بحسب خطوط العرض والطول في حال استخدام GPS
+  if (lat >= 15 && lat <= 32 && lng >= 34 && lng <= 56) return { method: 'makkah', methodId: 4, asrSchool: 0, title: 'أم القرى (الجزيرة العربية)' };
+  if (lat >= 20 && lat <= 37 && lng >= 24 && lng <= 36) return { method: 'egypt', methodId: 5, asrSchool: 0, title: 'المساحة المصرية' };
+  if (lat >= 20 && lat <= 38 && lng >= 60 && lng <= 90) return { method: 'karachi', methodId: 1, asrSchool: 1, title: 'جامعة كراتشي' };
+  if (lng < -30) return { method: 'isna', methodId: 2, asrSchool: 0, title: 'أمريكا الشمالية (ISNA)' };
+
+  return { method: 'mwl', methodId: 3, asrSchool: 0, title: 'رابطة العالم الإسلامي' };
+}
+
+async function recalculatePrayerTimes() {
+  const { lat, lng, tz, name } = CURRENT_USER_LOCATION;
+  const autoSetting = getAutoPrayerMethodAndSchool(lat, lng, name);
+
+  // تحديث شارة المعيار التلقائي
+  const badgeEl = document.getElementById('prayer-auto-method-tag');
+  if (badgeEl) {
+    badgeEl.textContent = `📍 المعيار المعتمد: ${autoSetting.title}`;
+  }
+
+  // الحساب الفلكي المحلي كخط دفاع أساسي
+  const localTimes = calculatePrayerTimesEngine(lat, lng, tz, autoSetting.method, autoSetting.asrSchool === 1 ? 'hanafi' : 'standard');
+  let activeTimes = {
+    fajr: localTimes.fajr,
+    sunrise: localTimes.sunrise,
+    dhuhr: localTimes.dhuhr,
+    asr: localTimes.asr,
+    maghrib: localTimes.maghrib,
+    isha: localTimes.isha
+  };
 
   // جلب المواقيت الرسمية الدقيقة من API الأذان العالمي إذا توفر اتصال
   try {
-    const methodMap = { 'makkah': 4, 'egypt': 5, 'mwl': 3, 'karachi': 1, 'dubai': 16, 'isna': 2 };
-    const methodId = methodMap[method] || 5;
-    const asrVal = (asrMadhab === 'hanafi') ? 1 : 0;
-    const url = `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=${methodId}&school=${asrVal}`;
+    const url = `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=${autoSetting.methodId}&school=${autoSetting.asrSchool}`;
     const res = await fetch(url);
     const data = await res.json();
-    if (data && data.data && data.data.timings) {
+    if (data?.data?.timings) {
       const t = data.data.timings;
-      const parseDec = (str) => {
-        const [hh, mm] = str.split(':');
-        return parseInt(hh, 10) + parseInt(mm, 10) / 60.0;
-      };
       activeTimes = {
         fajr: t.Fajr.slice(0, 5),
         sunrise: t.Sunrise.slice(0, 5),
         dhuhr: t.Dhuhr.slice(0, 5),
         asr: t.Asr.slice(0, 5),
         maghrib: t.Maghrib.slice(0, 5),
-        isha: t.Isha.slice(0, 5),
-        raw: {
-          fajr: parseDec(t.Fajr),
-          sunrise: parseDec(t.Sunrise),
-          dhuhr: parseDec(t.Dhuhr),
-          asr: parseDec(t.Asr),
-          maghrib: parseDec(t.Maghrib),
-          isha: parseDec(t.Isha)
-        }
+        isha: t.Isha.slice(0, 5)
       };
     }
   } catch (err) {
-    // الاعتماد على المحرك الفلكي المحلي في وضع عدم الاتصال
-    activeTimes = localTimes;
+    console.log('Aladhan API offline or error, using local engine:', err);
   }
 
+  // عرض المواقيت في البطاقات
   document.getElementById('time-fajr').textContent = formatPrayerTime(activeTimes.fajr);
   document.getElementById('time-sunrise').textContent = formatPrayerTime(activeTimes.sunrise);
   document.getElementById('time-dhuhr').textContent = formatPrayerTime(activeTimes.dhuhr);
@@ -1870,14 +1969,14 @@ async function recalculatePrayerTimes() {
   document.getElementById('qibla-direction-text').textContent = `${qiblaAngle.toFixed(1)}° (${getCardinalDirection(qiblaAngle)})`;
   document.getElementById('qibla-distance-text').textContent = `المسافة المستقيمة إلى الكعبة المشرفة: ${distance.toLocaleString()} كم`;
 
-  // تحريك إبرة البوصلة إلى الزاوية المحسوبة
+  // تحريك إبرة البوصلة
   const needle = document.getElementById('compass-needle');
   if (needle) {
     needle.style.transform = `translateX(-50%) rotate(${qiblaAngle}deg)`;
   }
 
-  // تحديث العد التنازلي للصلاة القادمة
-  updateNextPrayerCountdown(times);
+  // تشغيل العد التنازلي التفاعلي المباشر للصلوات الخمس
+  updateNextPrayerCountdown(activeTimes);
 
   // التقويم الهجري
   try {
@@ -1890,58 +1989,69 @@ async function recalculatePrayerTimes() {
   }
 }
 
-function getCardinalDirection(angle) {
-  if (angle >= 337.5 || angle < 22.5) return 'شمالاً (N)';
-  if (angle >= 22.5 && angle < 67.5) return 'شمال شرق (NE)';
-  if (angle >= 67.5 && angle < 112.5) return 'شرقاً (E)';
-  if (angle >= 112.5 && angle < 157.5) return 'جنوب شرق (SE)';
-  if (angle >= 157.5 && angle < 202.5) return 'جنوباً (S)';
-  if (angle >= 202.5 && angle < 247.5) return 'جنوب غرب (SW)';
-  if (angle >= 247.5 && angle < 292.5) return 'غرباً (W)';
-  return 'شمال غرب (NW)';
-}
-
 function updateNextPrayerCountdown(times) {
   if (prayerTimesInterval) clearInterval(prayerTimesInterval);
 
   function check() {
     const now = new Date();
-    const curDec = now.getHours() + now.getMinutes() / 60.0 + now.getSeconds() / 3600.0;
 
-    const list = [
-      { id: 'fajr', name: 'صلاة الفجر', dec: times.raw.fajr },
-      { id: 'dhuhr', name: 'صلاة الظهر', dec: times.raw.dhuhr },
-      { id: 'asr', name: 'صلاة العصر', dec: times.raw.asr },
-      { id: 'maghrib', name: 'صلاة المغرب', dec: times.raw.maghrib },
-      { id: 'isha', name: 'صلاة العشاء', dec: times.raw.isha }
-    ];
-
-    ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(k => {
-      document.getElementById(`card-${k}`)?.classList.remove('active');
-    });
-
-    let next = list.find(p => p.dec > curDec);
-    let diffHours = 0;
-
-    if (next) {
-      diffHours = next.dec - curDec;
-      document.getElementById(`card-${next.id}`)?.classList.add('active');
-      document.getElementById('next-prayer-name').textContent = next.name;
-    } else {
-      // الصلاة القادمة فجر الغد
-      next = list[0];
-      diffHours = (24.0 - curDec) + next.dec;
-      document.getElementById('card-fajr')?.classList.add('active');
-      document.getElementById('next-prayer-name').textContent = 'صلاة الفجر (الغد)';
+    // دالة تحليل الوقت مع دعم كامل لنظامي 12 ساعة (ص/م) و24 ساعة والأرقام العربية
+    function makePrayerDate(timeStr, addDays = 0) {
+      if (!timeStr) return null;
+      timeStr = toEnglishDigits(timeStr);
+      // كشف ما إذا كان الوقت في نظام 12 ساعة مع لاحقة (م = PM, ص = AM)
+      const isPM = timeStr.includes('م') || timeStr.toLowerCase().includes('pm');
+      const isAM = timeStr.includes('ص') || timeStr.toLowerCase().includes('am');
+      const clean = timeStr.replace(/[^\d:]/g, '');
+      let [h, m] = clean.split(':').map(Number);
+      if (isNaN(h) || isNaN(m)) return null;
+      // تحويل من نظام 12 ساعة إلى 24 ساعة بدقة
+      if (isPM && h < 12) h += 12;  // الظهر والمساء: 1م-11م → 13-23
+      if (isAM && h === 12) h = 0;  // الفجر 12:00 ص → 0 (منتصف الليل)
+      return new Date(now.getFullYear(), now.getMonth(), now.getDate() + addDays, h, m, 0, 0);
     }
 
-    const totalSeconds = Math.max(0, Math.floor(diffHours * 3600));
-    const h = Math.floor(totalSeconds / 3600);
-    const m = Math.floor((totalSeconds % 3600) / 60);
-    const s = totalSeconds % 60;
+    // الصلوات الخمس المفروضة ذات الأذان فقط
+    const prayers = [
+      { id: 'fajr', name: 'صلاة الفجر', date: makePrayerDate(times.fajr) },
+      { id: 'dhuhr', name: 'صلاة الظهر', date: makePrayerDate(times.dhuhr) },
+      { id: 'asr', name: 'صلاة العصر', date: makePrayerDate(times.asr) },
+      { id: 'maghrib', name: 'صلاة المغرب', date: makePrayerDate(times.maghrib) },
+      { id: 'isha', name: 'صلاة العشاء', date: makePrayerDate(times.isha) },
+    ];
 
+    // تحديد الصلاة القادمة التي وقتها أكبر من الوقت الحالي
+    let next = prayers.find(p => p.date && p.date.getTime() > now.getTime());
+    let targetDate = null;
+    let targetName = '';
+    let targetId = '';
+
+    if (next) {
+      targetDate = next.date;
+      targetName = next.name;
+      targetId = next.id;
+    } else {
+      // انقضت كل صلوات اليوم، فالصلاة القادمة هي فجر الغد
+      targetDate = makePrayerDate(times.fajr, 1);
+      targetName = 'صلاة الفجر (الغد)';
+      targetId = 'fajr';
+    }
+
+    if (!targetDate) return;
+
+    const diffMs = Math.max(0, targetDate.getTime() - now.getTime());
+    const totalSec = Math.floor(diffMs / 1000);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+
+    document.getElementById('next-prayer-name').textContent = targetName;
     document.getElementById('next-prayer-countdown').textContent =
       `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+    ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(k => {
+      document.getElementById(`card-${k}`)?.classList.toggle('active', k === targetId);
+    });
   }
 
   check();
@@ -1977,8 +2087,14 @@ function handleOrientation(event) {
 
 function playAdhanPreview() {
   stopSpeech();
-  mainQuranAudio.src = 'https://everyayah.com/data/audhubillah.mp3';
-  mainQuranAudio.play().catch(e => console.log('Adhan preview error:', e));
+  const audio = document.getElementById('main-quran-audio') || new Audio();
+  audio.style.display = 'block';
+  audio.src = 'adhan.mp3';
+  audio.play().catch(e => {
+    // البديل الشبكي المباشر في حال تعذر المسار المحلي
+    audio.src = 'https://www.islamcan.com/audio/adhan/azan1.mp3';
+    audio.play().catch(err => console.log('Adhan audio play error:', err));
+  });
   showToast('الله أكبر، الله أكبر — حي على الصلاة، حي على الفلاح', 'info');
 }
 
@@ -2055,169 +2171,167 @@ function normalizeArabic(text) {
 }
 
 
-// ─── محرك الإجابة الإسلامي الذكي متعدد المحاور (صفر هلوسة) ───
+// ─── محرك الذكاء الاصطناعي الإسلامي الحواري الموثوق (مثل أي AI طبيعي مربوط بالمصادر) ───
 function answerUserLocally(q) {
   const normQ = normalizeArabic(q);
   
-  // 1. التحية والتفاعل الودود
+  // 1. التحيات والحوار الطبيعي الودود
   let greeting = '';
-  const greetingWords = ['كيف حالك', 'شلونك', 'ازيك', 'عساك بخير', 'شخبارك', 'مرحبا', 'السلام عليكم', 'صباح الخير', 'مساء الخير', 'حياك الله', 'اهلين', 'اهلا'];
-  if (greetingWords.some(g => normQ.includes(normalizeArabic(g)))) {
-    greeting = 'وعليكم السلام ورحمة الله وبركاته، أهلاً ومرحباً بك أخي الكريم! بخير ونعمة من الله وفي عونك ونفعك، وأرجو أن تكون في أتم الصحة والعافية.\n\n';
+  const greetingWords = ['كيف حالك', 'شلونك', 'ازيك', 'عساك بخير', 'شخبارك', 'مرحبا', 'السلام عليكم', 'صباح الخير', 'مساء الخير', 'حياك الله', 'اهلين', 'اهلا', 'من انت', 'ما هذا'];
+  const hasGreeting = greetingWords.some(g => normQ.includes(normalizeArabic(g)));
+
+  if (hasGreeting) {
+    greeting = 'وعليكم السلام ورحمة الله وبركاته، مرحباً بك أخي الكريم! بخير ونعمة من الله وفي عونك ونفعك، وأرجو أن تكون في أتم الصحة والعافية.\n\n';
   }
 
-  // 2. تحليل المحاور المتعددة في السؤال وتفكيكها
-  const topicsFound = [];
-
-  // أ) جبريل وميكائيل (ميكال) والملائكة الكرام
-  if (normQ.includes('جبريل') || normQ.includes('ميكال') || normQ.includes('ميكائيل') || normQ.includes('اسرافيل') || normQ.includes('الملائكة')) {
-    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'angels_jibril_and_mikael');
-    if (book) {
-      topicsFound.push({
-        title: 'من هو جبريل وميكائيل (ميكال) عليهما السلام بالدليل الشرعي',
-        content: book.content,
-        book: book
-      });
-    }
-  }
-
-  // ب) العشرة المبشرون بالجنة
-  if (normQ.includes('مبشرين') || normQ.includes('المبشرون') || normQ.includes('عشرة مبشرين') || normQ.includes('مبشر بالجنة') || (normQ.includes('عشرة') && normQ.includes('جنة'))) {
-    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'ten_promised_paradise');
-    if (book) {
-      topicsFound.push({
-        title: 'العشرة المبشرون بالجنة وأدلة تبشيرهم ومناقبهم',
-        content: book.content,
-        book: book
-      });
-    }
-  }
-
-  // ج) حكم التداول والأسهم والفوركس والعملات المشفرة
-  if (normQ.includes('تداول') || normQ.includes('اسهم') || normQ.includes('فوركس') || normQ.includes('مارجن') || normQ.includes('رافعة مالية') || normQ.includes('عملات مشفرة') || normQ.includes('بتكوين')) {
-    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'fiqh_modern_trading_and_stocks');
-    if (book) {
-      topicsFound.push({
-        title: 'حكم التداول والأسهم والفوركس والعملات الرقمية في الشريعة الإسلامية',
-        content: book.content,
-        book: book
-      });
-    }
-  }
-
-  // د) صلاة الوتر (إذا ذكرت صراحة في السؤال)
-  if (normQ.includes('الوتر') || normQ.includes('وتر')) {
-    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'fiqh_witr_prayer');
-    if (book) {
-      topicsFound.push({
-        title: 'شرح مفصل لصلاة الوتر وحكمها ووقتها وكيفيتها بالدليل والمصادر',
-        content: book.content,
-        book: book
-      });
-    }
-  }
-
-  // هـ) يوم عرفة وليلة القدر واجتماعهما برمضان
-  if (normQ.includes('عرفة') || normQ.includes('عرفه') || normQ.includes('ليلة القدر') || normQ.includes('ليله القدر')) {
-    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'fiqh_fasting_arafah_qadr');
-    if (book) {
-      topicsFound.push({
-        title: 'حكم صيام يوم عرفة وبيان مسألة موافقة عرفة لرمضان وليلة القدر',
-        content: book.content,
-        book: book
-      });
-    }
-  }
-
-  // و) أحكام التجويد
-  if (normQ.includes('تجويد') || normQ.includes('نون ساكنة') || normQ.includes('ادغام') || normQ.includes('اخفاء') || normQ.includes('اقلاب') || normQ.includes('اظهار') || normQ.includes('مدود')) {
-    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'tajweed_complete_rules');
-    if (book) {
-      topicsFound.push({
-        title: 'أحكام التجويد ومخارج الحروف',
-        content: book.content,
-        book: book
-      });
-    }
-  }
-
-  // ز) القراءات العشر
-  if (normQ.includes('قراءات') || normQ.includes('القراءات العشر') || normQ.includes('رواة')) {
-    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'quran_ten_qiraat_guide');
-    if (book) {
-      topicsFound.push({
-        title: 'دليل القراءات العشر ورواتها العشرين',
-        content: book.content,
-        book: book
-      });
-    }
-  }
-
-  // ح) الرقية الشرعية
-  if (normQ.includes('رقية') || normQ.includes('سحر') || normQ.includes('حسد') || normQ.includes('عين') || normQ.includes('شفاء')) {
-    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'ruqyah_shariyyah_detailed');
-    if (book) {
-      topicsFound.push({
-        title: 'الرقية الشرعية الكاملة من القرآن والسنة الصحيحة',
-        content: book.content,
-        book: book
-      });
-    }
-  }
-
-  // ط) السيرة النبوية والمغازي
-  if (normQ.includes('غزوة') || normQ.includes('بدر') || normQ.includes('احد') || normQ.includes('الخندق') || normQ.includes('فتح مكة')) {
-    const book = window.ISLAMIC_DATA?.books?.find(b => b.book_id === 'atlas_prophet_seerah_battles');
-    if (book) {
-      topicsFound.push({
-        title: 'أحداث المغازي والسيرة النبوية الكبرى',
-        content: book.content,
-        book: book
-      });
-    }
-  }
-
-  // إذا تم استخلاص محاور واضحة: صياغة الجواب الشامل والمفصل
-  if (topicsFound.length > 0) {
-    let finalAnswer = greeting;
-    finalAnswer += 'الحمد لله والصلاة والسلام على رسول الله وبعد:\nإليك الجواب العلمي الشامل والموثق بالأدلة الصريحة من الكتاب والسنة على كل مسألة سألت عنها:\n\n';
-
-    const sources = [];
-    topicsFound.forEach((tp, idx) => {
-      finalAnswer += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-      finalAnswer += `🔹 ${idx + 1}. ${tp.title}:\n\n${tp.content}\n\n`;
-      if (tp.book) {
-        sources.push({
-          type: 'book',
-          title: tp.book.title_ar,
-          author: tp.book.author_ar,
-          text: tp.book.summary || tp.content.slice(0, 300) + '...'
-        });
-      }
-    });
-
-    return { answer: finalAnswer.trim(), sources: sources };
-  }
-
-  // إذا لم يكن هناك محور خاص مطابق، البحث في الموسوعة الشاملة
-  const sources = findRelevantSourcesLocally(q);
-  if (sources.length > 0) {
-    let ans = greeting;
-    ans += 'الحمد لله والصلاة والسلام على رسول الله وبعد:\nبناءً على المصادر المعتمدة الموثقة في الموسوعة بخصوص سؤالك:\n\n';
-    sources.slice(0, 3).forEach((s, i) => {
-      ans += `📌 [${s.title || s.ref}]:\n${s.fullText || s.text}\n\n`;
-    });
-    return { answer: ans.trim(), sources: sources };
-  }
-
-  if (greeting) {
+  // إذا كان السؤال مجرد تحية بدون استفسار موضوعي
+  const cleanQWords = normQ.split(/\s+/).filter(w => w.length > 2 && !['كيف', 'حالك', 'شلونك', 'مرحبا', 'السلام', 'عليكم', 'صباح', 'مساء', 'الخير'].includes(w));
+  if (hasGreeting && cleanQWords.length === 0) {
     return {
-      answer: greeting + 'تفضل بطرح سؤالك الشرعي أو الفقهي أو العقدي وسأجيبك بأدق المصادر المعتمدة من القرآن والسنة الصحيحة.',
+      answer: greeting + 'أنا مساعدك الذكي في العلوم الإسلامية، مربوط بالقرآن الكريم والأحاديث النبوية الصحيحة وأمهات كتب الفقه والعقيدة والسيرة.\nيسعدني الإجابة عن أي مسألة أو استفسار شرعي أو لغوي بدقة وتوثيق تام.',
       sources: []
     };
   }
 
-  return null;
+  // 2. تفكيك السؤال المركب إلى أسئلة فرعية باستخدام علامات الاستفهام وأدوات العطف الاستفهامية
+  const subQueries = q.split(/(?:[؟?;\n]+|\s+و\s*(?=(?:من|ما|هل|كيف|ذكرني|بين|اعطني|شرح|أخبرني|اذكر)))/gi)
+    .map(s => s.trim()).filter(s => s.length > 2);
+  const activeQueries = subQueries.length > 0 ? subQueries : [q];
+
+  const stopWords = new Set(['ماهي', 'اعطني', 'شرح', 'بالدليل', 'المصادر', 'حدثني', 'ذكرني', 'اول', 'هل', 'ما', 'هو', 'هي', 'من', 'عن', 'في', 'علي', 'الي', 'مع', 'ان', 'ثم', 'او', 'كم', 'اين', 'كيف', 'يجوز', 'حكم']);
+
+  const matchedSections = [];
+  const citedSources = [];
+  const citedKeys = new Set();
+
+  activeQueries.forEach((subQ) => {
+    if (greetingWords.some(g => normalizeArabic(subQ) === normalizeArabic(g))) return;
+
+    const normSub = normalizeArabic(subQ).replace(/[^\p{L}\p{N}\s]/gu, ' ');
+    const qWords = normSub.split(/\s+/).filter(w => w.length >= 2 && !stopWords.has(w));
+    if (qWords.length === 0) return;
+
+    let bestB = null;
+    let bestScore = 0;
+    let bestSec = '';
+
+    // البحث الدلالي في الكتب الـ 38 على مستوى الفقرات
+    if (window.ISLAMIC_DATA && window.ISLAMIC_DATA.books) {
+      window.ISLAMIC_DATA.books.forEach(b => {
+        const bTitleNorm = normalizeArabic(b.title_ar).replace(/[^\p{L}\p{N}\s]/gu, ' ');
+        const sections = b.content.split('\n\n');
+
+        sections.forEach(sec => {
+          const secNorm = normalizeArabic(sec).replace(/[^\p{L}\p{N}\s]/gu, ' ');
+          let score = 0;
+          let matches = 0;
+
+          qWords.forEach(w => {
+            if (secNorm.includes(w)) {
+              score += 25;
+              matches += 1;
+            }
+            if (bTitleNorm.includes(w)) {
+              score += 20;
+            }
+          });
+
+          score *= (matches + 1);
+
+          if (score > bestScore && matches > 0) {
+            bestScore = score;
+            bestB = b;
+            bestSec = sec;
+          }
+        });
+      });
+    }
+
+    // البحث في الأحاديث النبوية
+    if (window.ISLAMIC_DATA && window.ISLAMIC_DATA.hadiths) {
+      window.ISLAMIC_DATA.hadiths.forEach(h => {
+        const hNorm = normalizeArabic(h.text_ar).replace(/[^\p{L}\p{N}\s]/gu, ' ');
+        let hScore = 0;
+        let hMatches = 0;
+
+        qWords.forEach(w => {
+          if (hNorm.includes(w)) {
+            hScore += 30;
+            hMatches += 1;
+          }
+        });
+        hScore *= (hMatches + 1);
+
+        if (hScore > bestScore && hMatches >= 2) {
+          bestScore = hScore;
+          bestB = {
+            title_ar: `${h.collection} — حديث ${h.hadith_number}`,
+            author_ar: h.grade || 'صحيح',
+            book_id: `hadith_${h.hadith_number}`,
+            summary: h.text_ar
+          };
+          bestSec = `${h.text_ar}\n\n[التخريج: ${h.collection} | الدرجة: ${h.grade || 'صحيح'}]`;
+        }
+      });
+    }
+
+    if (bestB && bestSec) {
+      matchedSections.push({
+        query: subQ,
+        source: bestB.title_ar,
+        content: bestSec.trim()
+      });
+
+      if (!citedKeys.has(bestB.book_id || bestB.title_ar)) {
+        citedKeys.add(bestB.book_id || bestB.title_ar);
+        citedSources.push({
+          type: bestB.book_id?.startsWith('hadith') ? 'hadith' : 'book',
+          title: bestB.title_ar,
+          author: bestB.author_ar,
+          text: bestB.summary || bestSec.slice(0, 250) + '...'
+        });
+      }
+    }
+  });
+
+  if (matchedSections.length > 0) {
+    let finalAnswer = greeting;
+    finalAnswer += 'الحمد لله والصلاة والسلام على رسول الله، أما بعد:\n\n';
+
+    if (matchedSections.length === 1) {
+      finalAnswer += `📌 ${matchedSections[0].content}`;
+    } else {
+      matchedSections.forEach((sec, idx) => {
+        finalAnswer += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+        finalAnswer += `🔹 ${idx + 1}. مسألة (${sec.query.trim()}):\n\n${sec.content}\n\n`;
+      });
+    }
+
+    return { answer: finalAnswer.trim(), sources: citedSources };
+  }
+
+  // في حال لم يجد مقاطع مباشرة
+  const generalSources = findRelevantSourcesLocally(q);
+  if (generalSources.length > 0) {
+    let ans = greeting;
+    ans += 'الحمد لله والصلاة والسلام على رسول الله، أما بعد:\n\nبناءً على المصادر المعتمدة الموثقة في الموسوعة بخصوص مسألتك:\n\n';
+    generalSources.slice(0, 3).forEach((s) => {
+      ans += `📌 [${s.title || s.ref}]:\n${s.fullText || s.text}\n\n`;
+    });
+    return { answer: ans.trim(), sources: generalSources };
+  }
+
+  if (greeting) {
+    return {
+      answer: greeting + 'تفضل بطرح أي سؤال ديني أو فقهي أو لغوي، وسأجيبك فوراً بالدليل الموثق من القرآن والسنة.',
+      sources: []
+    };
+  }
+
+  return {
+    answer: 'لم أجد نصاً مطابقاً بشكل مباشر لهذا السؤال في الذاكرة المدمجة. يمكنك صياغة السؤال بكلمات مفتاحية أخرى، أو ربط مفتاح Google Gemini المجاني في زر الإعدادات أعلاه للإجابة الحوارية الموسعة عن أي سؤال.',
+    sources: []
+  };
 }
 
 // ─── 12. السؤال المعرفي الموثوق ───
@@ -2236,20 +2350,23 @@ async function askQuestion() {
   if (apiKey) {
     try {
       const contextText = relevantSources.map(s => `[مصدر: ${s.title || s.ref}]\n${s.text}`).join('\n\n');
-      const prompt = `أنت مساعد ذكاء اصطناعي إسلامي موثوق وفائق الدقة.
-أجب عن سؤال السائل باللغة العربية بأسلوب علمي رصين وموثق حصراً، بالاستناد إلى المصادر الإسلامية المرفقة أدناه دون أي اجتهاد أو هلوسة:
+      const prompt = `أنت مساعد ذكاء اصطناعي إسلامي حواري وموثوق، مثل ChatGPT ولكن متخصص في الإسلام ومستند إلى المصادر الشرعية.
 
-المصادر الموثقة:
-${contextText}
+تعليمات السلوك:
+- تحدث بشكل طبيعي وودود مثل أي مساعد ذكاء اصطناعي حديث.
+- إذا سلّم عليك المستخدم أو سألك عن حالك، رد بشكل طبيعي ودود إسلامي.
+- إذا سأل عن هويتك، عرّف نفسك بأنك مساعد إسلامي ذكي يجمع بين الحوار الطبيعي والتوثيق الشرعي الدقيق.
+- إذا كان السؤال دينياً أو فقهياً أو عقدياً، استند إلى المصادر المرفقة وأضف الأدلة والتخريج.
+- إذا كان السؤال عاماً (تاريخ، علم، ثقافة)، أجب بموضوعية مع ربطه بالإسلام إن أمكن.
+- لا تقل أبداً "لا أستطيع الإجابة" إلا إذا كان السؤال حرامًا أو ضد الإسلام.
+
+المصادر الموثقة المتاحة:
+${contextText || 'الموسوعة الإسلامية الشاملة (القرآن والأحاديث والفقه والعقيدة والسيرة)'}
 
 سؤال السائل:
 ${q}
 
-المطلوب:
-1. الإجابة المباشرة والواضحة والشاملة لجميع أجزاء السؤال.
-2. إذا سأل عن مسألة فلكية كاجتماع يوم عرفة في رمضان أو ليلة القدر، بين له استحالة ذلك فلكياً وشرعياً لأن عرفة في ذي الحجة ورمضان شهر منفصل بينهما شهران.
-3. ذكر الأدلة من القرآن والحديث مع التخريج.
-4. الإحالة إلى كتب أهل العلم المعتمدة.`;
+أجب باللغة العربية الفصحى السلسة، وعند الإجابة على الأسئلة الدينية: اذكر الأدلة من القرآن والسنة مع التخريج، وأشر إلى اختلاف العلماء إن وُجد.`;
 
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
         method: 'POST',
@@ -2587,21 +2704,84 @@ function downloadAllSearchResults() {
   downloadText('search_results.txt', container.innerText);
 }
 
-// ─── 14. مشجر الأسانيد التفاعلي ───
-const NARRATOR_PROFILES = {
+// ─── 14. مشجر الأسانيد التفاعلي الموثق ───
+const AUTHENTIC_NARRATORS_DB = {
+  "محمد رسول الله ﷺ": { tabaqa: "المصدر المعصوم ﷺ", grade: "رسول الله وخاتم الأنبياء والمرسلين ﷺ", death: "11 هـ", loc: "المدينة المنورة", bio: "محمد بن عبد الله بن عبد المطلب ﷺ الصادق المصدوق خاتم النبيين." },
   "رسول الله": { tabaqa: "المصدر المعصوم ﷺ", grade: "رسول الله وخاتم الأنبياء والمرسلين ﷺ", death: "11 هـ", loc: "المدينة المنورة", bio: "محمد بن عبد الله بن عبد المطلب ﷺ الصادق المصدوق." },
-  "عمر بن الخطاب": { tabaqa: "صحابي جليل (الخلفاء الراشدون)", grade: "أمير المؤمنين، شهيد المحراب، ثاني الخلفاء الراشدين", death: "23 هـ", loc: "المدينة المنورة", bio: "الفاروق أبو حفص عمر بن الخطاب رضي الله عنه." },
+  "أبو بكر الصديق": { tabaqa: "صحابي جليل (الخلفاء الراشدون)", grade: "أفضل الأمة بعد نبيها، الصديق الأكبر", death: "13 هـ", loc: "المدينة المنورة", bio: "عبد الله بن عثمان بن عامر التيمي القرشي، أول الخلفاء الراشدين." },
+  "عمر بن الخطاب": { tabaqa: "صحابي جليل (الخلفاء الراشدون)", grade: "أمير المؤمنين، شهيد المحراب، ثاني الخلفاء الراشدين", death: "23 هـ", loc: "المدينة المنورة", bio: "الفاروق أبو حفص عمر بن الخطاب بن نفيل العدوي القرشي رضي الله عنه." },
+  "عثمان بن عفان": { tabaqa: "صحابي جليل (الخلفاء الراشدون)", grade: "ذو النورين، جامع القرآن، ثالث الخلفاء الراشدين", death: "35 هـ", loc: "المدينة المنورة", bio: "عثمان بن عفان بن أبي العاص الأموي القرشي رضي الله عنه." },
+  "علي بن أبي طالب": { tabaqa: "صحابي جليل (الخلفاء الراشدون)", grade: "أمير المؤمنين، باب العلم، رابع الخلفاء الراشدين", death: "40 هـ", loc: "الكوفة / المدينة", bio: "أبو الحسن علي بن أبي طالب الهاشمي القرشي رضي الله عنه." },
+  "عائشة بنت أبي بكر": { tabaqa: "صحابة جليلة (أم المؤمنين)", grade: "أفقه نساء الأمة، حجة في الحديث والفرائض", death: "58 هـ", loc: "المدينة المنورة", bio: "أم المؤمنين عائشة بنت أبي بكر الصديق القرشية التيمية رضي الله عنها." },
+  "عائشة": { tabaqa: "صحابة جليلة (أم المؤمنين)", grade: "أفقه نساء الأمة، حجة في الحديث والفرائض", death: "58 هـ", loc: "المدينة المنورة", bio: "أم المؤمنين عائشة بنت أبي بكر الصديق القرشية التيمية رضي الله عنها." },
+  "أبو هريرة": { tabaqa: "صحابي جليل (أحفظ الصحابة)", grade: "سيد الحفاظ وصاحب رسول الله ﷺ، أكثر الصحابة حديثاً", death: "57 هـ", loc: "المدينة المنورة", bio: "عبد الرحمن بن صخر الدوسي رضي الله عنه، دعا له النبي ﷺ بالحفظ." },
+  "عبد الله بن عمر": { tabaqa: "صحابي جليل (المكثرون من الحديث)", grade: "فقيه الصحابة وعابدها الحريص على اتباع الأثر", death: "73 هـ", loc: "مكة / المدينة", bio: "عبد الله بن عمر بن الخطاب رضي الله عنهما، إمام في السنة والاتباع." },
+  "ابن عمر": { tabaqa: "صحابي جليل (المكثرون من الحديث)", grade: "فقيه الصحابة وعابدها المتبع للسنة", death: "73 هـ", loc: "مكة المكرمة", bio: "عبد الله بن عمر بن الخطاب رضي الله عنهما." },
+  "عبد الله بن عباس": { tabaqa: "صحابي جليل (حبر الأمة)", grade: "ترجمان القرآن وحبر الأمة بدعاء النبي ﷺ", death: "68 هـ", loc: "الطائف", bio: "عبد الله بن عباس بن عبد المطلب الهاشمي رضي الله عنهما." },
+  "ابن عباس": { tabaqa: "صحابي جليل (حبر الأمة)", grade: "ترجمان القرآن وحبر الأمة بدعاء النبي ﷺ", death: "68 هـ", loc: "الطائف", bio: "عبد الله بن عباس بن عبد المطلب الهاشمي رضي الله عنهما." },
+  "عبد الله بن مسعود": { tabaqa: "صحابي جليل (السابقون الأولون)", grade: "من أقرأ الصحابة وأفقههم، صاحب النعلين والوساد", death: "32 هـ", loc: "الكوفة / المدينة", bio: "أبو عبد الرحمن عبد الله بن مسعود الهذلي رضي الله عنه." },
+  "ابن مسعود": { tabaqa: "صحابي جليل (السابقون الأولون)", grade: "من أقرأ الصحابة وأفقههم", death: "32 هـ", loc: "الكوفة / المدينة", bio: "عبد الله بن مسعود الهذلي رضي الله عنه." },
+  "أنس بن مالك": { tabaqa: "صحابي جليل (خادم الرسول ﷺ)", grade: "مكثر من الرواية، دعا له النبي ﷺ بالبركة والولد", death: "93 هـ", loc: "البصرة", bio: "أنس بن مالك بن النضر الخزرجي الأنصاري رضي الله عنه." },
+  "جابر بن عبد الله": { tabaqa: "صحابي جليل (المكثرون)", grade: "صاحب بيعة العقبة وشهد المشاهد، مفتي المدينة في وقته", death: "78 هـ", loc: "المدينة المنورة", bio: "جابر بن عبد الله بن عمرو بن حرام الأنصاري السلمي رضي الله عنه." },
+  "أبو سعيد الخدري": { tabaqa: "صحابي جليل (المكثرون)", grade: "فقيه جليل من حفاظ الصحابة المكثرين", death: "74 هـ", loc: "المدينة المنورة", bio: "سعد بن مالك بن سنان الخدري الأنصاري رضي الله عنه." },
+  "حذيفة بن اليمان": { tabaqa: "صحابي جليل (أمين السر)", grade: "صاحب سر رسول الله ﷺ في المنافقين", death: "36 هـ", loc: "المدائن", bio: "حذيفة بن اليمان العبسي رضي الله عنه." },
+  "أبو موسى الأشعري": { tabaqa: "صحابي جليل (الفقهاء)", grade: "أحد فقهاء الصحابة وقرائهم، أوتي مزماراً من مزامير آل داود", death: "44 هـ", loc: "الكوفة", bio: "عبد الله بن قيس الأشعري رضي الله عنه." },
+  "أبو ذر الغفاري": { tabaqa: "صحابي جليل (الزهاد)", grade: "أصدق الناس لهجة، إمام الزاهدين", death: "32 هـ", loc: "الربذة", bio: "جندب بن جنادة الغفاري رضي الله عنه." },
+  "معاذ بن جبل": { tabaqa: "صحابي جليل (الفقهاء)", grade: "أعلم الأمة بالحلال والحرام، يتقدم العلماء برتوة", death: "18 هـ", loc: "الشام", bio: "معاذ بن جبل بن عمرو الأنصاري الخزرجي رضي الله عنه." },
+  "سعد بن أبي وقاص": { tabaqa: "العشرة المبشرون بالجنة", grade: "فارس الإسلام، أول من رمى بسهم في سبيل الله", death: "55 هـ", loc: "المدينة المنورة", bio: "سعد بن أبي وقاص الزهري القرشي رضي الله عنه." },
+  "طلحة بن عبيد الله": { tabaqa: "العشرة المبشرون بالجنة", grade: "طلحة الخير والجود، حامي رسول الله ﷺ يوم أحد", death: "36 هـ", loc: "البصرة", bio: "طلحة بن عبيد الله التيمي القرشي رضي الله عنه." },
+  "الزبير بن العوام": { tabaqa: "العشرة المبشرون بالجنة", grade: "حواري رسول الله ﷺ وابن عمته صفية", death: "36 هـ", loc: "البصرة", bio: "الزبير بن العوام بن خويلد الأسدي القرشي رضي الله عنه." },
+  "عبد الرحمن بن عوف": { tabaqa: "العشرة المبشرون بالجنة", grade: "أحد السابقين وأصحاب الشورى الستة، من كبار المنفقين", death: "32 هـ", loc: "المدينة المنورة", bio: "عبد الرحمن بن عوف الزهري القرشي رضي الله عنه." },
+  "سعيد بن المسيب": { tabaqa: "سيد التابعين (فقهاء المدينة)", grade: "إمام التابعين، فقيه فقهاء المدينة، أصح الناس مراسيل", death: "94 هـ", loc: "المدينة المنورة", bio: "سعيد بن المسيب بن حزن المخزومي القرشي." },
+  "عروة بن الزبير": { tabaqa: "فقهاء المدينة السبعة (التابعون)", grade: "ثقة ثبت مأمون، من أثبت الناس في عائشة", death: "94 هـ", loc: "المدينة المنورة", bio: "عروة بن الزبير بن العوام الأسدي القرشي." },
   "علقمة بن وقاص": { tabaqa: "كبار التابعين", grade: "ثقة ثبت، قليل الحديث، جليل القدر", death: "في خلافة عبد الملك بن مروان", loc: "المدينة المنورة", bio: "علقمة بن وقاص بن محصن الليثي المدني." },
-  "محمد بن إبراهيم": { tabaqa: "الطبقة الرابعة (أوساط التابعين)", grade: "ثقة مأمون حافظ متقن", death: "120 هـ", loc: "المدينة المنورة", bio: "محمد بن إبراهيم بن الحارث بن خالد التيمي القرشي." },
-  "يحيى بن سعيد": { tabaqa: "الطبقة الخامسة", grade: "إمام ثبت حافظ حجة", death: "143 هـ", loc: "المدينة المنورة / الكوفة", bio: "يحيى بن سعيد بن قيس الأنصاري النجاري، قاضي المدينة." },
-  "مالك بن أنس": { tabaqa: "إمام دار الهجرة (أتباع التابعين)", grade: "أمير المؤمنين في الحديث وإمام المذهب", death: "179 هـ", loc: "المدينة المنورة", bio: "الإمام مالك بن أنس الأصبحي، صاحب الموطأ." },
-  "عبد الله بن يوسف": { tabaqa: "الطبقة العاشرة (شيوخ البخاري)", grade: "ثقة متقن، أثبت الناس في الموطأ", death: "218 هـ", loc: "دمشق / مصر", bio: "عبد الله بن يوسف التنيسي الكلاعي." },
-  "الإمام البخاري": { tabaqa: "المصنف وصاحب الصحيح", grade: "أمير المؤمنين في الحديث وسيد الحفاظ", death: "256 هـ", loc: "بخارى", bio: "أبو عبد الله محمد بن إسماعيل البخاري الجعفي." },
-  "عبد الله بن عمر": { tabaqa: "صحابي جليل (المكثرون من الحديث)", grade: "فقيه الصحابة وعابدها المتبع للسنة", death: "73 هـ", loc: "مكة المكرمة", bio: "عبد الله بن عمر بن الخطاب رضي الله عنهما." },
-  "أنس بن مالك": { tabaqa: "صحابي جليل (خادم الرسول ﷺ)", grade: "مكثر من الرواية، دعا له النبي ﷺ بالبركة", death: "93 هـ", loc: "البصرة", bio: "أنس بن مالك بن النضر الخزرجي الأنصاري رضي الله عنه." },
-  "أبو هريرة": { tabaqa: "صحابي جليل (أحفظ الصحابة)", grade: "سيد الحفاظ وصاحب رسول الله ﷺ", death: "57 هـ", loc: "المدينة المنورة", bio: "عبد الرحمن بن صخر الدوسي رضي الله عنه." }
+  "محمد بن إبراهيم": { tabaqa: "الطبقة الرابعة (أوساط التابعين)", grade: "ثقة مأمون حافظ متقن، مدار حديث النية عليه", death: "120 هـ", loc: "المدينة المنورة", bio: "محمد بن إبراهيم بن الحارث بن خالد التيمي القرشي." },
+  "يحيى بن سعيد": { tabaqa: "الطبقة الخامسة", grade: "إمام ثبت حافظ حجة، قاضي المدينة في وقته", death: "143 هـ", loc: "المدينة المنورة / الكوفة", bio: "يحيى بن سعيد بن قيس الأنصاري النجاري المدني." },
+  "نافع مولى ابن عمر": { tabaqa: "الطبقة الثالثة (كبار التابعين)", grade: "ثقة ثبت حجة، إمام السلسلة الذهبية (مالك عن نافع عن ابن عمر)", death: "117 هـ", loc: "المدينة المنورة", bio: "نافع المدني أبو عبد الله، مولى عبد الله بن عمر بن الخطاب." },
+  "سالم بن عبد الله": { tabaqa: "أوساط التابعين (فقهاء المدينة)", grade: "إمام زاهد ثبت حجة، شديد الشبه بأبيه", death: "106 هـ", loc: "المدينة المنورة", bio: "سالم بن عبد الله بن عمر بن الخطاب القرشي العدوي." },
+  "ابن شهاب الزهري": { tabaqa: "الطبقة الرابعة (أئمة الحفاظ)", grade: "أمير المؤمنين في الحديث، أول من دون الحديث الشريف", death: "124 هـ", loc: "المدينة المنورة / الشام", bio: "محمد بن مسلم بن عبيد الله بن شهاب الزهري القرشي." },
+  "الزهري": { tabaqa: "الطبقة الرابعة (أئمة الحفاظ)", grade: "أمير المؤمنين في الحديث وأحفظ أهل زمانه", death: "124 هـ", loc: "المدينة المنورة", bio: "محمد بن مسلم بن عبيد الله بن شهاب الزهري القرشي." },
+  "الحسن البصري": { tabaqa: "سيد التابعين (أهل البصرة)", grade: "إمام جليل ثقة ثبت، فقيه زاهد واعظ", death: "110 هـ", loc: "البصرة", bio: "الحسن بن يسار البصري، مولى زيد بن ثابت رضي الله عنه." },
+  "محمد بن سيرين": { tabaqa: "كبار التابعين", grade: "إمام ثبت حجة ورع، مفسر الرؤى وحافظ الحديث", death: "110 هـ", loc: "البصرة", bio: "محمد بن سيرين الأنصاري، مولى أنس بن مالك رضي الله عنه." },
+  "مجاهد بن جبر": { tabaqa: "كبار التابعين (أئمة التفسير)", grade: "إمام التفسير، عرض المصحف على ابن عباس ثلاثاً", death: "104 هـ", loc: "مكة المكرمة", bio: "مجاهد بن جبر المكي، مولى بني مخزوم." },
+  "عكرمة": { tabaqa: "كبار التابعين", grade: "ثقة ثبت عالم بالتفسير والمغازي، مولى ابن عباس", death: "105 هـ", loc: "مكة / المدينة", bio: "عكرمة البربري، مولى عبد الله بن عباس رضي الله عنهما." },
+  "عطاء بن أبي رباح": { tabaqa: "الطبقة الثالثة (فقهاء مكة)", grade: "مفتي الحرم، ثقة ثبت فقيه حجة", death: "114 هـ", loc: "مكة المكرمة", bio: "عطاء بن أبي رباح القرشي الفهري المكي." },
+  "طاووس بن كيسان": { tabaqa: "كبار التابعين", grade: "ثقة ثبت فقيه عابد، حكيم أهل اليمن", death: "106 هـ", loc: "اليمن / مكة", bio: "طاووس بن كيسان اليماني الجندي، تلميذ ابن عباس." },
+  "قتادة": { tabaqa: "الطبقة الرابعة", grade: "ثقة ثبت أحفظ أهل زمانه، إمام التفسير واللغة", death: "117 هـ", loc: "البصرة", bio: "قتادة بن دعامة السدوسي البصري." },
+  "الأعمش": { tabaqa: "الطبقة الخامسة", grade: "شيخ المحدثين بالكوفة، ثقة ثبت حافظ متقن", death: "148 هـ", loc: "الكوفة", bio: "سليمان بن مهران الأسدي الكاهلي، أبو محمد الأعمش." },
+  "الشعبي": { tabaqa: "كبار التابعين", grade: "إمام الحفاظ وفقيه العراق، ثقة ثبت حجة", death: "104 هـ", loc: "الكوفة", bio: "عامر بن شراحيل الشعبي الحميري الكوفي." },
+  "إبراهيم النخعي": { tabaqa: "الطبقة الثالثة", grade: "فقيه أهل الكوفة، ثقة ثبت مأمون", death: "96 هـ", loc: "الكوفة", bio: "إبراهيم بن يزيد بن قيس النخعي الكوفي." },
+  "هشام بن عروة": { tabaqa: "الطبقة الخامسة", grade: "ثقة ثبت إمام حجة، من أثبت الناس في حديث أبيه", death: "146 هـ", loc: "المدينة / بغداد", bio: "هشام بن عروة بن الزبير بن العوام الأسدي القرشي." },
+  "مالك بن أنس": { tabaqa: "إمام دار الهجرة (أتباع التابعين)", grade: "أمير المؤمنين في الحديث وإمام المذهب المالكي", death: "179 هـ", loc: "المدينة المنورة", bio: "الإمام مالك بن أنس الأصبحي الحميري، صاحب الموطأ." },
+  "سفيان الثوري": { tabaqa: "الطبقة السابعة (أمير المؤمنين)", grade: "أمير المؤمنين في الحديث، سيد العلماء في زمانه", death: "161 هـ", loc: "الكوفة / البصرة", bio: "سفيان بن سعيد بن مسروق الثوري الكوفي." },
+  "سفيان بن عيينة": { tabaqa: "الطبقة الثامنة (إمام الحرم)", grade: "إمام الحرم المكي، ثقة حافظ حجة متقن", death: "198 هـ", loc: "مكة المكرمة", bio: "سفيان بن عيينة بن ميمون الهلالي الكوفي ثم المكي." },
+  "شعبة بن الحجاج": { tabaqa: "الطبقة السابعة (أمير المؤمنين)", grade: "أمير المؤمنين في الحديث، أول من فتش عن الرجال بالعراق", death: "160 هـ", loc: "البصرة", bio: "شعبة بن الحجاج بن الورد العتكي الأزدي البصري." },
+  "حماد بن سلمة": { tabaqa: "الطبقة السابعة", grade: "ثقة ثبت، أثبت الناس في ثابت البناني، إمام السنة", death: "167 هـ", loc: "البصرة", bio: "حماد بن سلمة بن دينار البصري الربعي." },
+  "حماد بن زيد": { tabaqa: "الطبقة الثامنة", grade: "ثقة ثبت حجة، إمام أهل البصرة وحافظهم", death: "179 هـ", loc: "البصرة", bio: "حماد بن زيد بن درهم الأزدي البصري الأزرق." },
+  "الليث بن سعد": { tabaqa: "الطبقة السابعة", grade: "إمام أهل مصر وفقيههم، ثقة ثبت حجة كريم", death: "175 هـ", loc: "مصر", bio: "الليث بن سعد بن عبد الرحمن الفهمي، عالم مصر وفقيهها." },
+  "الأوزاعي": { tabaqa: "الطبقة السابعة", grade: "إمام أهل الشام وفقيههم وسيدهم في وقته", death: "157 هـ", loc: "بيروت / الشام", bio: "عبد الرحمن بن عمرو بن يحمد الأوزاعي الدمشقي." },
+  "عبد الله بن المبارك": { tabaqa: "الطبقة الثامنة", grade: "الإمام الحجة، أمير المؤمنين في الحديث، شيخ المجاهدين", death: "181 هـ", loc: "مرو / خراسان", bio: "عبد الله بن المبارك بن واضح الحنظلي المروزي." },
+  "وكيع بن الجراح": { tabaqa: "الطبقة التاسعة", grade: "إمام حافظ متقن، شيخ الشافعي وأحمد بن حنبل", death: "197 هـ", loc: "الكوفة", bio: "وكيع بن الجراح بن مليح الرؤاسي الكوفي." },
+  "يحيى بن سعيد القطان": { tabaqa: "الطبقة التاسعة", grade: "إمام الجرح والتعديل، الحافظ الثبت المتقن", death: "198 هـ", loc: "البصرة", bio: "يحيى بن سعيد بن فروخ القطان التميمي البصري." },
+  "عبد الرحمن بن مهدي": { tabaqa: "الطبقة التاسعة", grade: "إمام نقد الحديث والعلل، ثقة ثبت حجة", death: "198 هـ", loc: "البصرة", bio: "عبد الرحمن بن مهدي بن حسان العنبري البصري." },
+  "الشافعي": { tabaqa: "مجدد القرن الثاني (صاحب المذهب)", grade: "ناصر السنة، واضع علم أصول الفقه، حجة الأمة", death: "204 هـ", loc: "مكة / بغداد / مصر", bio: "محمد بن إدريس بن العباس الشافعي المطلبي القرشي." },
+  "أحمد بن حنبل": { tabaqa: "إمام أهل السنة والجماعة", grade: "أمير المؤمنين في الحديث، الصابر في المحنة، صاحب المسند", death: "241 هـ", loc: "بغداد", bio: "أحمد بن محمد بن حنبل بن هلال الشيباني المروزي ثم البغدادي." },
+  "إسحاق بن راهويه": { tabaqa: "الطبقة العاشرة", grade: "أمير المؤمنين في الحديث، قرين أحمد بن حنبل وشيخ البخاري", death: "238 هـ", loc: "نيسابور", bio: "إسحاق بن إبراهيم بن مخلد الحنظلي التميمي النيسابوري." },
+  "علي بن المديني": { tabaqa: "الطبقة العاشرة", grade: "شيخ البخاري، أعلم أهل زمانه بعلل الحديث واختلاف طرقه", death: "234 هـ", loc: "البصرة / بغداد", bio: "علي بن عبد الله بن جعفر السعدي المديني." },
+  "يحيى بن معين": { tabaqa: "الطبقة العاشرة", grade: "إمام الجرح والتعديل، من أئمة الدنيا في الحديث ونقده", death: "233 هـ", loc: "بغداد", bio: "يحيى بن معين بن عون الغطفاني المري البغدادي." },
+  "الحميدي": { tabaqa: "الطبقة العاشرة (شيوخ البخاري)", grade: "ثقة حافظ فقيه، شيخ البخاري وصاحب المسند", death: "219 هـ", loc: "مكة المكرمة", bio: "عبد الله بن الزبير بن عيسى بن عبيد الله الحميدي القرشي الأسدي." },
+  "مسدد بن مسرهد": { tabaqa: "الطبقة العاشرة", grade: "ثقة حافظ حجة، من كبار شيوخ البخاري وأبي داود", death: "228 هـ", loc: "البصرة", bio: "مسدد بن مسرهد بن مسربل الأسدي البصري." },
+  "قتيبة بن سعيد": { tabaqa: "الطبقة العاشرة", grade: "ثقة ثبت رحال، روى عنه الجماعة كلهم", death: "240 هـ", loc: "بغلان / خراسان", bio: "قتيبة بن سعيد بن جميل الثقفي البلخي." },
+  "عبد الله بن يوسف": { tabaqa: "الطبقة العاشرة (شيوخ البخاري)", grade: "ثقة متقن، أثبت الناس في الموطأ عن مالك", death: "218 هـ", loc: "دمشق / مصر", bio: "عبد الله بن يوسف التنيسي الكلاعي الدمشقي." },
+  "الإمام البخاري": { tabaqa: "المصنف وصاحب الصحيح", grade: "أمير المؤمنين في الحديث وسيد الحفاظ، صاحب أصح كتاب بعد كتاب الله", death: "256 هـ", loc: "بخارى", bio: "أبو عبد الله محمد بن إسماعيل بن إبراهيم البخاري الجعفي." },
+  "الإمام مسلم": { tabaqa: "صاحب الجامع الصحيح", grade: "إمام الحفاظ والمتقنين، صاحب صحيح مسلم", death: "261 هـ", loc: "نيسابور", bio: "مسلم بن الحجاج بن مسلم القشيري النيسابوري." },
+  "أبو داود": { tabaqa: "صاحب السنن", grade: "إمام أئمة الفقه والحديث، صاحب السنن المشهورة", death: "275 هـ", loc: "سجستان / البصرة", bio: "سليمان بن الأشعث بن إسحاق الأزدي السجستاني." },
+  "الترمذي": { tabaqa: "صاحب الجامع الكبير", grade: "حافظ متقن مجمع على علمه وإمامته وزهده", death: "279 هـ", loc: "ترمذ", bio: "محمد بن عيسى بن سورة بن موسى السلمي الترمذي." },
+  "النسائي": { tabaqa: "صاحب السنن", grade: "إمام ناقد ثبت، شديد التحري في الرجال والرواية", death: "303 هـ", loc: "نسا / مصر", bio: "أحمد بن شعيب بن علي بن سنان النسائي." },
+  "ابن ماجه": { tabaqa: "صاحب السنن", grade: "حافظ كبير ومفسر، صاحب السنن والتواريخ", death: "273 هـ", loc: "قزوين", bio: "محمد بن يزيد بن ماجه الربعي القزويني." }
 };
 
+const NARRATOR_PROFILES = AUTHENTIC_NARRATORS_DB;
 let CURRENT_ISNAD_CHAIN = [];
 
 function generateIsnadTree() {
@@ -2627,19 +2807,21 @@ function generateIsnadTree() {
     }
   }
 
-  const matnMatch = text.match(/(?:سمعت\s+رسول\s+الله|قال\s+رسول\s+الله|عن\s+النبي.*?قال|أن\s+رسول\s+الله.*?قال|يقول\s+سمعت\s+رسول\s+الله)(?:.*?(?:يقول|قال))?\s*(:?.*)/i);
+  // فصل قطعي وصارم بين السند والمتن حتى لا يدخل أي حرف من متن الحديث في المشجر
+  const matnBoundary = text.match(/(?:سمعت\s+(?:رسول\s+الله|النبي)|(?:قال|فقال|سأل|سألت)\s+(?:رسول\s+الله|النبي)|(?:عن|أن)\s+(?:رسول\s+الله|النبي)|أن[هـ]\s*صلى\s*الله\s*عليه\s*وسلم)/i);
   let sanadPart = text;
   let matnPart = '';
 
-  if (matnMatch) {
-    sanadPart = text.slice(0, matnMatch.index);
-    matnPart = matnMatch[0];
+  if (matnBoundary) {
+    sanadPart = text.slice(0, matnBoundary.index);
+    matnPart = text.slice(matnBoundary.index);
   }
 
   const matnCard = document.getElementById('matn-display-card');
   const matnContent = document.getElementById('matn-text-content');
   if (matnPart) {
-    matnContent.textContent = '« ' + matnPart.replace(/^(?:سمعت\s+رسول\s+الله|قال\s+رسول\s+الله|عن\s+النبي.*?قال|أن\s+رسول\s+الله.*?قال|يقول\s+سمعت\s+رسول\s+الله)(?:.*?(?:يقول|قال))?\s*:?\s*/i, '') + ' »';
+    const cleanMatn = matnPart.replace(/^(?:(?:سمعت|قال|فقال|سأل|سألت)\s+(?:رسول\s+الله|النبي)|(?:عن|أن)\s+(?:رسول\s+الله|النبي)|أن[هـ]\s*صلى\s*الله\s*عليه\s*وسلم)(?:.*?(?:يقول|قال|قالت))?\s*:?\s*/i, '');
+    matnContent.textContent = '« ' + cleanMatn.trim() + ' »';
     matnCard.style.display = 'block';
   } else {
     matnCard.style.display = 'none';
@@ -2652,38 +2834,73 @@ function generateIsnadTree() {
 
 function parseIsnadText(sanadText) {
   let clean = sanadText.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '');
-  // تنظيف شامل للألقاب والتبجيلات لمنع بقاء أي زوائد مثل (هما)
+  // تنظيف شامل للألقاب والأدعية التبجيلية
   clean = clean.replace(/\s*(?:رضي\s*الله\s*(?:عنهما|عنهم|عنها|عنه)|رحمه\s*الله|عليه\s*السلام|صلى\s*الله\s*عليه\s*وسلم|كرم\s*الله\s*وجهه|رضوان\s*الله\s*عليهم|على\s*المنبر|يقول|قال)\s*/gi, ' ');
 
   const tokens = clean.split(/(?:حدثنا|حدثني|أخبرنا|أخبرني|أنبأنا|عن|سمعت|أنه سمع|قال سمعت|يقول سمعت|قال)/gi)
     .map(s => s.trim()).filter(s => s.length > 2);
 
-  const recognized = [];
-  tokens.forEach(tok => {
-    let name = tok.trim();
-    if (name.includes('الحميدي') || name.includes('عبد الله بن الزبير')) name = 'الحميدي عبد الله بن الزبير';
-    else if (name.includes('سفيان بن عيينة') || name.includes('سفيان')) name = 'سفيان بن عيينة';
-    if (name.includes('رسول الله') || name.includes('النبي')) name = 'رسول الله ﷺ';
-    else if (name.includes('عمر بن الخطاب')) name = 'عمر بن الخطاب';
-    else if (name.includes('علقمة بن وقاص')) name = 'علقمة بن وقاص';
-    else if (name.includes('محمد بن إبراهيم')) name = 'محمد بن إبراهيم';
-    else if (name.includes('يحيى بن سعيد')) name = 'يحيى بن سعيد';
-    else if (name.includes('مالك')) name = 'مالك بن أنس';
-    else if (name.includes('عبد الله بن يوسف')) name = 'عبد الله بن يوسف';
-    else if (name.includes('ابن عمر')) name = 'عبد الله بن عمر';
-    else if (name.includes('أنس بن مالك') || name.includes('أنس')) name = 'أنس بن مالك';
-    else if (name.includes('أبو هريرة')) name = 'أبو هريرة';
+  // قائمة كلمات الأفعال والأسماء التي يستحيل أن تكون أسماء رواة
+  const forbiddenHadithWords = new Set([
+    'رجل', 'رجلا', 'رسول', 'نبي', 'الصلاة', 'الصيام', 'الزكاة', 'الحج', 'الجنة', 'النار', 'البر', 'الإثم',
+    'الصدق', 'الكذب', 'الأعمال', 'النيات', 'النساء', 'الرجال', 'الماء', 'المسجد', 'البيت', 'يوم', 'الساعة',
+    'القيامة', 'المؤمن', 'المسلم', 'الكافر', 'المنافق', 'حتى', 'إذا', 'إلا', 'لكن', 'أن', 'إن', 'كل',
+    'توضأ', 'صلى', 'صام', 'حج', 'خرج', 'دخل', 'نهى', 'أمر', 'سأل', 'أتى', 'جاء', 'رأى', 'كان', 'يكون',
+    'أحدكم', 'نفسه', 'ماله', 'ولده', 'أهله', 'الناس', 'أجمعين'
+  ]);
 
-    if (name.length > 3 && !recognized.includes(name) && !name.includes('إنما الأعمال')) {
-      recognized.push(name);
+  const recognized = [];
+
+  tokens.forEach(rawTok => {
+    let tok = rawTok.trim();
+    if (!tok || tok.length < 3) return;
+
+    // 1. الفحص أولاً في قاعدة الرواة المعتمدة
+    let matchedCanonical = null;
+    for (const [canonName, info] of Object.entries(AUTHENTIC_NARRATORS_DB)) {
+      if (canonName === 'محمد رسول الله ﷺ' || canonName === 'رسول الله') continue;
+      const normTok = normalizeArabic(tok);
+      const normCanon = normalizeArabic(canonName);
+      if (normTok.includes(normCanon) || normCanon.includes(normTok)) {
+        matchedCanonical = canonName;
+        break;
+      }
+      // فحص الكنى والألقاب
+      const aliasMatch = [
+        canonName,
+        canonName.replace(/^أبو\s+/, ''),
+        canonName.replace(/\s+بن\s+.*$/, '')
+      ];
+      if (aliasMatch.some(a => a.length > 3 && normTok.includes(normalizeArabic(a)))) {
+        matchedCanonical = canonName;
+        break;
+      }
+    }
+
+    if (matchedCanonical) {
+      if (!recognized.includes(matchedCanonical)) recognized.push(matchedCanonical);
+      return;
+    }
+
+    // 2. إذا لم يكن في المعجم: نقبله فقط إذا كان اسماً حقيقياً (فلان بن فلان) ولا يحتوي كلمات من متن الحديث
+    const words = tok.split(/\s+/);
+    const hasForbidden = words.some(w => forbiddenHadithWords.has(w));
+    if (!hasForbidden && (tok.includes(' بن ') || tok.startsWith('أبو ') || tok.startsWith('ابن ') || tok.startsWith('أم '))) {
+      // تنظيف الاسم والتحقق من الطول
+      if (tok.length > 5 && tok.length < 35 && !recognized.includes(tok)) {
+        recognized.push(tok);
+      }
     }
   });
 
-  const ordered = [];
-  ordered.push('رسول الله ﷺ');
-  recognized.forEach(n => {
-    if (n !== 'رسول الله ﷺ' && !ordered.includes(n)) ordered.push(n);
+  // إضافة المصدر المعصوم ﷺ في قمة الإسناد
+  const ordered = ['محمد رسول الله ﷺ'];
+  // ترتيب حلقات السند زمنياً من الصحابي (الذي سمع من النبي ﷺ) نزولاً إلى المصنف
+  const chainFromSahabi = [...recognized].reverse();
+  chainFromSahabi.forEach(n => {
+    if (n !== 'محمد رسول الله ﷺ' && !ordered.includes(n)) ordered.push(n);
   });
+
   return ordered;
 }
 
@@ -3054,11 +3271,6 @@ function escHtml(s) {
 
 // ─── 18. PWA ───
 let deferredPrompt = null;
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW reg error:', err));
-  });
-}
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
@@ -3067,40 +3279,37 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 
-// ─── مسح الكاش والتحديث الفوري ───
-async function forceAppRefresh() {
-  showToast('جارٍ تحديث التطبيق ومسح الذاكرة المؤقتة...', 'info');
-  try {
-    if ('caches' in window) {
-      const keys = await caches.keys();
-      await Promise.all(keys.map(k => caches.delete(k)));
-    }
-    if ('serviceWorker' in navigator) {
-      const registrations = await navigator.serviceWorker.getRegistrations();
-      for (let reg of registrations) {
-        await reg.unregister();
-      }
-    }
-  } catch(e) {
-    console.log('Cache clear err:', e);
-  }
-  setTimeout(() => {
-    window.location.reload(true);
-  }, 400);
-}
-
 function installPWA() {
   if (deferredPrompt) {
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then((choiceResult) => {
       if (choiceResult.outcome === 'accepted') {
-        showToast('جزاكم الله خيراً، تم تثبيت التطبيق بنجاح!', 'success');
+        showToast('شكراً لتثبيت التطبيق! يمكنك فتحه الآن من شاشتك الرئيسية.', 'success');
       }
       deferredPrompt = null;
     });
   } else {
     showToast('لتثبيت التطبيق: افتح قائمة المتصفح (⋮) واختر "إضافة إلى الشاشة الرئيسية" (Install / Add to Home Screen)', 'info', 6000);
   }
+}
+
+// ─── تسجيل الخدمة وتحديث التطبيق تلقائياً في الخلفية بدون حذف الـ API ───
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then((reg) => {
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        if (newWorker) {
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('[SW] New version detected, updating silently...');
+              window.location.reload();
+            }
+          });
+        }
+      });
+    }).catch(err => console.log('SW registration error:', err));
+  });
 }
 
 // تشغيل حساب المواقيت افتراضياً عند الإقلاع
