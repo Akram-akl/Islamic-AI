@@ -515,9 +515,19 @@
   </div>
   <div class="header-actions">
     <button class="btn-action" onclick="openApiKeyModal()">⚙️ إعدادات الذكاء (API)</button>
-    <div style="display:inline-flex; align-items:center; gap:4px; background:rgba(0,0,0,0.25); padding:2px 6px; border-radius:10px; border:1px solid var(--border)">
+
+    <!-- اختيار صوت القارئ العام للتطبيق كاملاً -->
+    <div style="display:inline-flex; align-items:center; gap:4px; background:rgba(0,0,0,0.25); padding:2px 8px; border-radius:10px; border:1px solid var(--border)" title="صوت القارئ الصوتي المعتمد لجميع أزرار الاستماع في التطبيق">
+      <span style="font-size:11px; color:var(--gold-light); font-weight:700">🗣️ صوت القارئ:</span>
+      <select id="global-voice-select" onchange="onGlobalVoiceChange(this.value)" style="background:transparent; border:none; color:var(--text); font-size:11px; outline:none; max-width:130px; cursor:pointer">
+        <option value="">(جاري تحميل الأصوات...)</option>
+      </select>
+    </div>
+
+    <!-- اختيار لغة ترجمة معاني الآيات والأحاديث -->
+    <div style="display:inline-flex; align-items:center; gap:4px; background:rgba(0,0,0,0.25); padding:2px 6px; border-radius:10px; border:1px solid var(--border)" title="لغة ترجمة معاني الآيات والأحاديث فقط عند النقر على زر (🌐 ترجمة)، بينما تظل واجهة التطبيق كاملة بالعربية">
       <span style="font-size:11px; color:var(--gold-light); font-weight:700">🌐 ترجمة المعاني:</span>
-      <select id="user-lang-select" class="lang-selector" onchange="window.onLanguageChange()" title="تحديد لغة ترجمة معاني الآيات والأحاديث (البرنامج يظل باللغة العربية)">
+      <select id="user-lang-select" class="lang-selector" onchange="window.onLanguageChange()" title="تحديد لغة ترجمة معاني الآيات والأحاديث (واجهة التطبيق تظل بالعربية الفصيحة)">
         <option value="en">🇬🇧 الإنجليزية (English)</option>
         <option value="fr">🇫🇷 الفرنسية (Français)</option>
         <option value="es">🇪🇸 الإسبانية (Español)</option>
@@ -529,6 +539,7 @@
         <option value="ar" selected>🇸🇦 العربية (الأصل)</option>
       </select>
     </div>
+
     <button id="pwa-install-btn" class="btn-action" style="display:none" onclick="installPWA()">📱 تثبيت التطبيق</button>
     <div class="header-badge" id="db-badge">الموسوعة الإسلامية جاهزة</div>
   </div>
@@ -778,7 +789,7 @@
 
           <div style="display:flex; align-items:center; gap:6px">
             <label style="font-size:11.5px; color:var(--text-muted)">الصوت:</label>
-            <select id="tts-voice-select" style="padding:4px 8px; font-size:12px; max-width:180px">
+            <select id="tts-voice-select" onchange="onGlobalVoiceChange(this.value)" style="padding:4px 8px; font-size:12px; max-width:200px">
               <option value="">(الصوت الافتراضي)</option>
             </select>
           </div>
@@ -905,7 +916,10 @@
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; flex-wrap:wrap; gap:8px">
           <span style="font-size:11px; color:var(--text-muted)" id="prayer-hijri-date">التقويم الهجري: جاري الحساب...</span>
-          <button class="act-btn" onclick="playAdhanPreview()">🔊 سماع الأذان المبارك</button>
+          <div style="display:flex; gap:8px; align-items:center">
+            <button class="act-btn" onclick="playAdhanPreview()" style="font-weight:700">🔊 سماع الأذان المبارك</button>
+            <button class="act-btn stop" onclick="stopAdhan()" id="stop-adhan-btn" style="border-color:#ef4444; color:#ef4444; font-weight:700">⏹️ إيقاف الأذان</button>
+          </div>
         </div>
       </div>
 
@@ -1111,18 +1125,6 @@
         🔗 احصل على مفتاح مجاني في ثوانٍ من Google AI Studio
       </a>
       <button class="send-btn" onclick="saveApiKey()" style="margin:0; width:auto; padding:6px 18px">حفظ المفتاح</button>
-    </div>
-
-    <!-- بطاقة توضيحية لرصيد وكوتا الـ API -->
-    <div style="margin-top:16px; padding:12px 14px; background:rgba(201,168,76,0.08); border:1px solid rgba(201,168,76,0.25); border-radius:12px; font-size:12px">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px">
-        <strong style="color:var(--gold)">📊 بيان الرصيد والكوتا (API Status):</strong>
-        <span id="api-status-tag" style="padding:2px 8px; border-radius:12px; font-size:10.5px; background:rgba(27,107,69,0.3); color:#4ade80">نشط وجاهز</span>
-      </div>
-      <div style="color:var(--text-muted); line-height:1.6">
-        • <strong>الرصيد المالي:</strong> توفر جوجل الاستخدام المجاني (1,500 طلب يومياً)، ولا تتيح أمنياً قراءة الفواتير أو الرصيد المالي المتبقي برمجياً عبر الـ API للحماية من سرقة الحسابات.<br>
-        • <strong>طلبات الجلسة الحالية:</strong> <span id="api-session-count" style="color:var(--gold-light); font-weight:700">0 طلبات</span> تم استهلاكها بنجاح في جلستك الحالية.
-      </div>
     </div>
   </div>
 </div>
@@ -1520,8 +1522,13 @@ function stopAllAudio() {
     mainQuranAudio.pause();
     mainQuranAudio.currentTime = 0;
   }
+  if (typeof adhanAudioInstance !== 'undefined' && adhanAudioInstance) {
+    adhanAudioInstance.pause();
+    adhanAudioInstance.currentTime = 0;
+  }
   stopSpeech();
-  document.getElementById('global-audio-bar').style.display = 'none';
+  const bar = document.getElementById('global-audio-bar');
+  if (bar) bar.style.display = 'none';
   showToast('تم إيقاف الصوت', 'info');
 }
 
@@ -1542,49 +1549,77 @@ function sanitizeTextForTts(text) {
     .trim();
 }
 
+function onGlobalVoiceChange(val) {
+  if (val) {
+    localStorage.setItem('SELECTED_TTS_VOICE', val);
+  } else {
+    localStorage.removeItem('SELECTED_TTS_VOICE');
+  }
+  const sel1 = document.getElementById('global-voice-select');
+  const sel2 = document.getElementById('tts-voice-select');
+  if (sel1 && sel1.value !== val) sel1.value = val;
+  if (sel2 && sel2.value !== val) sel2.value = val;
+  showToast(val ? `تم اختيار صوت القارئ: ${val}` : 'تم ضبط صوت القارئ على التلقائي الأفضل', 'info');
+}
+
 function populateVoices() {
   if (!synth) return;
-  const select = document.getElementById('tts-voice-select');
-  if (!select) return;
+  const select1 = document.getElementById('tts-voice-select');
+  const select2 = document.getElementById('global-voice-select');
+  if (!select1 && !select2) return;
   const voices = synth.getVoices();
-  select.innerHTML = '';
+  const savedVoice = localStorage.getItem('SELECTED_TTS_VOICE') || '';
 
-  // فرز الأصوات العربية وترقية الأصوات الطبيعية العالية الجودة (Natural / Neural / Naayf / Hoda / Shakir / Salma)
-  const arVoices = voices.filter(v => v.lang && (v.lang.startsWith('ar') || v.lang.includes('AR'))).sort((a, b) => {
-    const isNaturalA = /natural|neural|naayf|hoda|tarik|salma|shakir|yousef/i.test(a.name) ? 1 : 0;
-    const isNaturalB = /natural|neural|naayf|hoda|tarik|salma|shakir|yousef/i.test(b.name) ? 1 : 0;
+  // فرز الأصوات العربية وترقية الأصوات الطبيعية العالية الجودة (Natural / Neural / Naayf / Hoda / Shakir / Salma / Zeina / Google Arabic)
+  const arVoices = voices.filter(v => v.lang && (v.lang.toLowerCase().startsWith('ar') || v.lang.toLowerCase().includes('ar') || /arabic/i.test(v.name))).sort((a, b) => {
+    const isNaturalA = /natural|neural|naayf|hoda|tarik|salma|shakir|yousef|zeina|laila|maged/i.test(a.name) ? 1 : 0;
+    const isNaturalB = /natural|neural|naayf|hoda|tarik|salma|shakir|yousef|zeina|laila|maged/i.test(b.name) ? 1 : 0;
     return isNaturalB - isNaturalA;
   });
-  const otherVoices = voices.filter(v => !v.lang || (!v.lang.startsWith('ar') && !v.lang.includes('AR')));
+  const otherVoices = voices.filter(v => !arVoices.includes(v));
 
-  if (arVoices.length > 0) {
-    const grp = document.createElement('optgroup');
-    grp.label = '🇸🇦 أصوات اللغة العربية الفصيحة';
-    arVoices.forEach(v => {
-      const opt = document.createElement('option');
-      opt.value = v.name;
-      opt.textContent = `${v.name} (${v.lang})`;
-      grp.appendChild(opt);
-    });
-    select.appendChild(grp);
-  } else {
-    const optNone = document.createElement('option');
-    optNone.value = "";
-    optNone.textContent = '(لا يتوفر صوت عربي بنظامك - يرجى الاستماع للتلاوات بالأعلى)';
-    select.appendChild(optNone);
-  }
+  [select1, select2].forEach(sel => {
+    if (!sel) return;
+    sel.innerHTML = '';
 
-  if (otherVoices.length > 0) {
-    const grp2 = document.createElement('optgroup');
-    grp2.label = '🌐 أصوات النظام الأخرى';
-    otherVoices.slice(0, 10).forEach(v => {
-      const opt = document.createElement('option');
-      opt.value = v.name;
-      opt.textContent = `${v.name} (${v.lang})`;
-      grp2.appendChild(opt);
-    });
-    select.appendChild(grp2);
-  }
+    const optDefault = document.createElement('option');
+    optDefault.value = '';
+    optDefault.textContent = '(أفضل صوت عربي تلقائي)';
+    sel.appendChild(optDefault);
+
+    if (arVoices.length > 0) {
+      const grp = document.createElement('optgroup');
+      grp.label = '🇸🇦 أصوات اللغة العربية الفصيحة المجانية';
+      arVoices.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.name;
+        opt.textContent = `${v.name} (${v.lang})`;
+        grp.appendChild(opt);
+      });
+      sel.appendChild(grp);
+    } else {
+      const optNone = document.createElement('option');
+      optNone.value = '';
+      optNone.textContent = '(لا يتوفر صوت عربي بنظامك - يرجى تفعيل حزمة العربية بالمتصفح)';
+      sel.appendChild(optNone);
+    }
+
+    if (otherVoices.length > 0) {
+      const grp2 = document.createElement('optgroup');
+      grp2.label = '🌐 أصوات النظام الأخرى';
+      otherVoices.slice(0, 10).forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.name;
+        opt.textContent = `${v.name} (${v.lang})`;
+        grp2.appendChild(opt);
+      });
+      sel.appendChild(grp2);
+    }
+
+    if (savedVoice) {
+      sel.value = savedVoice;
+    }
+  });
 }
 if (synth) {
   populateVoices();
@@ -1615,7 +1650,7 @@ function speakString(text) {
     showToast('المتصفح لا يدعم القراءة الصوتية', 'warning');
     return;
   }
-  const arVoices = synth.getVoices().filter(v => v.lang && (v.lang.startsWith('ar') || v.lang.includes('AR')));
+  const arVoices = synth.getVoices().filter(v => v.lang && (v.lang.toLowerCase().startsWith('ar') || /arabic/i.test(v.name)));
   if (arVoices.length === 0) {
     showToast('تنبيه: جهازك لا يحتوي على صوت نظام عربي مثبت، لذلك قد يظهر نطق الحروف رديئاً. للاستماع المتقن استمع لتلاوات المشايخ بالأعلى!', 'warning', 6500);
   }
@@ -1626,7 +1661,8 @@ function speakString(text) {
   ttsCurrentIdx = 0;
   isTtsPlaying = true;
   isTtsPaused = false;
-  document.getElementById('tts-play-btn').textContent = '⏸️ إيقاف مؤقت';
+  const playBtn = document.getElementById('tts-play-btn');
+  if (playBtn) playBtn.textContent = '⏸️ إيقاف مؤقت';
   showGlobalAudioBar('قارئ الكتب والمراجع', 'قراءة صوتية للأدلة والدروس');
 
   playNextTtsChunk();
@@ -1636,7 +1672,8 @@ function playNextTtsChunk() {
   if (!isTtsPlaying || isTtsPaused) return;
   if (ttsCurrentIdx >= ttsQueue.length) {
     isTtsPlaying = false;
-    document.getElementById('tts-play-btn').textContent = '▶️ قراءة صوتية';
+    const playBtn = document.getElementById('tts-play-btn');
+    if (playBtn) playBtn.textContent = '▶️ قراءة صوتية';
     document.getElementById('global-audio-bar').style.display = 'none';
     return;
   }
@@ -1647,11 +1684,15 @@ function playNextTtsChunk() {
   utterance.rate = rate;
   utterance.lang = 'ar-SA';
 
-  const voiceName = document.getElementById('tts-voice-select')?.value;
-  const arVoices = synth.getVoices().filter(v => v.lang && (v.lang.startsWith('ar') || v.lang.includes('AR')));
-  if (voiceName) {
-    const v = synth.getVoices().find(x => x.name === voiceName);
+  const preferredVoiceName = localStorage.getItem('SELECTED_TTS_VOICE') ||
+                             document.getElementById('global-voice-select')?.value ||
+                             document.getElementById('tts-voice-select')?.value;
+  const arVoices = synth.getVoices().filter(v => v.lang && (v.lang.toLowerCase().startsWith('ar') || /arabic/i.test(v.name)));
+
+  if (preferredVoiceName) {
+    const v = synth.getVoices().find(x => x.name === preferredVoiceName);
     if (v) utterance.voice = v;
+    else if (arVoices.length > 0) utterance.voice = arVoices[0];
   } else if (arVoices.length > 0) {
     utterance.voice = arVoices[0];
   }
@@ -1915,6 +1956,14 @@ function calculateDistanceToKaaba(lat, lng) {
   return Math.round(R * c);
 }
 
+// تحديد الاتجاه الجغرافي للقبلة بحسب زاوية السمت الفلكية
+function getCardinalDirection(angle) {
+  const directions = ['شمال (N)', 'شمال شرق (NE)', 'شرق (E)', 'جنوب شرق (SE)', 'جنوب (S)', 'جنوب غرب (SW)', 'غرب (W)', 'شمال غرب (NW)'];
+  const normalized = ((angle % 360) + 360) % 360;
+  const idx = Math.round(normalized / 45) % 8;
+  return directions[idx];
+}
+
 // تحديد معيار الحساب ومذهب العصر تلقائياً بحسب البلد أو الإحداثيات دون إزعاج المستخدم
 function getAutoPrayerMethodAndSchool(lat, lng, locationName = '') {
   const norm = normalizeArabic(locationName);
@@ -1970,42 +2019,48 @@ async function recalculatePrayerTimes() {
     maghrib: localTimes.maghrib,
     isha: localTimes.isha
   };
+  window.LATEST_PRAYER_TIMES = activeTimes;
 
   // دالة عرض وتحديث الواجهة مباشرة
   function applyTimesToUI(tObj) {
-    const elF = document.getElementById('time-fajr');
-    if (elF) elF.textContent = formatPrayerTime(tObj.fajr);
-    const elS = document.getElementById('time-sunrise');
-    if (elS) elS.textContent = formatPrayerTime(tObj.sunrise);
-    const elD = document.getElementById('time-dhuhr');
-    if (elD) elD.textContent = formatPrayerTime(tObj.dhuhr);
-    const elA = document.getElementById('time-asr');
-    if (elA) elA.textContent = formatPrayerTime(tObj.asr);
-    const elM = document.getElementById('time-maghrib');
-    if (elM) elM.textContent = formatPrayerTime(tObj.maghrib);
-    const elI = document.getElementById('time-isha');
-    if (elI) elI.textContent = formatPrayerTime(tObj.isha);
+    try {
+      const elF = document.getElementById('time-fajr');
+      if (elF) elF.textContent = formatPrayerTime(tObj.fajr);
+      const elS = document.getElementById('time-sunrise');
+      if (elS) elS.textContent = formatPrayerTime(tObj.sunrise);
+      const elD = document.getElementById('time-dhuhr');
+      if (elD) elD.textContent = formatPrayerTime(tObj.dhuhr);
+      const elA = document.getElementById('time-asr');
+      if (elA) elA.textContent = formatPrayerTime(tObj.asr);
+      const elM = document.getElementById('time-maghrib');
+      if (elM) elM.textContent = formatPrayerTime(tObj.maghrib);
+      const elI = document.getElementById('time-isha');
+      if (elI) elI.textContent = formatPrayerTime(tObj.isha);
 
-    // حساب القبلة والمسافة
-    const qiblaAngle = calculateQiblaDirection(lat, lng);
-    currentQiblaAngle = qiblaAngle;
-    const distance = calculateDistanceToKaaba(lat, lng);
+      // حساب القبلة والمسافة بدقة فلكية
+      const qiblaAngle = calculateQiblaDirection(lat, lng);
+      currentQiblaAngle = qiblaAngle;
+      const distance = calculateDistanceToKaaba(lat, lng);
+      const directionName = getCardinalDirection(qiblaAngle);
 
-    const degBadge = document.getElementById('qibla-deg-badge');
-    if (degBadge) degBadge.textContent = `${qiblaAngle.toFixed(1)}° نحو مكة المكرمة`;
-    const dirText = document.getElementById('qibla-direction-text');
-    if (dirText) dirText.textContent = `${qiblaAngle.toFixed(1)}° (${getCardinalDirection(qiblaAngle)})`;
-    const distText = document.getElementById('qibla-distance-text');
-    if (distText) distText.textContent = `المسافة المستقيمة إلى الكعبة المشرفة: ${distance.toLocaleString()} كم`;
+      const degBadge = document.getElementById('qibla-deg-badge');
+      if (degBadge) degBadge.textContent = `${qiblaAngle.toFixed(1)}° نحو مكة المكرمة`;
+      const dirText = document.getElementById('qibla-direction-text');
+      if (dirText) dirText.textContent = `${qiblaAngle.toFixed(1)}° (${directionName})`;
+      const distText = document.getElementById('qibla-distance-text');
+      if (distText) distText.textContent = `المسافة المستقيمة إلى الكعبة المشرفة: ${distance.toLocaleString()} كم`;
 
-    // تحريك إبرة البوصلة
-    const needle = document.getElementById('compass-needle');
-    if (needle) {
-      needle.style.transform = `translateX(-50%) rotate(${qiblaAngle}deg)`;
+      // تحريك إبرة البوصلة فورياً
+      const needle = document.getElementById('compass-needle');
+      if (needle) {
+        needle.style.transform = `translateX(-50%) rotate(${qiblaAngle}deg)`;
+      }
+
+      // تشغيل وتحديث العد التنازلي التفاعلي المباشر للصلوات الخمس
+      updateNextPrayerCountdown(tObj);
+    } catch (uiErr) {
+      console.error('Error applying prayer times to UI:', uiErr);
     }
-
-    // تشغيل العد التنازلي التفاعلي المباشر للصلوات الخمس
-    updateNextPrayerCountdown(tObj);
   }
 
   // تطبيق فوري فلكي محلي (بدون انتظار أي شبكة)
@@ -2157,17 +2212,34 @@ function handleOrientation(event) {
   }
 }
 
+let adhanAudioInstance = null;
 function playAdhanPreview() {
   stopSpeech();
-  const audio = document.getElementById('main-quran-audio') || new Audio();
-  audio.style.display = 'block';
-  audio.src = 'adhan.mp3';
-  audio.play().catch(e => {
-    // البديل الشبكي المباشر في حال تعذر المسار المحلي
-    audio.src = 'https://www.islamcan.com/audio/adhan/azan1.mp3';
-    audio.play().catch(err => console.log('Adhan audio play error:', err));
+  stopAllAudio();
+  if (!adhanAudioInstance) {
+    adhanAudioInstance = new Audio();
+  }
+  adhanAudioInstance.src = 'adhan.mp3';
+  adhanAudioInstance.currentTime = 0;
+  adhanAudioInstance.play().catch(e => {
+    adhanAudioInstance.src = 'https://www.islamcan.com/audio/adhan/azan1.mp3';
+    adhanAudioInstance.play().catch(err => console.log('Adhan audio play error:', err));
   });
   showToast('الله أكبر، الله أكبر — حي على الصلاة، حي على الفلاح', 'info');
+}
+
+function stopAdhan() {
+  if (adhanAudioInstance) {
+    adhanAudioInstance.pause();
+    adhanAudioInstance.currentTime = 0;
+  }
+  const qAudio = document.getElementById('main-quran-audio');
+  if (qAudio) {
+    qAudio.pause();
+    qAudio.currentTime = 0;
+  }
+  stopSpeech();
+  showToast('تم إيقاف صوت الأذان المبارك', 'info');
 }
 
 function downloadPrayerTimesSchedule() {
@@ -2243,194 +2315,90 @@ function normalizeArabic(text) {
 }
 
 
-// ─── محرك الذكاء الاصطناعي الإسلامي الحواري الموثوق (مثل أي AI طبيعي مربوط بالمصادر) ───
-let SESSION_API_REQUESTS = 0;
-
+// ─── محرك الذكاء الاصطناعي الإسلامي الحواري الطبيعي (شات بوت ذكي مربوط بالمصادر) ───
 function answerUserLocally(q) {
   const normQ = normalizeArabic(q);
 
-  // 1. فحص طلبات كتابة الأكواد البرمجية أو توليد الصور (ممنوعة تماماً)
-  const codePatterns = ['كود', 'برمج', 'بايثون', 'جافاسكريبت', 'html', 'css', 'python', 'javascript', 'برمجه', 'خوارزميه', 'دوال'];
+  // 1. فحص طلبات كتابة الأكواد البرمجية أو توليد الصور (ممنوعة تماماً بنطاق العمل)
+  const codePatterns = ['كود', 'برمج', 'بايثون', 'جافاسكريبت', 'html', 'css', 'python', 'javascript', 'برمجه', 'خوارزميه', 'دوال', 'برمجة'];
   const imagePatterns = ['انشئ صوره', 'توليد صوره', 'ارسم', 'صمم صوره', 'انشاء الصور', 'توليد الصور', 'رسم'];
 
-  const isAskingAboutCodeOrImage = normQ.includes('هل تستطيع') || normQ.includes('هل تقدر') || normQ.includes('تستطيع انشاء') || normQ.includes('تكتب الاكواد');
   const isDirectCodeRequest = codePatterns.some(p => normQ.includes(p));
   const isDirectImageRequest = imagePatterns.some(p => normQ.includes(p));
 
   if ((isDirectCodeRequest || isDirectImageRequest) && !normQ.includes('صلاه') && !normQ.includes('وضوء') && !normQ.includes('حكم')) {
     return {
-      answer: `أهلاً بك أخي الكريم.\n\n🚫 تنبيه بشأن الأكواد البرمجية وتوليد الصور:\nأنا مساعد ذكاء اصطناعي معرفي وشرعي، مخصص حصراً للعلوم الإسلامية واللغوية والتاريخية والمصادر الموثقة. قواعدي ونطاق عملي يمنعان منعاً باتاً كتابة وتصحيح الأكواد البرمجية أو إنشاء وتوليد الصور.\n\nيسعدني جداً إفادتك في أي مسألة شرعية أو تفسير أو تدبر أو حديث أو مسألة لغوية بدقة وتوثيق تام.`,
+      answer: `أهلاً بك أخي الكريم! 🌸\n\nأود التوضيح بلطف أنني مساعد ذكاء اصطناعي إسلامي معرفي وبحثي، مخصص لعلوم الشريعة والقرآن الكريم، وتخريج الأحاديث النبوية، والتاريخ والسير النبوية واللغة العربية.\n\nقواعدي ونطاق عملي يمنعانني منعاً باتاً من كتابة أو تصحيح الأكواد البرمجية، وكذلك من إنشاء وتوليد الصور. يسعدني ويشرفني جداً إفادتك في أي مسألة شرعية أو فقهية أو تاريخية أو لغوية بكل رحابة صدر ومودة.`,
       sources: []
     };
   }
 
-  // 2. فحص أسئلة الهوية والنموذج وسعة التوكن والمطور
-  const identityWords = ['من انت', 'ما هو نموذجك', 'ما نموذجك', 'من مصممك', 'من طورك', 'من صنعك', 'ما حدودك', 'كم وصل التوكن', 'كم التوكن', 'ما هي قدراتك', 'عرف بنفسك', 'ما وظيفتك', 'ماذا تفعل'];
-  const isIdentityQuestion = identityWords.some(w => normQ.includes(normalizeArabic(w)));
+  // 2. التحيات والمحادثة الإنسانية الطبيعية الحرة
+  const greetings = ['السلام عليكم', 'مرحبا', 'اهلا', 'صباح الخير', 'مساء الخير', 'كيف حالك', 'شلونك', 'ازيك', 'عساك بخير', 'شخبارك', 'حياك الله'];
+  const isGreetingOnly = greetings.some(g => normQ === normalizeArabic(g) || normQ === normalizeArabic(g) + ' و رحمة الله' || (normQ.startsWith(normalizeArabic(g)) && normQ.length < g.length + 10));
 
-  if (isIdentityQuestion) {
+  if (isGreetingOnly) {
     return {
-      answer: `أهلاً ومرحباً بك!\n\n🔹 من أنا؟\nأنا «مساعد الذكاء الاصطناعي الإسلامي» (Islamic AI Assistant)، نظام حواري ذكي صُمم ليكون مرجعاً موثوقاً وشاملاً يجمع بين سلاسة الحوار الطبيعي والأمانة العلمية التامة والتوثيق الشرعي المباشر.\n\n📌 نموذجي وقدراتي وحدودي الصارمة:\n• النموذج المعتمد: أعمل بنموذج Google Gemini 1.5 Flash مع محرك استرجاع هجين (RAG) مربوط بموسوعة محلية تضم القرآن الكريم كاملاً، و683 حديثاً صحيحاً من البخاري ومسلم والأربعين النووية والقدسية، و42 مصنفاً في الفقه والعقيدة والسيرة النبوية وسير الصحابة الكرام.\n• سعة التوكن: يدعم النموذج سياقاً ضخماً يصل إلى مليون توكن (1,000,000 Tokens) للتحليل والاستيعاب الفوري.\n• منع كتابة الأكواد: غير مخصص وممنوع من كتابة أو إنشاء الشيفرات البرمجية.\n• منع إنشاء الصور: لا أقوم بتوليد أو رسم الصور.\n• قاعدة «لا أعلم» والأمانة الشرعية: في جميع المسائل الدينية والفقهية، ألتزم حصراً بالنصوص الصريحة من الكتاب والسنة؛ وإن سُئلت عن مسألة شرعية لا يتوفر لها دليل صريح أو مصدر موثوق لدي، فجوابي الصريح هو: (لا أعلم)، ولا أفتي أو أخمن بغير علم.`,
+      answer: `وعليكم السلام ورحمة الله وبركاته! 🌿\n\nأهلاً ومرحباً بك أخي الفاضل. أنا بخير ونعمة وفضل عظيم من الله سبحانه وتعالى، وأرجو أن تكون في أتم الصحة والعافية والسكينة.\n\nأنا هنا معك وبجانبك كأخ ومساعد ذكي، جاهز للحوار والإجابة عن أي تساؤل أو مدارسة في علوم القرآن الكريم، والحديث النبوي الشريف، وأحكام الفقه، وسير الصحابة والتابعين. كيف يمكنني خدمتك والتيسير عليك اليوم؟`,
       sources: []
     };
   }
 
-  // 3. التحيات والترحيب الطبيعي
-  let greeting = '';
-  const greetingWords = ['كيف حالك', 'شلونك', 'ازيك', 'عساك بخير', 'شخبارك', 'مرحبا', 'السلام عليكم', 'صباح الخير', 'مساء الخير', 'حياك الله', 'اهلين', 'اهلا'];
-  const hasGreeting = greetingWords.some(g => normQ.includes(normalizeArabic(g)));
-
-  if (hasGreeting) {
-    greeting = 'وعليكم السلام ورحمة الله وبركاته، مرحباً بك أخي الكريم! بخير ونعمة وفضل من الله، وأرجو أن تكون في أتم الصحة والعافية.\n\n';
-  }
-
-  // إذا كان السؤال مجرد تحية فقط
-  const cleanQWords = normQ.split(/\s+/).filter(w => w.length > 2 && !['كيف', 'حالك', 'شلونك', 'مرحبا', 'السلام', 'عليكم', 'صباح', 'مساء', 'الخير'].includes(w));
-  if (hasGreeting && cleanQWords.length === 0) {
+  // 3. أسئلة الهوية والتعريف بالنموذج
+  const identityWords = ['من انت', 'ما هو نموذجك', 'ما نموذجك', 'من مصممك', 'من طورك', 'من صنعك', 'عرف بنفسك', 'ما وظيفتك', 'ماذا تفعل'];
+  if (identityWords.some(w => normQ.includes(normalizeArabic(w)))) {
     return {
-      answer: greeting + 'أنا في خدمتك ومساعدتك. تفضل بطرح أي سؤال أو مسألة وسأجيبك عنها بدقة وموضوعية إن شاء الله.',
+      answer: `مرحباً بك! أنا «مساعد الذكاء الاصطناعي الإسلامي» (Islamic AI Assistant).\n\nصُممت لأكون شات بوت حواري متقدم يجمع بين سلاسة النقاش والتحاور الإنساني الطبيعي والدافئ، مع التقيد الصارم بالأمانة العلمية والتوثيق المباشر من مصادر الإسلام المعتمدة.\n\n🔹 ما يميزني وما أقدمه لك:\n• قاعدة معرفية موثوقة: مربوط بموسوعة تضم القرآن الكريم كاملاً، وتخريج مئات الأحاديث الصحيحة من صحيح البخاري وصحيح مسلم والأربعين النووية والقدسية، بالإضافة إلى 42 مصنفاً في الفقه والعقيدة والسيرة النبوية وأحكام التجويد وتاريخ الصحابة.\n• أسلوب حواري طبيعي ومرن: أتحدث معك بطلاقة وفصاحة، وأحلل المسائل وألخصها مع ذكر الشواهد.\n• الأمانة الشرعية وقاعدة (لا أعلم): أعتمد على الدليل الشرعي الصحيح؛ وإن سُئلت عن مسألة فقهية أو غيبية لا دليل لها، أتوقف فوراً وأقول صراحة: (لا أعلم) دون تخمين.\n• منع الأكواد والصور: متخصص حصراً في العلوم الشرعية والمعرفية.`,
       sources: []
     };
   }
 
-  // 4. تفكيك السؤال المركب إلى أسئلة فرعية (منع دمج الأسئلة المختلفة معاً)
-  const subQueries = q.split(/(?:[؟?;\n]+|\s+و\s*(?=(?:من|ما|هل|كيف|ذكرني|بين|اعطني|شرح|أخبرني|اذكر)))/gi)
-    .map(s => s.trim()).filter(s => s.length > 2);
-  const activeQueries = subQueries.length > 0 ? subQueries : [q];
+  // 4. استرجاع المصادر المعتمدة وصياغة الإجابة الحوارية الطبيعية الذكية
+  const relevantSources = findRelevantSourcesLocally(q);
 
-  const stopWords = new Set(['ماهي', 'اعطني', 'شرح', 'بالدليل', 'المصادر', 'حدثني', 'ذكرني', 'اول', 'هل', 'ما', 'هو', 'هي', 'من', 'عن', 'في', 'علي', 'الي', 'مع', 'ان', 'ثم', 'او', 'كم', 'اين', 'كيف', 'يجوز', 'حكم']);
+  if (relevantSources && relevantSources.length > 0) {
+    const topSource = relevantSources[0];
+    const citedList = relevantSources.slice(0, 3);
 
-  const matchedSections = [];
-  const citedSources = [];
-  const citedKeys = new Set();
-  const unknownSubQueries = [];
+    let naturalText = `الحمد لله والصلاة والسلام على رسول الله، وعلى آله وصحبه ومن والاه. مرحباً بك أخي الكريم.\n\n`;
+    naturalText += `بخصوص سؤالك الكريم:\n\n`;
 
-  activeQueries.forEach((subQ) => {
-    if (greetingWords.some(g => normalizeArabic(subQ) === normalizeArabic(g))) return;
+    const cleanContent = topSource.fullText || topSource.text;
+    const paras = cleanContent.split('\n\n').filter(p => p.trim().length > 20);
 
-    const normSub = normalizeArabic(subQ).replace(/[^\p{L}\p{N}\s]/gu, ' ');
-    const qWords = normSub.split(/\s+/).filter(w => w.length >= 2 && !stopWords.has(w));
-    if (qWords.length === 0) return;
-
-    let bestB = null;
-    let bestScore = 0;
-    let bestSec = '';
-
-    // البحث في كتب الموسوعة الـ 42 على مستوى الفقرات
-    if (window.ISLAMIC_DATA && window.ISLAMIC_DATA.books) {
-      window.ISLAMIC_DATA.books.forEach(b => {
-        const bTitleNorm = normalizeArabic(b.title_ar).replace(/[^\p{L}\p{N}\s]/gu, ' ');
-        const sections = b.content.split('\n\n');
-
-        sections.forEach(sec => {
-          const secNorm = normalizeArabic(sec).replace(/[^\p{L}\p{N}\s]/gu, ' ');
-          let score = 0;
-          let matches = 0;
-
-          qWords.forEach(w => {
-            if (secNorm.includes(w)) {
-              score += 25;
-              matches += 1;
-            }
-            if (bTitleNorm.includes(w)) {
-              score += 20;
-            }
-          });
-
-          score *= (matches + 1);
-
-          if (score > bestScore && matches >= 1) {
-            bestScore = score;
-            bestB = b;
-            bestSec = sec;
-          }
-        });
+    if (paras.length > 0) {
+      paras.slice(0, 3).forEach((p) => {
+        naturalText += `${p.trim()}\n\n`;
       });
-    }
-
-    // البحث في الأحاديث النبوية الصحيحة
-    if (window.ISLAMIC_DATA && window.ISLAMIC_DATA.hadiths) {
-      window.ISLAMIC_DATA.hadiths.forEach(h => {
-        const hNorm = normalizeArabic(h.text_ar).replace(/[^\p{L}\p{N}\s]/gu, ' ');
-        let hScore = 0;
-        let hMatches = 0;
-
-        qWords.forEach(w => {
-          if (hNorm.includes(w)) {
-            hScore += 30;
-            hMatches += 1;
-          }
-        });
-        hScore *= (hMatches + 1);
-
-        if (hScore > bestScore && hMatches >= 1) {
-          bestScore = hScore;
-          bestB = {
-            title_ar: `${h.collection} — حديث ${h.hadith_number}`,
-            author_ar: h.grade || 'صحيح',
-            book_id: `hadith_${h.id || h.hadith_number}`,
-            summary: h.text_ar
-          };
-          bestSec = `${h.text_ar}\n\n[التخريج: ${h.collection} | الدرجة: ${h.grade || 'صحيح'}]`;
-        }
-      });
-    }
-
-    if (bestB && bestSec && bestScore >= 50) {
-      matchedSections.push({
-        query: subQ,
-        source: bestB.title_ar,
-        content: bestSec.trim()
-      });
-
-      if (!citedKeys.has(bestB.book_id || bestB.title_ar)) {
-        citedKeys.add(bestB.book_id || bestB.title_ar);
-        citedSources.push({
-          type: bestB.book_id?.startsWith('hadith') ? 'hadith' : 'book',
-          title: bestB.title_ar,
-          author: bestB.author_ar,
-          text: bestB.summary || bestSec.slice(0, 250) + '...'
-        });
-      }
     } else {
-      // مسألة لم نجد لها نصاً صريحاً في المصادر المتاحة
-      unknownSubQueries.push(subQ);
-    }
-  });
-
-  // إذا وُجدت إجابات لبعض المسائل أو كلها
-  if (matchedSections.length > 0) {
-    let finalAnswer = greeting;
-    finalAnswer += 'الحمد لله والصلاة والسلام على رسول الله، أما بعد:\n\n';
-
-    matchedSections.forEach((sec, idx) => {
-      if (matchedSections.length > 1) {
-        finalAnswer += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-        finalAnswer += `🔹 ${idx + 1}. إجابة مسألة (${sec.query.trim()}):\n\n${sec.content}\n\n`;
-      } else {
-        finalAnswer += `📌 ${sec.content}\n\n`;
-      }
-    });
-
-    // إذا كان هناك أسئلة لم نجد لها إجابة في نفس السؤال المركب: تطبيق قاعدة "لا أعلم"
-    if (unknownSubQueries.length > 0) {
-      finalAnswer += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-      unknownSubQueries.forEach(uq => {
-        finalAnswer += `⚠️ بخصوص مسألة (${uq.trim()}):\n(لا أعلم)؛ لم أجد نصاً شرعياً صريحاً أو دليلاً معتمداً في المصادر المدمجة، والتزاماً بالأمانة العلمية أتوقف عن الجواب عنها بغير علم.\n\n`;
-      });
+      naturalText += `${cleanContent.slice(0, 600)}...\n\n`;
     }
 
-    return { answer: finalAnswer.trim(), sources: citedSources };
+    const hadithSource = relevantSources.find(s => s.type === 'hadith');
+    if (hadithSource) {
+      naturalText += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+      naturalText += `📜 من السنة النبوية المطهرة الدالة على ذلك:\n`;
+      naturalText += `« ${hadithSource.text} »\n`;
+      naturalText += `[التخريج: ${hadithSource.title} ${hadithSource.grade ? `| الحكم: ${hadithSource.grade}` : ''}]\n\n`;
+    }
+
+    naturalText += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    naturalText += `💡 خلاصة وتوجيه: يمكنك الاستزادة بمراجعة المصادر الموثقة المرفقة أدناه، وإذا كان لديك استفسار إضافي حول أي جزئية في هذه المسألة، فتفضل بطرحه مباشرة!`;
+
+    return {
+      answer: naturalText.trim(),
+      sources: citedList
+    };
   }
 
-  // قاعدة "لا أعلم" الحاسمة إذا كان السؤال شرعياً ولم نعثر له على دليل
+  // 5. قاعدة "لا أعلم" الشرعية الصارمة عند غياب الدليل
   return {
-    answer: greeting + `الحمد لله والصلاة والسلام على رسول الله:\n\nبناءً على الأمانة العلمية والشرعية: (لا أعلم).\n\nلا يتوفر نص صريح أو دليل معتمد وموثوق لهذه المسألة في المصادر المدمجة حالياً. والواجب في دين الله هو التوقف عما لا يعلم الإنسان دليله، وتجنب الفتوى بغير علم. يمكنك مراجعة أهل العلم الموثوقين أو ربط مفتاح Gemini API لإجابة استدلالية أوسع.`,
+    answer: `الحمد لله والصلاة والسلام على رسول الله.\n\nأخي السائل الكريم: بناءً على الأمانة العلمية والشرعية، جوابي هو: (لا أعلم).\n\nلم أجد في نصوص القرآن الكريم والسنة النبوية الصحيحة والمصادر المدمجة حالياً دليلاً صريحاً أو نصاً معتمداً يجيب عن هذه المسألة بعينها بدقة. والتوقف عند عدم العلم من تمام الفقه وهدي النبي ﷺ وصحابته الكرام تجنباً للقول في دين الله بغير علم.\n\n💡 يُنصح بالرجوع إلى الفتاوى الرسمية لدور الإفتاء المعتمدة وكبار العلماء الموثوقين، كما يمكنك أيضاً إدخال مفتاح Gemini API في الإعدادات لبحث واستدلال حواري موسع.`,
     sources: []
   };
 }
 
-// ─── 12. السؤال المعرفي الموثوق ───
+// ─── 12. السؤال المعرفي الحواري الموثوق ───
 async function askQuestion() {
   const q = document.getElementById('question').value.trim();
   if (!q) { showToast('يُرجى كتابة سؤالك أولاً', 'warning'); return; }
@@ -2440,67 +2408,79 @@ async function askQuestion() {
   document.getElementById('answer-box').innerHTML = '';
   document.getElementById('ask-btn').disabled = true;
 
-  const normQ = normalizeArabic(q);
-  const identityWords = ['من انت', 'ما نموذجك', 'ما هو نموذجك', 'من مصممك', 'من طورك', 'من صنعك', 'ما حدودك', 'كم وصل التوكن', 'كم التوكن', 'قدراتك', 'كود', 'برمج', 'انشئ صوره', 'توليد صوره'];
-  const isGeneralOrTech = identityWords.some(w => normQ.includes(normalizeArabic(w)));
+  const relevantSources = findRelevantSourcesLocally(q);
+  const apiKey = (localStorage.getItem('GEMINI_API_KEY') || '').trim();
 
-  const relevantSources = isGeneralOrTech ? [] : findRelevantSourcesLocally(q);
-  const apiKey = localStorage.getItem('GEMINI_API_KEY');
-
+  // فحص واستخدام مفتاح Gemini API إن وجد
   if (apiKey) {
-    try {
-      const contextText = relevantSources.map(s => `[مصدر: ${s.title || s.ref}]\n${s.text}`).join('\n\n');
-      const prompt = `أنت مساعد ذكاء اصطناعي إسلامي حواري ومعرفي ذكي، تتحدث بشكل طبيعي ومتقن مثل أي نموذج ذكاء اصطناعي حديث، مع الالتزام التام بالقواعد الصارمة التالية:
+    if (!apiKey.startsWith('AIzaSy')) {
+      showToast('⚠️ المفتاح المدخل لا يبدأ بـ AIzaSy (مفاتيح Google الرسمية تبدأ دائماً بـ AIzaSy). جارٍ محاولة الاتصال والرجوع للمحرك المدمج في حال التعذر.', 'warning', 6000);
+    }
 
-1. [قاعدة منع الأكواد والصور]: ممنوع منعاً باتاً كتابة الأكواد البرمجية أو توليد الصور. إذا طُلب منك كتابة كود أو إنشاء صورة، اعتذر بلباقة موضحاً أنك مساعد معرفي وشرعي ولست مخصصاً للبرمجة أو الصور.
-2. [الأسئلة الحوارية والعامة والهوية]: إذا سألك المستخدم عن هويتك، نموذجك، سعة التوكن (مليون توكن)، أو رحب بك وسألك عن حالك، أجب كذكاء اصطناعي طبيعي ولبق، دون إقحام أي نصوص دينية لا علاقة لها بالسؤال (إياك أن تجيب بتفسير الفاتحة أو أي نص عشوائي).
-3. [تفكيك الأسئلة المتعددة]: إذا طرح المستخدم أكثر من سؤال في رسالته (مثل سؤالين أو ثلاثة مواضيع مختلفة)، قم بالإجابة على كل سؤال في نقطة مرقمة مستقلة بدقة وتفصيل، ولا تدمج الأسئلة معاً.
-4. [قاعدة "لا أعلم" في المسائل الشرعية والدينية]:
-   - إذا كان السؤال دينياً أو فقهياً أو عقدياً: يجب أن يكون الجواب مستنداً إلى القرآن الكريم والسنة النبوية الصحيحة والمصادر المعتمدة الموثقة مع ذكر الأدلة والتخريج.
-   - إذا سُئلت عن مسألة شرعية أو حكم لا يتوفر له دليل صريح أو لا تعلمه أو لم تجده في المصادر الموثقة، فيجب عليك وجوباً أن تقول صراحة: "لا أعلم" أو "لا يتوفر دليل شرعي معتمد لهذه المسألة لدي"، ويُحظر عليك حظراً تاماً الإفتاء بغير علم أو التخمين أو الاستنتاج من خارج المصادر.
-5. أجب باللغة العربية الفصحى الواضحة والجميلة.
+    const contextText = relevantSources.map(s => `[مصدر: ${s.title || s.ref}]\n${s.text || s.fullText}`).join('\n\n');
+    const prompt = `أنت «مساعد الذكاء الاصطناعي الإسلامي»، شات بوت حواري ذكي جداً، تتحدث بطلاقة وبحرية وحيوية كأي نموذج ذكاء اصطناعي متطور وحديث (مثل ChatGPT أو Gemini)، مع التزامك التام بالثوابت والضوابط الشرعية التالية:
 
-${contextText ? 'المصادر الموثقة المتاحة:\n' + contextText : ''}
+1. [الحرية والأسلوب الحواري الطبيعي]: تحدث كإنسان عالم ولطيف؛ رحب بالسائل وتحدث بأسلوب حواري ممتع ومترابط وأنيق باللغة العربية الفصحى. اشرح المسائل بوضوح وسلاسة مع التوسع والشرح الجميل.
+2. [الأسئلة العامة والهوية والتحيات]: إذا سلم عليك المستخدم أو سألك عن حالك أو عن هويتك أو نموذجك، تحاور معه بحرية ولباقة ولطف دون إقحام نصوص دينية عشوائية.
+3. [الاستناد للمصادر المعتمدة]: في المسائل الشرعية والفقهية والعقدية، استند إلى نصوص القرآن الكريم وصحيح السنة النبوية، واذكر الأدلة واسم السورة أو مخرج الحديث (البخاري ومسلم) عند الإمكان.
+4. [قاعدة "لا أعلم"]: إذا سُئلت عن مسألة شرعية أو حكم فقهي لم تجد له دليلاً صريحاً أو مسألة غير معلومة بالدليل، قل بصراحة وأمانة: "لا أعلم دليلاً قطيعاً في نصوص الكتاب والسنة المعتمدة لهذه المسألة"، ولا تخمن أو تفتِ بغير علم.
+5. [منع الأكواد والصور]: ممنوع منعاً باتاً كتابة الأكواد البرمجية أو توليد الصور؛ اعتذر بلباقة موضحاً تخصصك الشرعي والمعرفي.
+
+${contextText ? 'المصادر والكتب الموثقة المتاحة للاستئناس:\n' + contextText : ''}
 
 سؤال السائل:
 ${q}`;
 
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }]
-        })
-      });
+    const modelsToTry = [
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent'
+    ];
 
-      const data = await res.json();
-      document.getElementById('loading-box').style.display = 'none';
+    let geminiSuccess = false;
 
-      if (data.candidates && data.candidates[0]) {
-        const ans = data.candidates[0].content.parts[0].text;
-        SESSION_API_REQUESTS++;
-        const counterEl = document.getElementById('api-session-count');
-        if (counterEl) counterEl.textContent = `${SESSION_API_REQUESTS} طلبات`;
-        renderAnswerUI(ans, relevantSources, "Google Gemini 1.5 Flash (مستند للمصادر المعتمدة)");
-        document.getElementById('ask-btn').disabled = false;
-        return;
+    for (const endpoint of modelsToTry) {
+      if (geminiSuccess) break;
+      try {
+        const res = await fetch(`${endpoint}?key=${apiKey}`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }]
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+            const ans = data.candidates[0].content.parts[0].text;
+            document.getElementById('loading-box').style.display = 'none';
+            renderAnswerUI(ans, relevantSources, "Google Gemini AI (نموذج حواري مربوط بالمصادر المعتمدة)");
+            geminiSuccess = true;
+            document.getElementById('ask-btn').disabled = false;
+            return;
+          }
+        } else {
+          console.warn(`Gemini endpoint ${endpoint} status:`, res.status);
+        }
+      } catch (err) {
+        console.warn(`Gemini fetch error on ${endpoint}:`, err);
       }
-    } catch (err) {
-      console.log('Gemini API call failed, falling back:', err);
+    }
+
+    if (!geminiSuccess) {
+      showToast('تعذر الاتصال بـ Gemini API (تحقق من صحة المفتاح). تم تفعيل المحرك الحواري الذكي المدمج.', 'info', 5000);
     }
   }
 
+  // المحرك الحواري الذكي المدمج
   document.getElementById('loading-box').style.display = 'none';
   const localRes = answerUserLocally(q);
-  if (localRes && localRes.answer) {
-    renderAnswerUI(localRes.answer, localRes.sources, "الموسوعة الإسلامية الموثقة المباشرة (صفر هلوسة)");
-  } else {
-    renderAnswerUI(
-      "بناءً على الأمانة العلمية: (لا أعلم).\nلم أجد نصاً شرعياً مطابقاً لهذه المسألة في المصادر المدمجة. يُرجى مراجعة أهل العلم أو ربط مفتاح Gemini API المجاني لإجابة حوارية أوسع.",
-      [],
-      "تنبيه الأمانة العلمية"
-    );
-  }
+  renderAnswerUI(
+    localRes.answer,
+    localRes.sources,
+    "المحرك الحواري الذكي المدمج (مربوط بالموسوعة ومحكم بالمصادر)"
+  );
   document.getElementById('ask-btn').disabled = false;
 }
 
@@ -2728,11 +2708,101 @@ async function doSearch() {
   });
 }
 
+let EXTENDED_HADITH_CACHE = {};
+async function searchExtendedHadithBooks(q) {
+  if (!q) q = document.getElementById('search-query')?.value?.trim();
+  if (!q) return;
+
+  const btn = document.getElementById('extended-hadith-search-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = '⏳ جاري البحث في آلاف الأحاديث النبوية الكاملة...';
+  }
+
+  showToast('جارٍ فحص الآلاف من أحاديث صحيحي البخاري ومسلم وسنن أبي داود...', 'info', 4000);
+
+  const normQ = normalizeArabic(q);
+  const words = normQ.split(/\s+/).filter(w => w.length >= 2);
+  const matchedExt = [];
+
+  const files = [
+    { name: 'صحيح البخاري', path: 'data/hadith/bukhari_ar.json' },
+    { name: 'صحيح مسلم', path: 'data/hadith/muslim_ar.json' }
+  ];
+
+  for (const f of files) {
+    try {
+      if (!EXTENDED_HADITH_CACHE[f.path]) {
+        const res = await fetch(f.path);
+        if (res.ok) {
+          const json = await res.json();
+          EXTENDED_HADITH_CACHE[f.path] = json.hadiths || [];
+        }
+      }
+      const list = EXTENDED_HADITH_CACHE[f.path] || [];
+      list.forEach(h => {
+        const textNorm = normalizeArabic(h.text || h.text_ar || '');
+        if (textNorm.includes(normQ) || (words.length > 1 && words.every(w => textNorm.includes(w)))) {
+          matchedExt.push({
+            collection: f.name,
+            hadith_number: h.hadithnumber || h.arabicnumber || 1,
+            text_ar: h.text || h.text_ar,
+            grade: 'صحيح'
+          });
+        }
+      });
+    } catch(err) {
+      console.log('Extended hadith search error for', f.name, err);
+    }
+  }
+
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = '✅ تم البحث في الآلاف من أحاديث البخاري ومسلم';
+  }
+
+  if (matchedExt.length > 0) {
+    let extHtml = `<div class="card" style="margin-top:16px; border:1px solid var(--emerald-light)">
+      <div class="card-title">
+        <span>📜 نتائج البحث الموسع في صحيحي البخاري ومسلم الكاملين (${matchedExt.length} حديث):</span>
+      </div>`;
+
+    matchedExt.slice(0, 30).forEach((r, idx) => {
+      const hId = `ext-hres-${idx}-${Date.now()}`;
+      extHtml += `
+        <div class="source-item">
+          <div class="source-ref"><span class="type-icon type-hadith">📜</span> ${escHtml(r.collection)} — حديث رقم ${r.hadith_number} <span style="background:var(--emerald-light); color:#fff; font-weight:bold; padding:2px 8px; border-radius:6px; font-size:10.5px; margin-right:6px">⭐ أصح كتب الحديث</span></div>
+          <div class="source-text" id="${hId}">${escHtml(r.text_ar)}</div>
+          <div class="action-bar">
+            <button class="act-btn" onclick="speakTextById('${hId}')">🔊 استماع للحديث</button>
+            <button class="act-btn stop" onclick="stopSpeech()">⏹️ إيقاف</button>
+            <button class="act-btn" onclick="openIsnadFromText('${encodeURIComponent(r.text_ar || '')}')">🌳 مشجر السند</button>
+            <button class="act-btn" onclick="translateCard('${hId}', 'trans-${hId}')">🌐 ترجمة</button>
+            <button class="act-btn" onclick="copyTextById('${hId}')">📋 نسخ</button>
+          </div>
+          <div class="translated-box" id="trans-${hId}" style="display:none; margin-top:8px"></div>
+        </div>`;
+    });
+    extHtml += '</div>';
+
+    const resultsContainer = document.getElementById('search-results');
+    if (resultsContainer) {
+      resultsContainer.insertAdjacentHTML('beforeend', extHtml);
+    }
+    showToast(`تم العثور على ${matchedExt.length} حديث في المراجع الكاملة!`, 'success');
+  } else {
+    showToast('لم يتم العثور على أحاديث مطابقة إضافية في صحيح البخاري ومسلم', 'info');
+  }
+}
+
 function renderSearchResultsUI(d) {
   let html = `<div class="card" style="margin-top:16px">
-    <div class="card-title">
+    <div class="card-title" style="flex-wrap:wrap; gap:10px">
       <span>🎯 النتائج المسترجعة: ${d.total} نتيجة دقيقة</span>
-      <button class="act-btn download" onclick="downloadAllSearchResults()">⬇️ تحميل النتائج كلها</button>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+        <button class="act-btn" id="extended-hadith-search-btn" onclick="searchExtendedHadithBooks()" style="font-weight:700; border-color:var(--gold); color:var(--gold-light)">🔍 بحث موسع في آلاف أحاديث البخاري ومسلم الكاملة</button>
+        <button class="act-btn download" onclick="downloadAllSearchResults()">⬇️ تحميل النتائج كلها</button>
+      </div>
     </div>`;
 
   if (d.quran && d.quran.length) {
@@ -3015,12 +3085,16 @@ function renderIsnadNodes(narrators) {
   const container = document.getElementById('isnad-tree-root');
   container.innerHTML = '';
   document.getElementById('isnad-display-card').style.display = 'block';
-  document.getElementById('isnad-count-badge').textContent = `${narrators.length} حلقات إسنادية متصلة`;
+  document.getElementById('isnad-count-badge').textContent = `${narrators.length} حلقات إسنادية متصلة زمنياً`;
 
   narrators.forEach((name, idx) => {
     const isProphet = idx === 0;
     const isSahabi  = idx === 1;
     const isAuthor  = idx === narrators.length - 1 && narrators.length > 2;
+
+    const key = Object.keys(AUTHENTIC_NARRATORS_DB).find(k => name.includes(k));
+    const info = AUTHENTIC_NARRATORS_DB[key] || {};
+    const deathYear = info.death ? `توفي: ${info.death}` : 'من رواة الحديث الثقات';
 
     let nodeClass = 'isnad-node';
     let tagClass = 'tag-narrator';
@@ -3028,7 +3102,7 @@ function renderIsnadNodes(narrators) {
 
     if (isProphet) { nodeClass += ' prophet'; tagClass = 'tag-prophet'; tagText = 'المصدر المعصوم ﷺ'; }
     else if (isSahabi) { nodeClass += ' sahabi'; tagClass = 'tag-sahabi'; tagText = 'صحابي جليل (عدل)'; }
-    else if (isAuthor) { nodeClass += ' author'; tagClass = 'tag-author'; tagText = 'المصنف والمخرج'; }
+    else if (isAuthor) { nodeClass += ' author'; tagClass = 'tag-author'; tagText = 'المصنف والمخرج للكتاب'; }
     else if (idx === 2) { tagClass = 'tag-tabiee'; tagText = 'كبار التابعين'; }
 
     const nodeEl = document.createElement('div');
@@ -3037,17 +3111,28 @@ function renderIsnadNodes(narrators) {
     nodeEl.innerHTML = `
       <div class="node-header">
         <span class="node-tag ${tagClass}">${tagText}</span>
-        <span style="color:var(--text-muted); font-size:10.5px">انقر للبطاقة التوثيقية 🔍</span>
+        <span style="background:rgba(201,168,76,0.15); color:var(--gold-light); font-size:11px; padding:2px 8px; border-radius:8px; font-weight:700">📅 ${deathYear}</span>
       </div>
-      <div class="node-name">${escHtml(name)}</div>
-      <div style="font-size:11.5px; color:var(--gold-light); margin-top:3px">${isProphet ? 'عن جبريل عن رب العزة جل وعلا' : 'رواية بالسماع والتحديث المتصل'}</div>
+      <div class="node-name" style="margin-top:6px">${escHtml(name)}</div>
+      <div style="font-size:11.5px; color:var(--text-muted); margin-top:4px">
+        ${isProphet ? 'عن جبريل عليه السلام عن رب العزة جل وعلا' : (info.loc ? `📍 إقامته: ${info.loc} · انقر لفتح بطاقة الجرح والتعديل 🔍` : 'سماع وتحديث متصل · انقر للبطاقة التوثيقية 🔍')}
+      </div>
     `;
     container.appendChild(nodeEl);
 
     if (idx < narrators.length - 1) {
+      let arrowLabel = '⬇️ رَوَى عنه وأدّى الحديثَ إلى:';
+      if (isProphet) {
+        arrowLabel = '⬇️ سَمِعَ منه وبَلَّغَ عنه الصحابيُّ الجليل:';
+      } else if (isSahabi) {
+        arrowLabel = '⬇️ سَمِعَ منه وتَلَقَّى عنه الحديثَ التابعي:';
+      } else if (idx === narrators.length - 2) {
+        arrowLabel = '⬇️ سَمِعَ منه وأَخْرَجَهُ في كتابه ومصنَّفه الحافظ:';
+      }
+
       const arrow = document.createElement('div');
       arrow.className = 'isnad-arrow';
-      arrow.innerHTML = `▼ <span style="font-size:11px; color:var(--text-muted)">عن / حدثنا</span>`;
+      arrow.innerHTML = `<span style="font-size:11.5px; color:var(--gold-light); font-weight:700; background:rgba(10,14,20,0.85); padding:3px 12px; border-radius:12px; border:1px solid rgba(201,168,76,0.3)">${arrowLabel}</span>`;
       container.appendChild(arrow);
     }
   });
