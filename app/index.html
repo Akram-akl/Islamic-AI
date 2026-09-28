@@ -15,6 +15,14 @@
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    @font-face { font-family: 'UthmanicHafs';   src: url('fonts/uthmanic_hafs_v20.ttf');   font-display: swap; }
+    @font-face { font-family: 'UthmanicWarsh';   src: url('fonts/uthmanic_warsh_v21.ttf');  font-display: swap; }
+    @font-face { font-family: 'UthmanicQaloun';  src: url('fonts/uthmanic_qaloun_v21.ttf'); font-display: swap; }
+    @font-face { font-family: 'UthmanicDouri';   src: url('fonts/uthmanic_douri_v20.ttf');  font-display: swap; }
+    @font-face { font-family: 'UthmanicSousi';   src: url('fonts/uthmanic_sousi_v20.ttf');  font-display: swap; }
+    @font-face { font-family: 'UthmanicShuba';   src: url('fonts/uthmanic_shuba_v20.ttf');  font-display: swap; }
+  </style>
   
   <script>
     // تعريف الدوال العامة مبكراً لتفادي أي خطأ مرجعي في الـ HTML
@@ -334,20 +342,29 @@
     .cardinal-w { left: 10px; top: 50%; transform: translateY(-50%); }
 
     .compass-needle {
-      position: absolute; top: 18px; bottom: 18px; left: 50%; width: 4px;
-      background: linear-gradient(to bottom, var(--emerald-light) 50%, var(--border) 50%);
-      transform: translateX(-50%); transform-origin: center center;
-      transition: transform 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
+      position: absolute; top: 18px; bottom: 18px; left: 50%; width: 6px;
+      background: linear-gradient(to bottom, #00ff88 0%, #2D9E68 45%, rgba(30,46,66,0.5) 50%, rgba(30,46,66,0.4) 100%);
+      transform: translateX(-50%) rotate(136deg); transform-origin: center center;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border-radius: 3px;
+      box-shadow: 0 0 12px rgba(45,158,104,0.8);
     }
     .compass-kaaba {
-      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
-      font-size: 22px; filter: drop-shadow(0 0 8px #FFD700);
+      position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+      font-size: 24px; filter: drop-shadow(0 0 10px #FFD700);
+      animation: kaabaGlow 2s ease-in-out infinite alternate;
+    }
+    @keyframes kaabaGlow {
+      from { filter: drop-shadow(0 0 6px #FFD700); }
+      to { filter: drop-shadow(0 0 16px #FFD700) brightness(1.3); }
     }
     .compass-center {
-      position: absolute; top: 50%; left: 50%; width: 14px; height: 14px;
+      position: absolute; top: 50%; left: 50%; width: 16px; height: 16px;
       border-radius: 50%; background: var(--gold); border: 2px solid #fff;
       transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px rgba(201,168,76,0.7);
     }
+    .compass-disc { transition: transform 0.5s ease-out; }
 
     /* ─── بار الصوت العائم (Global Floating Player) ─── */
     #global-audio-bar {
@@ -485,6 +502,24 @@
     img, video, iframe, canvas, svg { max-width: 100%; height: auto; }
     table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     pre, code { white-space: pre-wrap; word-break: break-all; }
+      /* --- True Dark Mode (System Preference) --- */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-dark:       #05080b;
+        --bg-card:       #0a0e14;
+        --bg-input:      #0e1520;
+        --border:        #162334;
+        --text:          #d8e1ef;
+        --text-muted:    #697e97;
+        --shadow:        0 8px 40px rgba(0,0,0,0.8);
+      }
+      body {
+        background: var(--bg-dark);
+      }
+      header {
+        background: rgba(5,8,11,0.92);
+      }
+    }
   </style>
   <script src="encyclopedia.js"></script>
 </head>
@@ -553,6 +588,7 @@
     <button class="tab" onclick="switchTab('audio')" id="tab-audio">🎧 القراءات العشر والأصوات</button>
     <button class="tab" onclick="switchTab('prayer')" id="tab-prayer">🕌 مواقيت الصلاة والقبلة</button>
     <button class="tab" onclick="switchTab('isnad')" id="tab-isnad">🌳 مشجر الأسانيد</button>
+    <button class="tab" onclick="switchTab('quran-enc')" id="tab-quran-enc">📖 الموسوعة القرآنية والمصحف</button>
     <button class="tab" onclick="switchTab('library')" id="tab-library">📚 المكتبة الإسلامية</button>
   </div>
 
@@ -741,8 +777,8 @@
                 <option value="https://server16.mp3quran.net/soufi/Rewayat-Khalaf-A-n-Hamzah/" data-type="surah">🎙️ [اختيار خلف العاشر / إسحاق وإدريس] — الشيخ عبد الرشيد صوفي</option>
               </optgroup>
             </select>
+          <button class="send-btn" onclick="openSurahAppModal(document.getElementById('quran-surah-picker').value, document.getElementById('quran-ayah-picker').value)" style="margin-top:10px; background: linear-gradient(135deg, #1A4D33, #0D2810); border: 1px solid var(--emerald-light);">📚 الموسوعة الشاملة (تفسير، معاني، إعراب، تجويد، سور)</button>
           </div>
-
           <div style="display:flex; gap:6px; margin-top:16px; flex-wrap:wrap">
             <button class="send-btn" onclick="playSelectedAyah()" style="margin:0; width:auto; padding:8px 18px">
               ▶️ تشغيل التلاوة
@@ -1010,6 +1046,386 @@
   </div>
 
   <!-- ══════════════ 6. تبويب المكتبة الإسلامية الشاملة ══════════════ -->
+    <!-- ═══════════════ تبويب الموسوعة القرآنية والمصحف ═══════════════ -->
+  <div id="quran-enc-panel" style="display:none">
+
+    <!-- ملحوظة هامة -->
+    <div style="background: linear-gradient(135deg,#1a2a18,#0d1a0c); border: 1px solid var(--emerald-light); border-radius:12px; padding:12px 16px; margin-bottom:14px; font-size:13px; color:var(--gold-light); direction:rtl;">
+      <strong>📌 تنبيه:</strong> جميع التفاسير (الميسر، ابن كثير، السعدي، الطبري...) وإعراب الآيات وعلوم القرآن المعروضة هنا مبنية على <strong>رواية حفص عن عاصم</strong> من موسوعة سورة الموثوقة. نصوص الروايات الأخرى مستخرجة من مشروع خطوط الروايات العثمانية.
+    </div>
+
+    <!-- شريط الإعدادات الرئيسية -->
+    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:12px 16px; margin-bottom:14px;">
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <label style="font-size:11px; color:var(--text-muted);">الرواية</label>
+        <select id="enc-riwaya" onchange="encLoadRiwaya()" style="background:var(--bg-input); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:6px 10px; outline:none; font-size:13px;">
+          <option value="hafs">حفص عن عاصم</option>
+          <option value="warsh">ورش عن نافع</option>
+          <option value="qaloun">قالون عن نافع</option>
+          <option value="douri">الدوري عن أبي عمرو</option>
+          <option value="sousi">السوسي عن أبي عمرو</option>
+          <option value="shuba">شعبة عن عاصم</option>
+        </select>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <label style="font-size:11px; color:var(--text-muted);">السورة</label>
+        <select id="enc-sura" onchange="encLoadAyas()" style="background:var(--bg-input); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:6px 10px; outline:none; font-size:13px; max-width:180px;"></select>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <label style="font-size:11px; color:var(--text-muted);">الآية</label>
+        <select id="enc-aya" onchange="encRenderAya()" style="background:var(--bg-input); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:6px 10px; outline:none; font-size:13px;"></select>
+      </div>
+      <div style="display:flex; gap:8px; align-items:flex-end;">
+        <button onclick="encPrevAya()" style="background:var(--bg-input); border:1px solid var(--border); color:var(--gold); padding:7px 14px; border-radius:8px; cursor:pointer; font-size:16px;">◀</button>
+        <button onclick="encNextAya()" style="background:var(--bg-input); border:1px solid var(--border); color:var(--gold); padding:7px 14px; border-radius:8px; cursor:pointer; font-size:16px;">▶</button>
+      </div>
+      <div id="enc-riwaya-badge" style="margin-right:auto; background:linear-gradient(135deg,var(--emerald),var(--emerald-light)); padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700; color:#fff;"></div>
+    </div>
+
+    <!-- عرض الآية بالخط العثماني (قابل للنقر) -->
+    <div id="enc-mushaf-card" class="card" style="text-align:center; padding:24px 16px; margin-bottom:14px; min-height:100px;">
+      <div id="enc-mushaf-loading" style="color:var(--text-muted); font-size:14px;">جارٍ تحميل بيانات الرواية...</div>
+      <div id="enc-aya-display" style="font-size:38px; line-height:2; direction:rtl; cursor:default; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; align-items:center;"></div>
+      <div id="enc-aya-info" style="font-size:12px; color:var(--text-muted); margin-top:8px;"></div>
+    </div>
+
+    <!-- تفسير وعلوم الكلمة المختارة -->
+    <div id="enc-word-panel" style="display:none; margin-bottom:14px;">
+      <div class="card" style="border-color:var(--gold-dark);">
+        <div class="card-title" style="color:var(--gold); font-size:14px;">
+          🔍 علوم الكلمة: <span id="enc-word-selected" style="font-family:'UthmanicHafs',serif; font-size:22px;"></span>
+          <button onclick="document.getElementById('enc-word-panel').style.display='none'" style="margin-right:auto; background:none; border:1px solid var(--border); color:var(--text-muted); padding:2px 10px; border-radius:8px; cursor:pointer; font-size:12px;">✕ إغلاق</button>
+        </div>
+        <div id="enc-word-tabs" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
+          <button class="enc-word-tab" onclick="encFetchWord('meaning-word',this)">معنى غريب القرآن</button>
+          <button class="enc-word-tab" onclick="encFetchWord('eerab-word',this)">إعراب الكلمة</button>
+          <button class="enc-word-tab" onclick="encFetchWord('word-qeraat',this)">اختلاف القراءات</button>
+          <button class="enc-word-tab" onclick="encFetchWord('word-tasreef',this)">الصرف</button>
+          <button class="enc-word-tab" onclick="encFetchWord('amaaken-words',this)">أماكن ورودها</button>
+          <button class="enc-word-tab" onclick="encFetchWord('wordrasm',this)">الرسم العثماني</button>
+          <button class="enc-word-tab" onclick="encFetchWord('word-pic',this)">صورة توضيحية</button>
+        </div>
+        <div id="enc-word-loading" style="display:none; text-align:center; padding:10px; color:var(--text-muted); font-size:13px;">جارٍ جلب البيانات من موسوعة سورة...</div>
+        <div id="enc-word-content" style="font-family:'Amiri',serif; font-size:18px; line-height:2; color:#FFF2D1; direction:rtl; min-height:60px;"></div>
+      </div>
+    </div>
+
+    <!-- موسوعة الآية -->
+    <div class="card">
+      <div class="card-title" style="color:var(--gold); font-size:14px; margin-bottom:12px;">📚 موسوعة سورة — علوم الآية (ضغط على كلمة لعلوم الكلمة)</div>
+      <div id="enc-aya-tabs" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
+        <button class="enc-aya-tab" onclick="encFetchAya('tafsir-mokhtasar',this)">المختصر</button>
+        <button class="enc-aya-tab" onclick="encFetchAya('w-moyassar',this)">الميسر</button>
+        <button class="enc-aya-tab" onclick="encFetchAya('tafsir-katheer',this)">ابن كثير</button>
+        <button class="enc-aya-tab" onclick="encFetchAya('tafsir-saadi',this)">السعدي</button>
+        <button class="enc-aya-tab" onclick="encFetchAya('tafsir-tabary',this)">الطبري</button>
+        <button class="enc-aya-tab" onclick="encFetchAya('tafsir-baghawy',this)">البغوي</button>
+        <button class="enc-aya-tab" onclick="encFetchAya('ayat-nozool',this)">أسباب النزول</button>
+        <button class="enc-aya-tab" onclick="encFetchAya('eerab-aya',this)">إعراب الآية</button>
+        <button class="enc-aya-tab" onclick="encFetchAya('tajweed-aya',this)">التجويد</button>
+        <button class="enc-aya-tab" onclick="encFetchAya('fwaed_qassim',this)">فوائد</button>
+      </div>
+      <div id="enc-aya-loading" style="display:none; text-align:center; padding:12px; color:var(--text-muted); font-size:13px;">جارٍ جلب البيانات الموثوقة من موسوعة سورة...</div>
+      <div id="enc-aya-content" style="font-family:'Amiri',serif; font-size:20px; line-height:2.2; color:#FFF2D1; direction:rtl; min-height:80px; max-height:60vh; overflow-y:auto; padding:8px;">اختر تبويباً لعرض محتواه...</div>
+    </div>
+
+  </div>
+
+  <style>
+    .enc-aya-tab, .enc-word-tab {
+      padding: 5px 12px; font-size: 12px; border-radius: 20px; cursor: pointer;
+      background: var(--bg-input); border: 1px solid var(--border); color: var(--text-muted);
+      font-family: 'Tajawal', sans-serif; transition: all 0.2s;
+    }
+    .enc-aya-tab:hover, .enc-word-tab:hover, .enc-aya-tab.active, .enc-word-tab.active {
+      background: linear-gradient(135deg, var(--emerald), var(--gold-dark)); color: #fff; border-color: transparent;
+    }
+    .enc-word-span {
+      font-family: inherit; cursor: pointer; padding: 2px 4px; border-radius: 6px;
+      transition: background 0.2s; display: inline-block;
+    }
+    .enc-word-span:hover { background: rgba(201,168,76,0.2); }
+    .enc-word-span.selected { background: rgba(201,168,76,0.35); outline: 2px solid var(--gold); }
+  </style>
+
+  <script>
+  // ═══════════════════════════════════════════
+  //   موسوعة القرآن — إدارة البيانات
+  // ═══════════════════════════════════════════
+
+  const RIWAYA_CONFIG = {
+    hafs:   { file: 'quran_data/hafsData_v2-0.json',   font: 'UthmanicHafs',   name: 'حفص عن عاصم',   color: '#2D9E68' },
+    warsh:  { file: 'quran_data/warshData_v2-1.json',  font: 'UthmanicWarsh',  name: 'ورش عن نافع',    color: '#C9A84C' },
+    qaloun: { file: 'quran_data/QalounData_v2-1.json', font: 'UthmanicQaloun', name: 'قالون عن نافع',  color: '#38BDF8' },
+    douri:  { file: 'quran_data/DouriData_v2-0.json',  font: 'UthmanicDouri',  name: 'الدوري عن أبي عمرو', color: '#C084FC' },
+    sousi:  { file: 'quran_data/SousiData_v2-0.json',  font: 'UthmanicSousi',  name: 'السوسي عن أبي عمرو', color: '#FB923C' },
+    shuba:  { file: 'quran_data/shubaData_v2-0.json',  font: 'UthmanicShuba',  name: 'شعبة عن عاصم',   color: '#F87171' }
+  };
+
+  const SURA_NAMES_AR = ['الفاتحة','البقرة','آل عمران','النساء','المائدة','الأنعام','الأعراف','الأنفال','التوبة','يونس','هود','يوسف','الرعد','إبراهيم','الحجر','النحل','الإسراء','الكهف','مريم','طه','الأنبياء','الحج','المؤمنون','النور','الفرقان','الشعراء','النمل','القصص','العنكبوت','الروم','لقمان','السجدة','الأحزاب','سبأ','فاطر','يس','الصافات','ص','الزمر','غافر','فصلت','الشورى','الزخرف','الدخان','الجاثية','الأحقاف','محمد','الفتح','الحجرات','ق','الذاريات','الطور','النجم','القمر','الرحمن','الواقعة','الحديد','المجادلة','الحشر','الممتحنة','الصف','الجمعة','المنافقون','التغابن','الطلاق','التحريم','الملك','القلم','الحاقة','المعارج','نوح','الجن','المزمل','المدثر','القيامة','الإنسان','المرسلات','النبأ','النازعات','عبس','التكوير','الانفطار','المطففين','الانشقاق','البروج','الطارق','الأعلى','الغاشية','الفجر','البلد','الشمس','الليل','الضحى','الشرح','التين','العلق','القدر','البينة','الزلزلة','العاديات','القارعة','التكاثر','العصر','الهمزة','الفيل','قريش','الماعون','الكوثر','الكافرون','النصر','المسد','الإخلاص','الفلق','الناس'];
+
+  let encQuranData = null;
+  let encCurrentRiwaya = 'hafs';
+  let encCurrentSura = 1;
+  let encCurrentAya = 1;
+  let encSelectedWordNum = 1;
+
+  function encInit() {
+    const suraSelect = document.getElementById('enc-sura');
+    SURA_NAMES_AR.forEach((name, i) => {
+      const opt = document.createElement('option');
+      opt.value = i + 1;
+      opt.text = (i+1) + '. ' + name;
+      suraSelect.appendChild(opt);
+    });
+    encLoadRiwaya();
+  }
+
+  async function encLoadRiwaya() {
+    const riwaya = document.getElementById('enc-riwaya').value;
+    encCurrentRiwaya = riwaya;
+    const config = RIWAYA_CONFIG[riwaya];
+    
+    document.getElementById('enc-riwaya-badge').textContent = config.name;
+    document.getElementById('enc-riwaya-badge').style.background = 'linear-gradient(135deg,' + config.color + '80,' + config.color + ')';
+    document.getElementById('enc-mushaf-loading').style.display = 'block';
+    document.getElementById('enc-aya-display').innerHTML = '';
+
+    try {
+      const resp = await fetch(config.file);
+      if (!resp.ok) throw new Error('file not found');
+      encQuranData = await resp.json();
+      document.getElementById('enc-mushaf-loading').style.display = 'none';
+      encLoadAyas();
+    } catch(e) {
+      document.getElementById('enc-mushaf-loading').textContent = 'تعذر تحميل بيانات الرواية. ' + e.message;
+    }
+  }
+
+  function encGetSuraAyas(suraNum) {
+    if (!encQuranData) return [];
+    // Support both array-of-suras and flat array formats
+    const data = encQuranData;
+    if (Array.isArray(data) && data[0] && data[0].sura) {
+      const sura = data.find(s => s.sura === suraNum);
+      return sura ? sura.ayas : [];
+    }
+    // flat ayas list
+    if (Array.isArray(data)) {
+      return data.filter(a => a.sura_number === suraNum || a.sura === suraNum);
+    }
+    // object keyed by sura
+    if (data[suraNum]) return data[suraNum];
+    return [];
+  }
+
+  function encLoadAyas() {
+    const suraNum = parseInt(document.getElementById('enc-sura').value);
+    encCurrentSura = suraNum;
+    
+    const ayaSelect = document.getElementById('enc-aya');
+    ayaSelect.innerHTML = '';
+
+    // Try to get count from data or use known counts
+    const suraAyaCounts = [7,286,200,176,120,165,206,75,129,109,123,111,43,52,99,128,111,110,98,135,112,78,118,64,77,227,93,88,69,60,34,30,73,54,45,83,182,88,75,85,54,53,89,59,37,35,38,29,18,45,60,25,78,118,64,120,89,110,97,94,36,17,24,94,46,26,17,26,30,20,95,40,55,26,25,43,72,28,80,44,75,20,40,80,112,92,114,52,68,28,44,28,83,54,9,37,6,200,75,60,11,6,17,111,11,22,70,43,7,6,6,5,8,3,5,4,9,6,3];
+    const count = suraAyaCounts[suraNum - 1] || 286;
+    
+    for (let i = 1; i <= count; i++) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.text = 'الآية ' + i;
+      ayaSelect.appendChild(opt);
+    }
+    
+    encCurrentAya = 1;
+    ayaSelect.value = 1;
+    encRenderAya();
+  }
+
+  function encRenderAya() {
+    const suraNum = parseInt(document.getElementById('enc-sura').value);
+    const ayaNum = parseInt(document.getElementById('enc-aya').value);
+    encCurrentSura = suraNum;
+    encCurrentAya = ayaNum;
+
+    const display = document.getElementById('enc-aya-display');
+    const info = document.getElementById('enc-aya-info');
+
+    if (!encQuranData) {
+      display.innerHTML = '<span style="color:var(--text-muted); font-size:14px;">جارٍ تحميل البيانات...</span>';
+      return;
+    }
+
+    // Find the aya text from data
+    let ayaText = null;
+    const d = encQuranData;
+    
+    if (Array.isArray(d)) {
+      // flat list of ayas: {sura, aya, text} or {sura_number, aya_number, ...words}
+      const ayaObj = d.find(a => (a.sura === suraNum || a.sura_number === suraNum) && (a.aya === ayaNum || a.aya_number === ayaNum));
+      if (ayaObj) {
+        if (ayaObj.words && Array.isArray(ayaObj.words)) {
+          // words array
+          renderWordsFromArray(ayaObj.words, suraNum, ayaNum);
+          info.textContent = SURA_NAMES_AR[suraNum-1] + ' — الآية ' + ayaNum;
+          return;
+        }
+        ayaText = ayaObj.text || ayaObj.aya_text || ayaObj.content;
+      }
+    } else if (d.suras && Array.isArray(d.suras)) {
+      const sura = d.suras.find(s => s.number === suraNum || s.sura === suraNum);
+      if (sura && sura.ayas) {
+        const aya = sura.ayas.find(a => a.number === ayaNum || a.aya === ayaNum);
+        if (aya) ayaText = aya.text;
+      }
+    }
+
+    if (ayaText) {
+      renderWordsFromText(ayaText, suraNum, ayaNum);
+    } else {
+      display.innerHTML = '<span style="color:var(--text-muted); font-size:14px;">تعذر عرض نص الآية من بيانات الرواية</span>';
+    }
+    info.textContent = SURA_NAMES_AR[suraNum-1] + ' — الآية ' + ayaNum;
+  }
+
+  function renderWordsFromText(text, suraNum, ayaNum) {
+    const riwaya = encCurrentRiwaya;
+    const font = RIWAYA_CONFIG[riwaya].font;
+    const display = document.getElementById('enc-aya-display');
+    display.style.fontFamily = "'" + font + "', serif";
+    
+    const words = text.trim().split(/\s+/);
+    display.innerHTML = words.map((word, i) => {
+      const num = i + 1;
+      return '<span class="enc-word-span" data-word-num="' + num + '" onclick="encSelectWord(this,' + suraNum + ',' + ayaNum + ',' + num + ')" title="اضغط لعلوم الكلمة">' + word + '</span>';
+    }).join(' ');
+  }
+
+  function renderWordsFromArray(words, suraNum, ayaNum) {
+    const riwaya = encCurrentRiwaya;
+    const font = RIWAYA_CONFIG[riwaya].font;
+    const display = document.getElementById('enc-aya-display');
+    display.style.fontFamily = "'" + font + "', serif";
+    
+    display.innerHTML = words.map((w, i) => {
+      const num = i + 1;
+      const text = w.text || w.word || w;
+      return '<span class="enc-word-span" data-word-num="' + num + '" onclick="encSelectWord(this,' + suraNum + ',' + ayaNum + ',' + num + ')" title="اضغط لعلوم الكلمة">' + text + '</span>';
+    }).join(' ');
+  }
+
+  function encSelectWord(el, sura, aya, wordNum) {
+    document.querySelectorAll('.enc-word-span').forEach(s => s.classList.remove('selected'));
+    el.classList.add('selected');
+    encSelectedWordNum = wordNum;
+    
+    document.getElementById('enc-word-selected').textContent = el.textContent.trim();
+    document.getElementById('enc-word-panel').style.display = 'block';
+    document.getElementById('enc-word-content').textContent = 'اختر قسماً لعرض علوم هذه الكلمة...';
+    
+    // Auto-fetch meaning
+    const firstTab = document.querySelector('.enc-word-tab');
+    if (firstTab) encFetchWord('meaning-word', firstTab);
+  }
+
+  async function encFetchWord(slug, btn) {
+    document.querySelectorAll('.enc-word-tab').forEach(t => t.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    
+    const sura = encCurrentSura;
+    const aya = encCurrentAya;
+    const word = encSelectedWordNum;
+    
+    const loadEl = document.getElementById('enc-word-loading');
+    const contentEl = document.getElementById('enc-word-content');
+    loadEl.style.display = 'block';
+    contentEl.innerHTML = '';
+
+    try {
+      let url;
+      if (slug === 'word-pic') {
+        url = 'https://dev.surahapp.com/api/v1/word/word-pic/' + sura + '/' + aya + '/' + word;
+      } else {
+        url = 'https://dev.surahapp.com/api/v1/word/' + slug + '/' + sura + '/' + aya + '/' + word;
+      }
+      const resp = await fetch(url);
+      if (resp.status === 404) { contentEl.textContent = 'لا توجد بيانات لهذه الكلمة في هذا القسم.'; return; }
+      if (!resp.ok) throw new Error('server error');
+      const data = await resp.json();
+
+      if (slug === 'word-pic' && data.media && data.media.length > 0) {
+        contentEl.innerHTML = '<img src="' + data.media[0].large_url + '" style="max-width:100%; border-radius:12px;">';
+      } else {
+        const text = Array.isArray(data) 
+          ? data.map(d => d.content || '').join('<br>') 
+          : (data.content || data.text || 'لا يوجد محتوى.');
+        contentEl.innerHTML = text.replace(/\n/g,'<br>');
+      }
+    } catch(e) {
+      contentEl.innerHTML = '<span style="color:var(--text-muted)">خطأ في جلب البيانات. تأكد من الاتصال.</span>';
+    } finally {
+      loadEl.style.display = 'none';
+    }
+  }
+
+  async function encFetchAya(slug, btn) {
+    document.querySelectorAll('.enc-aya-tab').forEach(t => t.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+
+    const loadEl = document.getElementById('enc-aya-loading');
+    const contentEl = document.getElementById('enc-aya-content');
+    loadEl.style.display = 'block';
+    contentEl.innerHTML = '';
+
+    try {
+      const url = 'https://dev.surahapp.com/api/v1/aya/' + slug + '/' + encCurrentSura + '/' + encCurrentAya;
+      const resp = await fetch(url);
+      if (resp.status === 404) { contentEl.textContent = 'لا توجد بيانات لهذه الآية في هذا القسم.'; return; }
+      if (!resp.ok) throw new Error('server error');
+      const data = await resp.json();
+      const text = Array.isArray(data) 
+        ? data.map(d => d.content || '').join('<hr style="border-color:var(--border); margin:10px 0">') 
+        : (data.content || data.text || 'لا يوجد محتوى.');
+      contentEl.innerHTML = text.replace(/\n/g,'<br>');
+    } catch(e) {
+      contentEl.innerHTML = '<span style="color:var(--text-muted)">خطأ في جلب البيانات. تأكد من الاتصال.</span>';
+    } finally {
+      loadEl.style.display = 'none';
+    }
+  }
+
+  function encNextAya() {
+    const ayaSelect = document.getElementById('enc-aya');
+    const current = parseInt(ayaSelect.value);
+    if (current < ayaSelect.options.length) {
+      ayaSelect.value = current + 1;
+      encCurrentAya = current + 1;
+      encRenderAya();
+    }
+  }
+
+  function encPrevAya() {
+    const ayaSelect = document.getElementById('enc-aya');
+    const current = parseInt(ayaSelect.value);
+    if (current > 1) {
+      ayaSelect.value = current - 1;
+      encCurrentAya = current - 1;
+      encRenderAya();
+    }
+  }
+
+  // Initialize when tab is first opened
+  let encInitialized = false;
+  const origSwitchTab = window.switchTab;
+  window.switchTab = function(tab) {
+    if (typeof origSwitchTab === 'function') origSwitchTab(tab);
+    if (tab === 'quran-enc' && !encInitialized) {
+      encInitialized = true;
+      encInit();
+    }
+  };
+  </script>
+
   <div id="library-panel" style="display:none">
     <div class="card">
       <div class="card-title">
@@ -1754,6 +2170,52 @@ let CURRENT_USER_LOCATION = {
 let prayerTimesInterval = null;
 let currentQiblaAngle = 136.1;
 
+// ─── تحميل بيانات الأحاديث الكاملة من ملفات JSON ───
+window.HADITH_FILES_LOADED = false;
+window.ALL_HADITHS_CACHE = null;
+
+async function loadAllHadithsFromFiles() {
+  if (window.HADITH_FILES_LOADED && window.ALL_HADITHS_CACHE) return window.ALL_HADITHS_CACHE;
+  const files = [
+    { name: 'صحيح البخاري', path: 'data/hadith/bukhari_ar.json', col: 'البخاري' },
+    { name: 'صحيح مسلم',   path: 'data/hadith/muslim_ar.json',  col: 'مسلم' },
+    { name: 'سنن أبي داود', path: 'data/hadith/abudawud_ar.json', col: 'أبو داود' },
+    { name: 'سنن الترمذي', path: 'data/hadith/tirmidhi_ar.json', col: 'الترمذي' },
+    { name: 'سنن ابن ماجه', path: 'data/hadith/ibnmajah_ar.json', col: 'ابن ماجه' },
+    { name: 'الأربعون النووية', path: 'data/hadith/nawawi40_ar.json', col: 'النووية' },
+    { name: 'الأحاديث القدسية', path: 'data/hadith/qudsi_ar.json', col: 'القدسية' }
+  ];
+  const all = [];
+  for (const f of files) {
+    try {
+      const res = await fetch(f.path);
+      if (!res.ok) continue;
+      const json = await res.json();
+      const hadiths = json.hadiths || json || [];
+      (Array.isArray(hadiths) ? hadiths : []).forEach(h => {
+        all.push({
+          collection: f.name,
+          hadith_number: h.hadithnumber || h.arabicnumber || h.id || 0,
+          text_ar: h.text || h.text_ar || '',
+          grade: h.grades?.[0]?.grade || 'صحيح',
+          chapter_ar: h.chapter || ''
+        });
+      });
+    } catch(e) { console.log('Hadith load error:', f.name, e); }
+  }
+  window.ALL_HADITHS_CACHE = all;
+  window.HADITH_FILES_LOADED = true;
+  if (!window.ISLAMIC_DATA) window.ISLAMIC_DATA = {};
+  window.ISLAMIC_DATA.hadiths = all;
+  const badge = document.getElementById('db-badge');
+  if (badge) badge.textContent = `الموسوعة جاهزة — ${all.length.toLocaleString()} حديث`;
+  console.log(`[IslamicAI] Loaded ${all.length} hadiths from local JSON files.`);
+  return all;
+}
+
+// تحميل الأحاديث في الخلفية فوراً عند تحميل الصفحة
+loadAllHadithsFromFiles();
+
 function detectUserLocation() {
   if (!navigator.geolocation) {
     showToast('المتصفح لا يدعم تحديد الموقع التلقائي', 'warning');
@@ -2050,10 +2512,16 @@ async function recalculatePrayerTimes() {
       const distText = document.getElementById('qibla-distance-text');
       if (distText) distText.textContent = `المسافة المستقيمة إلى الكعبة المشرفة: ${distance.toLocaleString()} كم`;
 
-      // تحريك إبرة البوصلة فورياً
+      // تحريك إبرة البوصلة فورياً مع تأثير بصري واضح
       const needle = document.getElementById('compass-needle');
       if (needle) {
         needle.style.transform = `translateX(-50%) rotate(${qiblaAngle}deg)`;
+        needle.style.boxShadow = `0 0 18px rgba(45,158,104,1), 0 0 30px rgba(45,158,104,0.5)`;
+      }
+      // تحديث لون القرص لإظهار تغيير واضح
+      const disc = document.getElementById('compass-disc');
+      if (disc) {
+        disc.style.boxShadow = `0 0 45px rgba(201,168,76,0.5), inset 0 0 20px rgba(0,0,0,0.8), 0 0 15px rgba(45,158,104,0.3)`;
       }
 
       // تشغيل وتحديث العد التنازلي التفاعلي المباشر للصلوات الخمس
@@ -2107,67 +2575,70 @@ function updateNextPrayerCountdown(times) {
   if (prayerTimesInterval) clearInterval(prayerTimesInterval);
   if (!times || !times.fajr) return;
 
+  // حفظ آخر أوقات صلاة صحيحة لاستخدامها عند إعادة التشغيل
+  window._LAST_PRAYER_TIMES = times;
+
+  function parsePrayerTime(timeStr, addDays = 0) {
+    if (!timeStr) return null;
+    // نورمالايز: تحويل الأرقام العربية وإزالة ص/م
+    let s = toEnglishDigits(String(timeStr)).trim();
+    const isPM = s.includes('م') || /pm/i.test(s);
+    const isAM = s.includes('ص') || /am/i.test(s);
+    s = s.replace(/[^\d:]/g, '');
+    const parts = s.split(':');
+    if (parts.length < 2) return null;
+    let h = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10);
+    if (isNaN(h) || isNaN(m)) return null;
+    if (isPM && h < 12) h += 12;
+    if (isAM && h === 12) h = 0;
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate() + addDays, h, m, 0, 0);
+  }
+
   function check() {
     const now = new Date();
-
-    // دالة تحليل الوقت الدقيقة مع دعم كامل لنظامي 12 ساعة (ص/م) و24 ساعة
-    function makePrayerDate(timeStr, addDays = 0) {
-      if (!timeStr) return null;
-      timeStr = toEnglishDigits(String(timeStr)).trim();
-      const isPM = timeStr.includes('م') || timeStr.toLowerCase().includes('pm');
-      const isAM = timeStr.includes('ص') || timeStr.toLowerCase().includes('am');
-      const clean = timeStr.replace(/[^\d:]/g, '');
-      const parts = clean.split(':');
-      if (parts.length < 2) return null;
-      let h = parseInt(parts[0], 10);
-      let m = parseInt(parts[1], 10);
-      if (isNaN(h) || isNaN(m)) return null;
-      if (isPM && h < 12) h += 12;
-      if (isAM && h === 12) h = 0;
-      return new Date(now.getFullYear(), now.getMonth(), now.getDate() + addDays, h, m, 0, 0);
-    }
-
-    // الصلوات الخمس المفروضة
     const prayers = [
-      { id: 'fajr', name: 'صلاة الفجر', date: makePrayerDate(times.fajr) },
-      { id: 'dhuhr', name: 'صلاة الظهر', date: makePrayerDate(times.dhuhr) },
-      { id: 'asr', name: 'صلاة العصر', date: makePrayerDate(times.asr) },
-      { id: 'maghrib', name: 'صلاة المغرب', date: makePrayerDate(times.maghrib) },
-      { id: 'isha', name: 'صلاة العشاء', date: makePrayerDate(times.isha) },
+      { id: 'fajr',    name: 'صلاة الفجر',   time: times.fajr },
+      { id: 'dhuhr',   name: 'صلاة الظهر',   time: times.dhuhr },
+      { id: 'asr',     name: 'صلاة العصر',   time: times.asr },
+      { id: 'maghrib', name: 'صلاة المغرب',  time: times.maghrib },
+      { id: 'isha',    name: 'صلاة العشاء',  time: times.isha },
     ];
 
-    let next = prayers.find(p => p.date && p.date.getTime() > now.getTime());
-    let targetDate = null;
-    let targetName = '';
-    let targetId = '';
+    let targetDate = null, targetName = '', targetId = 'fajr';
 
-    if (next) {
-      targetDate = next.date;
-      targetName = next.name;
-      targetId = next.id;
-    } else {
-      // انقضت كل صلوات اليوم، فالصلاة القادمة هي فجر الغد
-      targetDate = makePrayerDate(times.fajr, 1);
+    for (const p of prayers) {
+      const d = parsePrayerTime(p.time, 0);
+      if (d && d.getTime() > now.getTime()) {
+        targetDate = d;
+        targetName = p.name;
+        targetId   = p.id;
+        break;
+      }
+    }
+
+    if (!targetDate) {
+      // جميع صلوات اليوم انتهت — انتظر فجر الغد
+      targetDate = parsePrayerTime(times.fajr, 1);
       targetName = 'صلاة الفجر (الغد)';
-      targetId = 'fajr';
+      targetId   = 'fajr';
     }
 
     if (!targetDate) return;
 
     const diffMs = Math.max(0, targetDate.getTime() - now.getTime());
     const totalSec = Math.floor(diffMs / 1000);
-    const h = Math.floor(totalSec / 3600);
-    const m = Math.floor((totalSec % 3600) / 60);
-    const s = totalSec % 60;
+    const hh = Math.floor(totalSec / 3600);
+    const mm = Math.floor((totalSec % 3600) / 60);
+    const ss = totalSec % 60;
 
     const nameEl = document.getElementById('next-prayer-name');
-    const cdEl = document.getElementById('next-prayer-countdown');
+    const cdEl   = document.getElementById('next-prayer-countdown');
     if (nameEl) nameEl.textContent = targetName;
-    if (cdEl) {
-      cdEl.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    }
+    if (cdEl)   cdEl.textContent   = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
 
-    ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(k => {
+    ['fajr','sunrise','dhuhr','asr','maghrib','isha'].forEach(k => {
       document.getElementById(`card-${k}`)?.classList.toggle('active', k === targetId);
     });
   }
@@ -2262,7 +2733,7 @@ function downloadPrayerTimesSchedule() {
 
 // ─── 9. تبديل التبويبات ───
 function switchTab(name) {
-  ['ask', 'search', 'audio', 'prayer', 'isnad', 'library'].forEach(t => {
+  ['ask', 'search', 'audio', 'prayer', 'isnad', 'quran-enc', 'library'].forEach(t => {
     const el = document.getElementById(`${t}-panel`);
     const btn = document.getElementById(`tab-${t}`);
     if (el) el.style.display = (t === name) ? 'block' : 'none';
@@ -3504,7 +3975,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// تشغيل حساب المواقيت فورياً وبدون تأخير عند الإقلاع
+// تشغيل حساب المواقيت فورياً وتحميل الأحاديث عند الإقلاع
 try {
   recalculatePrayerTimes();
 } catch (err) {
@@ -3512,8 +3983,229 @@ try {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  // إعادة تحميل المواقيت عند جاهزية DOM
   recalculatePrayerTimes();
+  // تحميل الأحاديث في الخلفية إذا لم تُحمّل بعد
+  if (!window.HADITH_FILES_LOADED) loadAllHadithsFromFiles();
 });
+
+// ضمان أن العداد يعمل دائماً حتى لو تأخر تحميل الـ API
+setTimeout(() => {
+  if (!prayerTimesInterval && window._LAST_PRAYER_TIMES) {
+    updateNextPrayerCountdown(window._LAST_PRAYER_TIMES);
+  } else if (!prayerTimesInterval) {
+    // حساب محلي احتياطي بإحداثيات افتراضية
+    const loc = CURRENT_USER_LOCATION;
+    const localTimes = calculatePrayerTimesEngine(loc.lat, loc.lng, loc.tz);
+    updateNextPrayerCountdown(localTimes);
+  }
+}, 3000);
 </script>
-</body>
+<!-- Modal التفسير وعلوم القرآن الشاملة -->
+<div class="modal-overlay" id="surahapp-modal">
+  <div class="modal-card" style="max-width: 900px; background: var(--bg-card); border: 1px solid var(--gold-dark); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+    <button class="close-modal" onclick="closeSurahAppModal()" style="position: absolute; top: 16px; left: 16px; background: var(--bg-input); border: 1px solid var(--border); color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; cursor: pointer;">✕</button>
+    <div class="card-title" id="surahapp-modal-title" style="font-size: 16px; font-weight: 700; color: var(--gold);">📚 موسوعة سورة الشاملة</div>
+    
+    <div style="display:flex; gap:10px; flex-wrap:wrap; background: var(--bg-input); padding: 10px; border-radius: 12px; border: 1px solid var(--border);">
+        <label style="font-size:12px; color:var(--text-muted); align-self:center;">مستوى البيانات:</label>
+        <select id="surahapp-level" onchange="updateSurahAppProjects()" style="background: var(--bg-card); color: var(--text); padding: 6px; border-radius: 8px; border: 1px solid var(--border); outline:none;">
+            <option value="sura">📌 معلومات السورة كاملة</option>
+            <option value="page">📄 فوائد الصفحة</option>
+            <option value="aya" selected>📖 مستوى الآية (التفاسير، الإعراب، التجويد)</option>
+            <option value="word">🔍 مستوى الكلمة (معاني غريب القرآن، صرف، رسم)</option>
+        </select>
+
+        <div id="word-number-container" style="display:none; align-items:center; gap:5px;">
+            <label style="font-size:12px; color:var(--gold-light);">رقم الكلمة بالآية:</label>
+            <input type="number" id="surahapp-word-number" value="1" min="1" max="200" onchange="refreshCurrentSurahAppTab()" style="width:60px; background: var(--bg-card); color: var(--text); padding: 5px; border-radius: 8px; border: 1px solid var(--border); outline:none;">
+        </div>
+        <div id="page-number-container" style="display:none; align-items:center; gap:5px;">
+            <label style="font-size:12px; color:var(--gold-light);">رقم الصفحة (1-604):</label>
+            <input type="number" id="surahapp-page-number" value="1" min="1" max="604" onchange="refreshCurrentSurahAppTab()" style="width:60px; background: var(--bg-card); color: var(--text); padding: 5px; border-radius: 8px; border: 1px solid var(--border); outline:none;">
+        </div>
+    </div>
+
+    <div id="surahapp-tabs" class="tabs" style="display: flex; flex-wrap: wrap; gap: 6px; overflow-x: auto; max-height: 140px; align-items:flex-start;">
+    </div>
+
+    <div id="surahapp-loading" class="loading" style="display:none; text-align: center; padding: 20px;">
+      <div class="spinner" style="margin: 0 auto;"></div>
+      <div style="font-size:13px; color:var(--text-muted); margin-top: 10px;">جارٍ جلب البيانات الحصرية من موسوعة سورة...</div>
+    </div>
+    
+    <div id="surahapp-content-area" style="font-family: 'Amiri', serif; font-size: 20px; line-height: 2.2; color: #FFF2D1; direction: rtl; padding: 18px; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid var(--border); min-height: 150px; max-height: 50vh; overflow-y: auto;">
+      الرجاء اختيار القسم المطلوب...
+    </div>
+  </div>
+</div>
+
+<script>
+let currentSura = 1;
+let currentAya = 1;
+let currentActiveLevel = 'aya';
+let currentActiveSlug = 'w-moyassar';
+
+const API_PROJECTS = {
+    sura: [
+        { slug: 'asmaa-sowar', name: 'أسماء السور' },
+        { slug: 'maqased-sowar', name: 'مقاصد السور' },
+        { slug: 'fadael-sowar', name: 'فضائل السور' },
+        { slug: 'nozool-sowar', name: 'مكان وزمان النزول' },
+        { slug: 'adad_ayat-sowar', name: 'عدد الآيات' },
+        { slug: 'makiyu_madaniu_Falih', name: 'مكي ومدني' }
+    ],
+    page: [
+        { slug: 'fawaed-page', name: 'فوائد الصفحة' }
+    ],
+    aya: [
+        { slug: 'tafsir-mokhtasar', name: 'المختصر في التفسير' },
+        { slug: 'w-moyassar', name: 'التفسير الميسر' },
+        { slug: 'tafsir-katheer', name: 'تفسير ابن كثير' },
+        { slug: 'tafsir-saadi', name: 'تفسير السعدي' },
+        { slug: 'tafsir-tabary', name: 'تفسير الطبري' },
+        { slug: 'tafsir-baghawy', name: 'تفسير البغوي' },
+        { slug: 'ayat-nozool', name: 'أسباب النزول' },
+        { slug: 'eerab-aya', name: 'إعراب الآية' },
+        { slug: 'tajweed-aya', name: 'أحكام التجويد' },
+        { slug: 'fwaed_qassim', name: 'فوائد الآية' },
+        { slug: 'taamolatvideo', name: 'تأملات فيديو' }
+    ],
+    word: [
+        { slug: 'meaning-word', name: 'معنى غريب القرآن' },
+        { slug: 'eerab-word', name: 'إعراب الكلمة' },
+        { slug: 'word-qeraat', name: 'اختلاف القراءات' },
+        { slug: 'word-tasreef', name: 'الصرف' },
+        { slug: 'amaaken-words', name: 'أماكن ورودها' },
+        { slug: 'tawjih-qiraat', name: 'توجيه القراءات' },
+        { slug: 'wordrasm', name: 'الرسم العثماني' },
+        { slug: 'word-pic', name: 'صورة توضيحية للكلمة' }
+    ]
+};
+
+function openSurahAppModal(sura, aya) {
+  if (!sura || !aya) return;
+  currentSura = parseInt(sura);
+  currentAya = parseInt(aya);
+  document.getElementById('surahapp-modal').style.display = 'flex';
+  document.getElementById('surahapp-modal-title').innerText = '📚 موسوعة سورة الشاملة - سورة ' + sura + ' آية ' + aya;
+  
+  document.getElementById('surahapp-level').value = 'aya';
+  updateSurahAppProjects();
+}
+
+function closeSurahAppModal() {
+  document.getElementById('surahapp-modal').style.display = 'none';
+}
+
+function updateSurahAppProjects() {
+    const level = document.getElementById('surahapp-level').value;
+    const tabsContainer = document.getElementById('surahapp-tabs');
+    
+    document.getElementById('word-number-container').style.display = (level === 'word') ? 'flex' : 'none';
+    document.getElementById('page-number-container').style.display = (level === 'page') ? 'flex' : 'none';
+
+    tabsContainer.innerHTML = '';
+    
+    const projects = API_PROJECTS[level];
+    if (projects) {
+        projects.forEach((proj) => {
+            const btn = document.createElement('button');
+            btn.className = 'tab';
+            btn.style.padding = '6px 12px';
+            btn.style.fontSize = '12px';
+            btn.style.marginBottom = '4px';
+            btn.innerText = proj.name;
+            btn.onclick = () => fetchSurahAppData(level, proj.slug, btn);
+            tabsContainer.appendChild(btn);
+        });
+        
+        if(tabsContainer.firstChild) {
+            tabsContainer.firstChild.click();
+        }
+    }
+}
+
+function refreshCurrentSurahAppTab() {
+    const activeBtn = document.querySelector('#surahapp-tabs .tab[style*="var(--emerald)"]');
+    if (activeBtn) {
+        fetchSurahAppData(currentActiveLevel, currentActiveSlug, activeBtn);
+    }
+}
+
+async function fetchSurahAppData(level, slug, btnElement) {
+  currentActiveLevel = level;
+  currentActiveSlug = slug;
+
+  if(btnElement) {
+    document.querySelectorAll('#surahapp-tabs .tab').forEach(t => {
+       t.style.background = 'none';
+       t.style.color = 'var(--text-muted)';
+       t.style.fontWeight = '600';
+    });
+    btnElement.style.background = 'linear-gradient(135deg, var(--emerald), var(--gold-dark))';
+    btnElement.style.color = '#fff';
+    btnElement.style.fontWeight = '700';
+  }
+
+  const contentArea = document.getElementById('surahapp-content-area');
+  const loading = document.getElementById('surahapp-loading');
+  
+  contentArea.innerHTML = '';
+  loading.style.display = 'block';
+
+  let apiUrl = '';
+  if (level === 'sura') {
+      apiUrl = 'https://dev.surahapp.com/api/v1/sura/' + slug + '/' + currentSura;
+  } else if (level === 'page') {
+      const pageNum = document.getElementById('surahapp-page-number').value || 1;
+      apiUrl = 'https://dev.surahapp.com/api/v1/page/' + slug + '/' + pageNum;
+  } else if (level === 'aya') {
+      apiUrl = 'https://dev.surahapp.com/api/v1/aya/' + slug + '/' + currentSura + '/' + currentAya;
+  } else if (level === 'word') {
+      const wordNum = document.getElementById('surahapp-word-number').value || 1;
+      if (slug === 'word-pic') {
+          apiUrl = 'https://dev.surahapp.com/api/v1/word/word-pic/' + currentSura + '/' + currentAya + '/' + wordNum;
+      } else {
+          apiUrl = 'https://dev.surahapp.com/api/v1/word/' + slug + '/' + currentSura + '/' + currentAya + '/' + wordNum;
+      }
+  }
+
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+        if(response.status === 404) throw new Error('NOT_FOUND');
+        throw new Error('NETWORK_ERROR');
+    }
+    const data = await response.json();
+    
+    let contentHtml = '';
+    
+    if (slug === 'word-pic' && data.media && data.media.length > 0) {
+        contentHtml = '<img src="' + data.media[0].large_url + '" style="max-width:100%; border-radius:12px;">';
+    } else if (Array.isArray(data)) {
+        contentHtml = data.map(d => '<div style="margin-bottom:12px;">' + (d.content || d.text || '').replace(/\n/g, '<br>') + '</div>').join('');
+    } else {
+        contentHtml = (data.content || data.text || '').replace(/\n/g, '<br>');
+    }
+    
+    contentArea.innerHTML = contentHtml || 'لا يتوفر محتوى حالياً لهذه الخيارات في الخادم.';
+  } catch (error) {
+    if (error.message === 'NOT_FOUND') {
+        contentArea.innerHTML = '<span style="color:var(--text-muted)">لا توجد بيانات مسجلة في الموسوعة لهذا الموضع تحديداً.</span>';
+    } else {
+        console.error('SurahApp fetch error:', error);
+        contentArea.innerHTML = '<span style="color:var(--red)">حدث خطأ أثناء جلب البيانات أو أن الميزة غير متوفرة.</span>';
+    }
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+</script>
+</body></body>
 </html>
+
+
+
+
+

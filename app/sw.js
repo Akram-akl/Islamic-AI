@@ -1,60 +1,54 @@
-const CACHE_NAME = 'islamic-ai-v5';
-const ASSETS_TO_CACHE = [
-  '/',
-  'index.html',
-  'manifest.json',
-  'icon.svg'
-];
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js');
 
-self.addEventListener('install', (e) => {
-  self.skipWaiting();
-});
+if (workbox) {
+  console.log(`[SW] Workbox is loaded`);
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            console.log('[SW] Deleting old cache:', key);
-            return caches.delete(key);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+  workbox.core.skipWaiting();
+  workbox.core.clientsClaim();
+
+  // Cache static assets (CSS, JS, Fonts)
+  workbox.routing.registerRoute(
+    ({request}) => request.destination === 'style' || request.destination === 'script' || request.destination === 'font',
+    new workbox.strategies.StaleWhileRevalidate({
+      cacheName: 'static-resources',
+    })
   );
-});
 
-self.addEventListener('fetch', (e) => {
-  // Ignore non-http requests (e.g. chrome-extension://)
-  if (e.request.method !== 'GET' || !e.request.url.startsWith('http')) return;
-
-  // Network-First for HTML/document/index.html to ensure live updates without stale cache
-  if (e.request.mode === 'navigate' || e.request.destination === 'document' || e.request.url.endsWith('index.html') || e.request.url.endsWith('/')) {
-    e.respondWith(
-      fetch(e.request)
-        .then((res) => {
-          if (res && res.status === 200) {
-            const clone = res.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
-          }
-          return res;
-        })
-        .catch(() => caches.match(e.request).then((cached) => cached || caches.match('/index.html') || caches.match('/')))
-    );
-    return;
-  }
-
-  // Network-first for static scripts and data, fallback to cache
-  e.respondWith(
-    fetch(e.request)
-      .then((res) => {
-        if (res && res.status === 200) {
-          const clone = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
-        }
-        return res;
-      })
-      .catch(() => caches.match(e.request))
+  // Cache API Responses (Answers, Translations, Search)
+  workbox.routing.registerRoute(
+    ({url}) => url.pathname.startsWith('/api/'),
+    new workbox.strategies.NetworkFirst({
+      cacheName: 'api-cache',
+      plugins: [
+        new workbox.expiration.ExpirationPlugin({
+          maxEntries: 100,
+          maxAgeSeconds: 24 * 60 * 60, // 24 hours
+        }),
+      ],
+    })
   );
-});
+
+  // Cache HTML Pages
+  workbox.routing.registerRoute(
+    ({request}) => request.mode === 'navigate',
+    new workbox.strategies.NetworkFirst({
+      cacheName: 'pages-cache',
+    })
+  );
+
+  // Cache Audio files from external sources
+  workbox.routing.registerRoute(
+    ({url}) => url.href.includes('mp3quran.net') || url.pathname.endsWith('.mp3'),
+    new workbox.strategies.CacheFirst({
+      cacheName: 'audio-cache',
+      plugins: [
+        new workbox.expiration.ExpirationPlugin({
+          maxEntries: 50,
+          maxAgeSeconds: 7 * 24 * 60 * 60, // 1 week
+        }),
+      ],
+    })
+  );
+} else {
+  console.log(`[SW] Workbox didn't load`);
+}
