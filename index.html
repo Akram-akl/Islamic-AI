@@ -16,12 +16,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <style>
-    @font-face { font-family: 'UthmanicHafs';   src: url('fonts/uthmanic_hafs_v20.ttf');   font-display: swap; }
-    @font-face { font-family: 'UthmanicWarsh';   src: url('fonts/uthmanic_warsh_v21.ttf');  font-display: swap; }
-    @font-face { font-family: 'UthmanicQaloun';  src: url('fonts/uthmanic_qaloun_v21.ttf'); font-display: swap; }
-    @font-face { font-family: 'UthmanicDouri';   src: url('fonts/uthmanic_douri_v20.ttf');  font-display: swap; }
-    @font-face { font-family: 'UthmanicSousi';   src: url('fonts/uthmanic_sousi_v20.ttf');  font-display: swap; }
-    @font-face { font-family: 'UthmanicShuba';   src: url('fonts/uthmanic_shuba_v20.ttf');  font-display: swap; }
+    @font-face { font-family: 'UthmanicHafs';   src: url('fonts/uthmanic_hafs_v20.ttf?v=2.2');   font-display: swap; }
+    @font-face { font-family: 'UthmanicWarsh';   src: url('fonts/uthmanic_warsh_v21.ttf?v=2.2');  font-display: swap; }
+    @font-face { font-family: 'UthmanicQaloun';  src: url('fonts/uthmanic_qaloun_v21.ttf?v=2.2'); font-display: swap; }
+    @font-face { font-family: 'UthmanicDouri';   src: url('fonts/uthmanic_douri_v20.ttf?v=2.2');  font-display: swap; }
+    @font-face { font-family: 'UthmanicSousi';   src: url('fonts/uthmanic_sousi_v20.ttf?v=2.2');  font-display: swap; }
+    @font-face { font-family: 'UthmanicShuba';   src: url('fonts/uthmanic_shuba_v20.ttf?v=2.2');  font-display: swap; }
   </style>
   
   <script>
@@ -136,25 +136,57 @@
     }
 
     .tabs {
-      display: flex; gap: 6px;
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 16px; padding: 6px;
-      overflow-x: auto; scrollbar-width: none;
+      display: flex;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 8px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(201,168,76,0.3) transparent;
+      white-space: nowrap;
     }
-    .tabs::-webkit-scrollbar { display: none; }
+    .tabs::-webkit-scrollbar {
+      height: 4px;
+    }
+    .tabs::-webkit-scrollbar-thumb {
+      background: rgba(201,168,76,0.3);
+      border-radius: 4px;
+    }
 
     .tab {
-      flex: 1; min-width: 125px; padding: 11px 12px;
-      background: none; border: none; cursor: pointer;
-      color: var(--text-muted); font-family: 'Tajawal', sans-serif;
-      font-size: 13px; font-weight: 600; border-radius: 12px;
-      transition: all 0.25s; white-space: nowrap;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
+      flex: 0 0 auto;
+      min-width: fit-content;
+      padding: 10px 16px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid transparent;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-family: 'Tajawal', sans-serif;
+      font-size: 13.5px;
+      font-weight: 600;
+      border-radius: 12px;
+      transition: all 0.25s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
     }
-    .tab:hover { color: var(--text); background: var(--bg-input); }
+    .tab:hover {
+      color: var(--text);
+      background: var(--bg-input);
+      border-color: var(--border);
+    }
     .tab.active {
       background: linear-gradient(135deg, var(--emerald), var(--gold-dark));
-      color: #fff; font-weight: 700; box-shadow: 0 4px 15px rgba(27,107,69,0.45);
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(27,107,69,0.45);
+      border-color: rgba(201,168,76,0.3);
     }
 
     .card {
@@ -435,31 +467,139 @@
       overflow-wrap: anywhere;
     }
     
+    /* ─── تنسيقات الشات بوت الحواري الذكي (Chat UI) ─── */
+    .chat-msg {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      animation: toastIn 0.25s ease;
+      align-items: flex-start;
+    }
+    .chat-msg.user {
+      flex-direction: row-reverse;
+    }
+    .msg-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+    }
+    .chat-msg.user .msg-avatar {
+      background: linear-gradient(135deg, var(--emerald), #124029);
+      border-color: var(--emerald-light);
+    }
+    .chat-msg.bot .msg-avatar {
+      background: linear-gradient(135deg, #2A3B50, var(--gold-dark));
+      border-color: var(--gold);
+    }
+    .msg-bubble {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.8;
+      position: relative;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    }
+    .chat-msg.user .msg-bubble {
+      background: linear-gradient(135deg, #1b382b, #13281f);
+      border: 1px solid rgba(45, 158, 104, 0.4);
+      color: #E8F5E9;
+      border-bottom-left-radius: 4px;
+    }
+    .chat-msg.bot .msg-bubble {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-bottom-right-radius: 4px;
+    }
+    .msg-time {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .msg-bubble h1, .msg-bubble h2, .msg-bubble h3 {
+      color: var(--gold);
+      margin: 8px 0 6px;
+      font-size: 15px;
+    }
+    .msg-bubble strong {
+      color: var(--gold-light);
+    }
+    .msg-bubble blockquote {
+      border-right: 3px solid var(--gold);
+      padding: 6px 12px;
+      margin: 8px 0;
+      background: rgba(201,168,76,0.08);
+      border-radius: 0 8px 8px 0;
+    }
+
     @media (max-width: 768px) {
       body { padding-bottom: 75px; }
-      header { padding: 8px 12px; gap: 8px; flex-wrap: wrap; }
+      header {
+        padding: 8px 10px;
+        gap: 6px;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .header-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+      }
       .logo { width: 34px; height: 34px; font-size: 16px; border-radius: 8px; }
       .header-title h1 { font-size: 14.5px; }
       .header-title p { display: none; }
-      .header-actions { width: 100%; justify-content: space-between; gap: 5px; margin-top: 4px; flex-wrap: wrap; }
-      .lang-selector { padding: 4px 6px; font-size: 11px; max-width: 140px; }
+      .header-actions {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 4px;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+      }
+      .header-actions::-webkit-scrollbar { display: none; }
+      .header-actions > * {
+        flex: 0 0 auto;
+      }
+      .lang-selector { padding: 4px 6px; font-size: 11px; max-width: 130px; }
       .btn-action { padding: 4px 8px; font-size: 11px; }
       .header-badge { font-size: 9.5px; padding: 2px 6px; }
       
-      main { padding: 10px 8px; gap: 12px; }
-      .tabs { gap: 4px; padding: 3px; -webkit-overflow-scrolling: touch; }
-      .tab { min-width: 85px; padding: 7px 6px; font-size: 11px; white-space: nowrap; }
+      main { padding: 8px 6px; gap: 10px; }
+      .tabs {
+        gap: 6px;
+        padding: 6px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+        scrollbar-width: thin;
+      }
+      .tab {
+        flex: 0 0 auto;
+        min-width: fit-content;
+        padding: 8px 12px;
+        font-size: 12.5px;
+        white-space: nowrap;
+      }
       
-      .card { padding: 14px 10px; border-radius: 14px; margin-bottom: 10px; }
+      .card { padding: 12px 10px; border-radius: 12px; margin-bottom: 10px; }
       .card-title { font-size: 13px; gap: 6px; flex-wrap: wrap; }
       
-      textarea { min-height: 80px; font-size: 13.5px; padding: 10px 38px 10px 10px; }
-      .mic-input-btn { width: 28px; height: 28px; font-size: 13px; top: 8px; left: 8px; }
-      
-      .quick-chips { gap: 4px; flex-wrap: wrap; }
-      .quick-chip { font-size: 10px; padding: 3px 7px; }
-      
-      .send-btn { font-size: 13px; padding: 9px 14px; border-radius: 8px; width: 100% !important; justify-content: center; }
+      .msg-bubble { max-width: 92%; padding: 10px 12px; font-size: 13px; }
       
       .next-prayer-banner { padding: 12px; border-radius: 12px; flex-direction: column; align-items: stretch; gap: 8px; }
       #next-prayer-name { font-size: 17px !important; }
@@ -485,16 +625,16 @@
     }
 
     @media (max-width: 420px) {
-      .tab { min-width: 75px; font-size: 10px; padding: 6px 4px; }
-      .header-title h1 { font-size: 13px; }
-      .btn-action { font-size: 10px; padding: 4px 6px; }
+      .tab { font-size: 12px; padding: 7px 10px; flex: 0 0 auto; }
+      .header-title h1 { font-size: 13.5px; }
+      .btn-action { font-size: 10.5px; padding: 4px 6px; }
       .prayer-grid { grid-template-columns: 1fr 1fr !important; gap: 4px !important; }
       .prayer-card { padding: 6px 2px; }
       .prayer-time { font-size: 14px; }
       .compass-disc { width: 150px; height: 150px; }
       #next-prayer-name { font-size: 15px !important; }
       #next-prayer-countdown { font-size: 18px !important; }
-      .act-btn { font-size: 10px; padding: 4px 6px; }
+      .act-btn { font-size: 10.5px; padding: 4px 6px; }
     }
 
     /* Prevent horizontal overflow everywhere */
@@ -521,6 +661,23 @@
       }
     }
   </style>
+  <!-- CSS المحادثة الذكية التفاعلية -->
+  <style>
+    .chat-msg { display:flex; gap:10px; align-items:flex-start; animation:slideIn 0.25s ease; }
+    .chat-msg.user { flex-direction:row-reverse; }
+    .msg-avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--emerald),var(--gold-dark)); display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+    .msg-bubble { background:rgba(15,22,32,0.9); border:1px solid var(--border); border-radius:16px; padding:12px 14px; max-width:80%; line-height:1.7; }
+    .chat-msg.user .msg-bubble { border-radius:16px 4px 16px 16px; background:linear-gradient(135deg,rgba(27,107,69,0.85),rgba(45,158,104,0.7)); border-color:var(--emerald-light); }
+    .chat-msg.bot .msg-bubble { border-radius:4px 16px 16px 16px; }
+    .msg-time { font-size:10.5px; color:var(--text-muted); margin-top:6px; }
+    .quick-chip { display:inline-block; padding:5px 12px; background:rgba(201,168,76,0.12); border:1px solid rgba(201,168,76,0.3); border-radius:20px; font-size:12px; color:var(--gold-light); cursor:pointer; white-space:nowrap; transition:background 0.2s; }
+    .quick-chip:hover { background:rgba(201,168,76,0.28); }
+    .mic-input-btn { position:absolute; background:transparent; border:none; cursor:pointer; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
+    .mic-input-btn:hover { background:rgba(201,168,76,0.15); }
+    #chat-messages::-webkit-scrollbar { width:4px; }
+    #chat-messages::-webkit-scrollbar-track { background:transparent; }
+    #chat-messages::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+  </style>
   <script src="encyclopedia.js"></script>
 </head>
 <body>
@@ -543,10 +700,12 @@
 </div>
 
 <header>
-  <div class="logo">☪</div>
-  <div class="header-title">
-    <h1>الذكاء الاصطناعي الإسلامي</h1>
-    <p>Islamic AI Hub — القراءات العشر · السنة والمشجر · مواقيت الصلاة والقبلة · تفريغ الصوتيات</p>
+  <div class="header-brand">
+    <div class="logo">☪</div>
+    <div class="header-title">
+      <h1>الذكاء الاصطناعي الإسلامي</h1>
+      <p>Islamic AI Hub — القراءات العشر · السنة والمشجر · مواقيت الصلاة والقبلة · تفريغ الصوتيات</p>
+    </div>
   </div>
   <div class="header-actions">
     <button class="btn-action" onclick="openApiKeyModal()">⚙️ إعدادات الذكاء (API)</button>
@@ -554,8 +713,18 @@
     <!-- اختيار صوت القارئ العام للتطبيق كاملاً -->
     <div style="display:inline-flex; align-items:center; gap:4px; background:rgba(0,0,0,0.25); padding:2px 8px; border-radius:10px; border:1px solid var(--border)" title="صوت القارئ الصوتي المعتمد لجميع أزرار الاستماع في التطبيق">
       <span style="font-size:11px; color:var(--gold-light); font-weight:700">🗣️ صوت القارئ:</span>
-      <select id="global-voice-select" onchange="onGlobalVoiceChange(this.value)" style="background:transparent; border:none; color:var(--text); font-size:11px; outline:none; max-width:130px; cursor:pointer">
-        <option value="">(جاري تحميل الأصوات...)</option>
+      <select id="global-voice-select" onchange="onGlobalVoiceChange(this.value)" style="background:transparent; border:none; color:var(--text); font-size:11px; outline:none; max-width:150px; cursor:pointer">
+        <option value="">(أفضل صوت عربي تلقائي)</option>
+        <optgroup label="🇸🇦 أصوات عربية مُوصى بها">
+          <option value="__NAAYF__">Microsoft Naayf (ذكر عربي سعودي)</option>
+          <option value="__HODA__">Microsoft Hoda (أنثى عربية مصرية)</option>
+          <option value="__TARIK__">Microsoft Tarik (ذكر عربي مغربي)</option>
+          <option value="__SALMA__">Microsoft Salma (أنثى عربية)</option>
+          <option value="__ZARIYAH__">Google Arabic (صوت جوجل عربي)</option>
+        </optgroup>
+        <optgroup label="🖥️ أصوات النظام (تُحمّل تلقائياً)">
+          <!-- تُضاف ديناميكياً من populateVoices() -->
+        </optgroup>
       </select>
     </div>
 
@@ -583,7 +752,7 @@
 <main>
 
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('ask')" id="tab-ask">💬 سؤال وجواب موثوق</button>
+    <button class="tab active" onclick="switchTab('ask')" id="tab-ask">💬 المحادثة والذكاء الاصطناعي</button>
     <button class="tab" onclick="switchTab('search')" id="tab-search">🔍 بحث شامل ومباشر</button>
     <button class="tab" onclick="switchTab('audio')" id="tab-audio">🎧 القراءات العشر والأصوات</button>
     <button class="tab" onclick="switchTab('prayer')" id="tab-prayer">🕌 مواقيت الصلاة والقبلة</button>
@@ -592,63 +761,90 @@
     <button class="tab" onclick="switchTab('library')" id="tab-library">📚 المكتبة الإسلامية</button>
   </div>
 
-  <!-- ══════════════ 1. تبويب السؤال الموثوق وتفريغ الصوتيات ══════════════ -->
+  <!-- ══════════════ 1. تبويب المحادثة الذكية وتفريغ الصوتيات ══════════════ -->
   <div id="ask-panel">
-    <div class="card">
-      <div class="card-title">
-        <span>✨ اطرح سؤالك المعرفي الموثوق (صفر هلوسة)</span>
-        <button class="act-btn" onclick="openApiKeyModal()">⚙️ ربط مفتاح مجاني (Gemini)</button>
-      </div>
-
-      <div class="textarea-container">
-        <textarea id="question" rows="3" placeholder="مثال: اعطني شرحاً مفصلاً لصلاة الوتر بالدليل والمصادر وهل سنة أم واجب؟
-أو: هل يمكن أن يوافق يوم عرفة رمضان أو ليلة القدر وما فضل صيامه؟
-أو: تحدث بالصوت عبر الميكروفون أو أرفق مقطعاً صوتياً لتفريغه..."></textarea>
-        <button class="mic-input-btn" id="question-mic-btn" onclick="toggleSpeechRecognition('question', 'question-mic-btn')" title="اضغط للتحدث بالصوت المباشر ليتحول إلى نص">🎙️</button>
-      </div>
-
-      <!-- محطة تفريغ المقاطع الصوتية المسجلة (Audio file upload to text) -->
-      <div style="background:var(--bg-input); border:1px dashed var(--gold-dark); border-radius:12px; padding:12px; margin-top:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px">
-        <div style="display:flex; align-items:center; gap:8px">
-          <span style="font-size:20px">📁🎙️</span>
+    <div class="card" style="padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:580px; box-shadow:0 8px 30px rgba(0,0,0,0.5);">
+      
+      <!-- ترويسة الشات الحواري -->
+      <div style="padding:12px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.25); flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--emerald),var(--gold)); display:flex; align-items:center; justify-content:center; font-size:16px;">☪</div>
           <div>
-            <div style="font-size:12.5px; font-weight:700; color:var(--gold)">إرسال مقطع صوتي لتحويله إلى نص (Audio to Text):</div>
-            <div style="font-size:11px; color:var(--text-muted)">يدعم رفع المقاطع (.mp3, .wav, .m4a, .ogg) لتفريغها مباشرة بالذكاء الاصطناعي</div>
+            <div style="font-size:14.5px; font-weight:800; color:var(--gold-light);">مساعد الذكاء الاصطناعي الإسلامي الحواري</div>
+            <div style="font-size:11px; color:var(--text-muted);">حوار طبيعي متصل مباشرة بموسوعة 28,849 حديثاً نبوياً والقرآن الكريم و42 كتاباً معتمداً</div>
           </div>
         </div>
-        <div style="display:flex; gap:6px; align-items:center">
-          <input type="file" id="audio-file-input" accept="audio/*,.mp3,.wav,.m4a,.ogg,.aac,.webm" onchange="handleAudioFileUpload(event)" style="font-size:11.5px">
+        <div style="display:flex; gap:6px; align-items:center;">
+          <button class="act-btn" onclick="openApiKeyModal()">⚙️ إعدادات النموذج</button>
+          <button class="act-btn" onclick="clearChatHistory()">🗑️ مسح المحادثة</button>
         </div>
       </div>
 
-      <!-- معاينة المقطع الصوتي المرفوع وحالة التفريغ -->
-      <div id="audio-upload-preview" style="display:none; margin-top:10px; padding:10px; background:rgba(20,30,44,0.7); border-radius:10px">
-        <div style="font-size:12px; color:var(--gold-light); margin-bottom:6px" id="uploaded-audio-filename">مقطع صوتي محدد</div>
-        <audio id="uploaded-audio-player" controls style="width:100%; height:36px"></audio>
-        <button class="send-btn" onclick="transcribeUploadedAudio()" id="transcribe-btn" style="margin-top:8px; padding:8px 16px; font-size:13.5px">
-          ⚡ تفريغ المقطع الصوتي إلى نص فوري
+      <!-- مساحة الرسائل والمحادثة التفاعلية -->
+      <div id="chat-messages" style="flex:1; overflow-y:auto; padding:16px; max-height:55vh; min-height:300px; display:flex; flex-direction:column; gap:12px;">
+        
+        <!-- رسالة الترحيب الأولى من المساعد -->
+        <div class="chat-msg bot">
+          <div class="msg-avatar">☪</div>
+          <div class="msg-bubble">
+            <p><strong>وعليكم السلام ورحمة الله وبركاته! 🌿 أهلاً بك أخي الكريم في المحادثة الذكية الموثوقة.</strong></p>
+            <p style="margin-top:6px; font-size:13.5px; line-height:1.7;">
+              أنا مساعدك الإسلامي الحواري، يمكنك محاورتي وسؤالي بحرية وسلاسة تامة في أي مسألة فقهية، أو عقائدية، أو الاستفسار عن فضل صيام أو صلاة، أو تخريج الأحاديث النبوية، أو شرح أحكام التجويد، أو تاريخ وسير الصحابة الكرام.
+              <br><br>
+              💡 أنا متصل مباشرة ببيانات التطبيق المدمجة التي تضم <strong>28,849 حديثاً نبوياً صحيحاً</strong> والقرآن الكريم و<strong>42 كتاباً ومصنفاً معتمداً</strong>. تفضل بطرح ما في خاطرك وسأجيبك بأمانة علمية ولسان عربي فصيح!
+            </p>
+            <div class="msg-time">
+              <span>الآن</span> · <span>محرك حواري مدعوم بالمصادر</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- مؤشر الكتابة التفاعلي -->
+      <div id="chat-typing-indicator" style="display:none; padding:8px 18px; align-items:center; gap:8px; background:rgba(0,0,0,0.15); border-top:1px solid rgba(255,255,255,0.03);">
+        <div class="spinner" style="width:18px; height:18px; border-width:2px;"></div>
+        <span style="font-size:12px; color:var(--gold-light);">المساعد الحواري يبحث في موسوعة الأحاديث والكتب ويصيغ الإجابة...</span>
+      </div>
+
+      <!-- شرائح الأسئلة السريعة الاقتراحية -->
+      <div id="chat-chips" style="padding:6px 12px; background:rgba(0,0,0,0.18); border-top:1px solid var(--border); overflow-x:auto; display:flex; gap:6px; white-space:nowrap; scrollbar-width:none;">
+        <span class="quick-chip" onclick="quickChatPrompt('السلام عليكم ورحمة الله، كيف حالك وعرفني بنفسك ومصادرك؟')">🌿 السلام عليكم وكيف حالك؟</span>
+        <span class="quick-chip" onclick="quickChatPrompt('ما فضل صيام يوم عرفة وهل يمكن أن يوافق ليلة القدر؟ بالدليل')">🕌 صيام يوم عرفة وليلة القدر</span>
+        <span class="quick-chip" onclick="quickChatPrompt('اعطني شرحاً مفصلاً لحديث إنما الأعمال بالنيات مع رواته وتخريجه')">📜 حديث إنما الأعمال بالنيات</span>
+        <span class="quick-chip" onclick="quickChatPrompt('من هم العشرة المبشرون بالجنة وما فضلهم بالدليل؟')">🌟 العشرة المبشرون بالجنة</span>
+        <span class="quick-chip" onclick="quickChatPrompt('ما هي أحكام النون الساكنة والتنوين في علم التجويد مع الأمثلة؟')">📖 أحكام التجويد</span>
+      </div>
+
+      <!-- شريط تفريغ المقاطع الصوتية المجاني الخالي من طلب التوكن -->
+      <div id="chat-audio-bar" style="padding:8px 14px; background:rgba(20,30,44,0.5); border-top:1px dashed var(--gold-dark); display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:11.5px; flex-wrap:wrap;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span>📁🎙️ تفريغ مقطع صوتي (.mp3, .wav, .m4a):</span>
+          <input type="file" id="audio-file-input" accept="audio/*,.mp3,.wav,.m4a,.ogg,.aac,.webm" onchange="handleAudioFileUpload(event)" style="font-size:11px; max-width:180px;">
+        </div>
+        <div id="audio-upload-preview" style="display:none; align-items:center; gap:8px;">
+          <audio id="uploaded-audio-player" controls style="height:28px; width:160px;"></audio>
+          <button class="act-btn" onclick="transcribeUploadedAudio()" id="transcribe-btn" style="padding:3px 10px; font-size:11px; background:var(--gold); color:#0A0E14; font-weight:700;">
+            ⚡ تفريغ مجاني فوري
+          </button>
+        </div>
+        <span id="uploaded-audio-filename" style="color:var(--text-muted); font-size:10.5px;">تفريغ مجاني 100% بدون أي توكن إلزامي</span>
+      </div>
+
+      <!-- صندوق إدخال الرسالة والميكروفون والإرسال -->
+      <div style="padding:10px 14px; border-top:1px solid var(--border); background:var(--bg-card); display:flex; gap:8px; align-items:flex-end;">
+        <div style="position:relative; flex:1;">
+          <textarea id="chat-input" rows="1" placeholder="اكتب سؤالك أو تحيتك هنا... (اضغط Enter للإرسال)"
+            onkeydown="if(event.key==='Enter' && !event.shiftKey){ event.preventDefault(); sendChatMessage(); }"
+            oninput="autoResizeTextarea(this)"
+            style="width:100%; resize:none; padding:10px 42px 10px 12px; font-size:13.5px; border-radius:12px; max-height:120px; line-height:1.5; outline:none; background:var(--bg-input); border:1px solid var(--border); color:var(--text);"></textarea>
+          <button class="mic-input-btn" id="chat-mic-btn" onclick="toggleSpeechRecognition('chat-input', 'chat-mic-btn')" title="تحدث بالميكروفون (مجاني وبلا حدود)" style="top:7px; left:8px; width:28px; height:28px; font-size:14px;">🎙️</button>
+        </div>
+        <button class="send-btn" id="chat-send-btn" onclick="sendChatMessage()" style="margin:0; width:auto; padding:10px 20px; border-radius:12px; display:flex; align-items:center; gap:6px; flex-shrink:0;">
+          <span>إرسال</span> ⚡
         </button>
       </div>
 
-      <div class="quick-chips">
-        <span class="quick-chip" onclick="setQuickQuestion('كيف حالك وذكرني من هو جبريل وميكال بالدليل ومن أول 10 مبشرين وهل يجوز التداول؟')">🌟 جبريل وميكائيل، العشرة المبشرون، وحكم التداول</span>
-        <span class="quick-chip" onclick="setQuickQuestion('اعطني شرح مفصل لصلاة الوتر بالدليل والمصادر وهل سنة ام واجب وما حكم صيام يوم عرفة وهل يوافق رمضان وليلة القدر؟')">🕌 صلاة الوتر ويوم عرفة وليلة القدر</span>
-        <span class="quick-chip" onclick="setQuickQuestion('ما هي أحكام النون الساكنة والتنوين في التجويد مع الأمثلة؟')">📖 أحكام التجويد (النون والتنوين)</span>
-        <span class="quick-chip" onclick="setQuickQuestion('من هم أئمة القراءات العشر ورواتهم العشرون وما الفرق بين الرواية والقراءة؟')">📜 القراءات العشر ورواتها الـ 20</span>
-        <span class="quick-chip" onclick="setQuickQuestion('ما هو حديث إنما الأعمال بالنيات وما تخريجه؟')">📜 حديث النيات</span>
-      </div>
-
-      <button class="send-btn" onclick="askQuestion()" id="ask-btn">
-        <span>🔮</span> ابحث وأجب من المصادر المعتمدة حصراً
-      </button>
-    </div>
-
-    <div id="results" style="display:none; margin-top:16px">
-      <div id="loading-box" class="card loading" style="display:none">
-        <div class="spinner"></div>
-        <div style="font-size:13.5px; color:var(--text-muted)">جار استخراج الأدلة الدقيقة من القرآن والسنة والكتب المعتمدة...</div>
-      </div>
-      <div id="answer-box"></div>
     </div>
   </div>
 
@@ -1094,6 +1290,19 @@
         <span class="quick-chip" onclick="loadIsnadSample(4)">📜 حديث لا يؤمن أحدكم حتى يحب لأخيه</span>
         <span class="quick-chip" onclick="loadIsnadSample(5)">📜 حديث كلمتان خفيفتان على اللسان</span>
       </div>
+
+      <!-- بحث فوري في 28,849 حديثاً نبوياً لاستخراج السند والمشجر -->
+      <div style="background:rgba(201,168,76,0.06); border:1px solid rgba(201,168,76,0.25); border-radius:10px; padding:10px 14px; margin-top:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:6px;">
+          <span style="font-size:12px; font-weight:700; color:var(--gold-light)">🔍 أو ابحث في 28,849 حديثاً بالسنة النبوية لعرض سنده ومتنه:</span>
+          <span style="font-size:11px; color:var(--text-muted)">صحيح البخاري، مسلم، أبو داود، الترمذي، النسائي، ابن ماجه، أحمد، موطأ مالك</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="isnad-search-hadith-query" placeholder="ابحث بكلمات من المتن أو اسم الراوي... مثال: كعب بن مالك، إنما الأعمال، بني الإسلام، كلمتان" style="flex:1; font-size:12px;" onkeypress="if(event.key==='Enter') searchHadithForIsnad()">
+          <button class="act-btn" onclick="searchHadithForIsnad()" style="background:var(--bg-input); border-color:var(--gold); color:var(--gold-light); font-size:12px; padding:6px 14px; font-weight:700;">بحث في الأحاديث</button>
+        </div>
+        <div id="isnad-search-results" style="margin-top:8px; display:none; max-height:220px; overflow-y:auto;"></div>
+      </div>
     </div>
 
     <!-- بطاقة المتن الشريف المفصول -->
@@ -1116,17 +1325,33 @@
     </div>
   </div>
 
-  <!-- ══════════════ 6. تبويب المكتبة الإسلامية الشاملة ══════════════ -->
-    <!-- ═══════════════ تبويب الموسوعة القرآنية والمصحف ═══════════════ -->
+  <!-- ══════════════ 6. تبويب الموسوعة القرآنية والمصحف ══════════════ -->
   <div id="quran-enc-panel" style="display:none">
+
+    <!-- لافتة الميزة التفاعلية الإرشادية للمستخدم -->
+    <div style="background:rgba(201,168,76,0.12); border:1px solid var(--gold); border-radius:10px; padding:10px 14px; margin-bottom:12px; font-size:13px; color:var(--gold-light); display:flex; align-items:center; gap:8px;">
+      <span style="font-size:18px;">💡</span>
+      <span><strong>ميزة تفاعلية:</strong> اضغط على أي كلمة لعرض غريب القرآن وإعرابها وقراءاتها وتصريفها، أو اختر تبويباً أدناه للتفسير وعلوم الآية.</span>
+    </div>
 
     <!-- ملحوظة هامة -->
     <div style="background: linear-gradient(135deg,#1a2a18,#0d1a0c); border: 1px solid var(--emerald-light); border-radius:12px; padding:12px 16px; margin-bottom:14px; font-size:13px; color:var(--gold-light); direction:rtl;">
       <strong>📌 تنبيه:</strong> جميع التفاسير (الميسر، ابن كثير، السعدي، الطبري...) وإعراب الآيات وعلوم القرآن المعروضة هنا مبنية على <strong>رواية حفص عن عاصم</strong> من موسوعة سورة الموثوقة. نصوص الروايات الأخرى مستخرجة من مجمع الملك فهد لطباعة المصحف الشريف.
     </div>
 
+    <!-- مفتاح نمط العرض: آية مفردة vs تصفح المصحف كاملاً صفحة بصفحة -->
+    <div style="display:flex; gap:8px; margin-bottom:12px; align-items:center; flex-wrap:wrap;">
+      <button id="enc-mode-single-btn" class="act-btn active" onclick="encSetViewMode('single')" style="font-weight:700">📖 عرض الآية المفردة وعلومها</button>
+      <button id="enc-mode-page-btn" class="act-btn" onclick="encSetViewMode('page')" style="font-weight:700">📑 تصفح المصحف بالصفحات (1 - 604)</button>
+      <div id="enc-page-controls" style="display:none; align-items:center; gap:6px; margin-right:auto;">
+        <button class="act-btn" onclick="encPrevPage()" title="الصفحة السابقة">◀ السابقة</button>
+        <span style="font-size:12.5px; color:var(--gold-light)">صفحة <input type="number" id="enc-page-input" min="1" max="604" value="1" onchange="encGoToPage(this.value)" style="width:55px; text-align:center; padding:3px; font-size:12px; background:var(--bg-input); border:1px solid var(--border); color:var(--gold); border-radius:6px"> من 604</span>
+        <button class="act-btn" onclick="encNextPage()" title="الصفحة التالية">التالية ▶</button>
+      </div>
+    </div>
+
     <!-- شريط الإعدادات الرئيسية -->
-    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:12px 16px; margin-bottom:14px;">
+    <div id="enc-controls-bar" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:12px 16px; margin-bottom:14px;">
       <div style="display:flex; flex-direction:column; gap:4px;">
         <label style="font-size:11px; color:var(--text-muted);">الرواية</label>
         <select id="enc-riwaya" onchange="encLoadRiwaya()" style="background:var(--bg-input); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:6px 10px; outline:none; font-size:13px;">
@@ -1153,6 +1378,16 @@
       <div id="enc-riwaya-badge" style="margin-right:auto; background:linear-gradient(135deg,var(--emerald),var(--emerald-light)); padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700; color:#fff;"></div>
     </div>
 
+    <!-- بطاقة عرض الصفحة الكاملة للمصحف الشريف (صفحة بصفحة) -->
+    <div id="enc-page-view-card" class="card" style="display:none; padding:20px 16px; margin-bottom:14px; border:2px solid var(--gold-dark); background:linear-gradient(180deg, rgba(20,30,44,0.7), rgba(10,14,20,0.95)); border-radius:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--gold-dark); padding-bottom:8px; margin-bottom:14px; font-size:13px; color:var(--gold-light);">
+        <span id="enc-page-sura-header" style="font-weight:700;">سورة الفاتحة</span>
+        <span id="enc-page-juz-header" style="font-weight:700;">الجزء الأول</span>
+      </div>
+      <div id="enc-page-display" style="font-size:32px; line-height:2.4; text-align:justify; text-align-last:center; direction:rtl; min-height:220px; padding:8px;"></div>
+      <div style="text-align:center; margin-top:14px; border-top:1px solid var(--border); padding-top:8px; font-size:13px; color:var(--gold);" id="enc-page-footer">١</div>
+    </div>
+
     <!-- عرض الآية بالخط العثماني (قابل للنقر) -->
     <div id="enc-mushaf-card" class="card" style="text-align:center; padding:24px 16px; margin-bottom:14px; min-height:100px;">
       <div id="enc-mushaf-loading" style="color:var(--text-muted); font-size:14px;">جارٍ تحميل بيانات الرواية...</div>
@@ -1168,13 +1403,14 @@
           <button onclick="document.getElementById('enc-word-panel').style.display='none'" style="margin-right:auto; background:none; border:1px solid var(--border); color:var(--text-muted); padding:2px 10px; border-radius:8px; cursor:pointer; font-size:12px;">✕ إغلاق</button>
         </div>
         <div id="enc-word-tabs" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
-          <button class="enc-word-tab" onclick="encFetchWord('meaning-word',this)">معنى غريب القرآن</button>
-          <button class="enc-word-tab" onclick="encFetchWord('eerab-word',this)">إعراب الكلمة</button>
-          <button class="enc-word-tab" onclick="encFetchWord('word-qeraat',this)">اختلاف القراءات</button>
-          <button class="enc-word-tab" onclick="encFetchWord('word-tasreef',this)">الصرف</button>
-          <button class="enc-word-tab" onclick="encFetchWord('amaaken-words',this)">أماكن ورودها</button>
-          <button class="enc-word-tab" onclick="encFetchWord('wordrasm',this)">الرسم العثماني</button>
-          <button class="enc-word-tab" onclick="encFetchWord('word-pic',this)">صورة توضيحية</button>
+          <button class="enc-word-tab active" data-slug="meaning-word-oldv" onclick="encFetchWord('meaning-word-oldv',this)">معنى غريب القرآن</button>
+          <button class="enc-word-tab" data-slug="eerab-word" onclick="encFetchWord('eerab-word',this)">إعراب الكلمة</button>
+          <button class="enc-word-tab" data-slug="word-qeraat" onclick="encFetchWord('word-qeraat',this)">اختلاف القراءات</button>
+          <button class="enc-word-tab" data-slug="tawjih-qiraat" onclick="encFetchWord('tawjih-qiraat',this)">توجيه القراءات</button>
+          <button class="enc-word-tab" data-slug="word-tasreef" onclick="encFetchWord('word-tasreef',this)">الصرف والتصريف</button>
+          <button class="enc-word-tab" data-slug="amaaken-words" onclick="encFetchWord('amaaken-words',this)">أماكن ورودها</button>
+          <button class="enc-word-tab" data-slug="wordrasm" onclick="encFetchWord('wordrasm',this)">الرسم العثماني</button>
+          <button class="enc-word-tab" data-slug="word-pic" onclick="encFetchWord('word-pic',this)">صورة توضيحية</button>
         </div>
         <div id="enc-word-loading" style="display:none; text-align:center; padding:10px; color:var(--text-muted); font-size:13px;">جارٍ جلب البيانات من موسوعة سورة...</div>
         <div id="enc-word-content" style="font-family:'Amiri',serif; font-size:18px; line-height:2; color:#FFF2D1; direction:rtl; min-height:60px;"></div>
@@ -1313,6 +1549,172 @@
     encRenderAya();
   }
 
+  // دالة تنظيف رموز أرقام الآيات العثمانية المعقدة التي تظهر كأحرف غريبة مثل ﰂ و ئح و بج
+  function cleanAyahText(text) {
+    if (!text) return '';
+    return text
+      // إزالة علامات الأرقام العثمانية القديمة ومحارف Presentation Forms-A
+      .replace(/[\uFC00-\uFDFF\uFE70-\uFEFF\u06DD\u06DE\u06DF]/g, '')
+      .replace(/[ﰀ-ﱟ]/g, '')
+      // إزالة أي أحرف بقيت معلقة في نهاية الآية من رسم الأرقام القديم مثل "بج" أو "ئح" أو "ﰂ"
+      .replace(/\s+[بجئح]+\s*$/g, '')
+      .trim();
+  }
+
+  function toArabicNumerals(num) {
+    const arabicDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    return String(num).replace(/[0-9]/g, d => arabicDigits[d]);
+  }
+
+  let encViewMode = 'single'; // 'single' or 'page'
+  window.encCurrentPage = 1;
+
+  function encSetViewMode(mode) {
+    encViewMode = mode;
+    const btnSingle = document.getElementById('enc-mode-single-btn');
+    const btnPage = document.getElementById('enc-mode-page-btn');
+    const pageControls = document.getElementById('enc-page-controls');
+    const singleCard = document.getElementById('enc-mushaf-card');
+    const pageCard = document.getElementById('enc-page-view-card');
+    const controlsBar = document.getElementById('enc-controls-bar');
+
+    if (mode === 'page') {
+      if (btnSingle) btnSingle.classList.remove('active');
+      if (btnPage) btnPage.classList.add('active');
+      if (pageControls) pageControls.style.display = 'flex';
+      if (singleCard) singleCard.style.display = 'none';
+      if (pageCard) pageCard.style.display = 'block';
+      encRenderPage(window.encCurrentPage || 1);
+    } else {
+      if (btnSingle) btnSingle.classList.add('active');
+      if (btnPage) btnPage.classList.remove('active');
+      if (pageControls) pageControls.style.display = 'none';
+      if (singleCard) singleCard.style.display = 'block';
+      if (pageCard) pageCard.style.display = 'none';
+      encRenderAya();
+    }
+  }
+
+  function encPrevPage() {
+    let p = (window.encCurrentPage || 1) - 1;
+    if (p < 1) p = 604;
+    encGoToPage(p);
+  }
+
+  function encNextPage() {
+    let p = (window.encCurrentPage || 1) + 1;
+    if (p > 604) p = 1;
+    encGoToPage(p);
+  }
+
+  function encGoToPage(pageVal) {
+    const pageNum = Math.max(1, Math.min(604, parseInt(pageVal) || 1));
+    window.encCurrentPage = pageNum;
+    const inp = document.getElementById('enc-page-input');
+    if (inp) inp.value = pageNum;
+    encRenderPage(pageNum);
+  }
+
+  function encRenderPage(pageNum) {
+    const pageDisplay = document.getElementById('enc-page-display');
+    const suraHeader = document.getElementById('enc-page-sura-header');
+    const juzHeader = document.getElementById('enc-page-juz-header');
+    const footer = document.getElementById('enc-page-footer');
+    if (!pageDisplay) return;
+
+    if (!encQuranData) {
+      pageDisplay.innerHTML = '<span style="color:var(--text-muted); font-size:14px;">جارٍ تحميل بيانات المصحف الشريف...</span>';
+      return;
+    }
+
+    const riwaya = encCurrentRiwaya || 'hafs';
+    const font = RIWAYA_CONFIG[riwaya]?.font || 'UthmanicHafs';
+    pageDisplay.style.fontFamily = "'" + font + "', serif";
+
+    let pageAyas = [];
+    const d = encQuranData;
+    if (Array.isArray(d)) {
+      pageAyas = d.filter(a => a.page === pageNum);
+    } else if (d.suras && Array.isArray(d.suras)) {
+      d.suras.forEach(s => {
+        if (s.ayas) {
+          s.ayas.forEach(a => {
+            if (a.page === pageNum) {
+              pageAyas.push({ ...a, sura_number: s.number || s.sura, aya_number: a.number || a.aya });
+            }
+          });
+        }
+      });
+    }
+
+    if (footer) footer.textContent = toArabicNumerals(pageNum);
+
+    if (pageAyas.length === 0) {
+      pageDisplay.innerHTML = `<span style="color:var(--text-muted); font-size:15px;">لا تتوفر آيات مسجلة للصفحة ${pageNum} في هذا الملف.</span>`;
+      return;
+    }
+
+    const firstAya = pageAyas[0];
+    const suraNum = firstAya.sura_no || firstAya.sura || firstAya.sura_number || 1;
+    if (suraHeader) suraHeader.textContent = 'سورة ' + (SURA_NAMES_AR[suraNum - 1] || '');
+
+    // حساب تقريبي للجزء بناءً على الصفحة
+    const juzNum = Math.min(30, Math.ceil(pageNum / 20.13));
+    const juzNames = ['الأول','الثاني','الثالث','الرابع','الخامس','السادس','السابع','الثامن','التاسع','العاشر','الحادي عشر','الثاني عشر','الثالث عشر','الرابع عشر','الخامس عشر','السادس عشر','السابع عشر','الثامن عشر','التاسع عشر','العشرون','الحادي والعشرون','الثاني والعشرون','الثالث والعشرون','الرابع والعشرون','الخامس والعشرون','السادس والعشرون','السابع والعشرون','الثامن والعشرون','التاسع والعشرون','الثلاثون'];
+    if (juzHeader) juzHeader.textContent = 'الجزء ' + (juzNames[juzNum - 1] || juzNum);
+
+    let html = '';
+    pageAyas.forEach(a => {
+      const sNum = a.sura_no || a.sura || a.sura_number;
+      const aNum = a.aya_no || a.aya || a.aya_number;
+
+      // البسملة عند بداية السور عدا التوبة
+      if (aNum === 1 && sNum !== 1 && sNum !== 9) {
+        html += `<div style="display:block; width:100%; text-align:center; font-size:26px; color:var(--gold); margin:12px 0 8px; font-weight:700;">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>`;
+      }
+
+      let rawText = a.aya_text || a.text || a.content || '';
+      if (a.words && Array.isArray(a.words)) {
+        rawText = a.words.map(w => w.text || w.word || w).join(' ');
+      }
+
+      const clean = cleanAyahText(rawText);
+      const words = clean.split(/\s+/).filter(w => {
+        const pure = w.replace(/[.,:;()\[\]{}0-9\u0660-\u0669۝]/g, '').trim();
+        return pure.length > 0;
+      });
+
+      words.forEach((w, wIdx) => {
+        const wNum = wIdx + 1;
+        html += `<span class="enc-word-span" data-sura="${sNum}" data-aya="${aNum}" data-word-num="${wNum}" onclick="encSelectWord(this, ${sNum}, ${aNum}, ${wNum})" title="سورة ${SURA_NAMES_AR[sNum-1]} - آية ${aNum}">${w}</span> `;
+      });
+
+      html += `<span class="ayah-end-symbol" style="font-family:'Amiri', serif; color:var(--gold); font-size:1.15em; margin:0 6px; cursor:pointer;" onclick="encSelectAyaQuick(${sNum}, ${aNum})" title="عرض تفسير الآية ${aNum}"> ۝${toArabicNumerals(aNum)} </span> `;
+    });
+
+    pageDisplay.innerHTML = html;
+  }
+
+  function encSelectAyaQuick(suraNum, ayaNum) {
+    const suraSelect = document.getElementById('enc-sura');
+    const ayaSelect = document.getElementById('enc-aya');
+    if (suraSelect && suraSelect.value != suraNum) {
+      suraSelect.value = suraNum;
+      encLoadAyas();
+    }
+    if (ayaSelect) ayaSelect.value = ayaNum;
+    encCurrentSura = suraNum;
+    encCurrentAya = ayaNum;
+
+    // جلب التفسير النشط تلقائياً
+    const activeTab = document.querySelector('.enc-aya-tab.active') || document.querySelector('.enc-aya-tab');
+    if (activeTab) {
+      const slug = activeTab.getAttribute('data-slug') || activeTab.getAttribute('onclick')?.match(/'([^']+)'/)?.[1] || 'tafsir-mokhtasar';
+      encFetchAya(slug, activeTab);
+    }
+    showToast(`تم تحديد الآية ${ayaNum} من سورة ${SURA_NAMES_AR[suraNum-1]} وجاري عرض علومها`, 'info', 3000);
+  }
+
   function encRenderAya() {
     const suraNum = parseInt(document.getElementById('enc-sura').value);
     const ayaNum = parseInt(document.getElementById('enc-aya').value);
@@ -1333,7 +1735,6 @@
     
     let currentAyahPage = 1;
     if (Array.isArray(d)) {
-      // flat list of ayas: {sura_no, aya_no, aya_text}
       const ayaObj = d.find(a => (a.sura_no === suraNum || a.sura === suraNum || a.sura_number === suraNum) && (a.aya_no === ayaNum || a.aya === ayaNum || a.aya_number === ayaNum));
       if (ayaObj) {
         if (ayaObj.page) currentAyahPage = ayaObj.page;
@@ -1341,6 +1742,7 @@
         if (ayaObj.words && Array.isArray(ayaObj.words)) {
           renderWordsFromArray(ayaObj.words, suraNum, ayaNum);
           info.textContent = SURA_NAMES_AR[suraNum-1] + ' — الآية ' + ayaNum + ' (صفحة ' + currentAyahPage + ')';
+          autoUpdateSciencesAndTafsir(suraNum, ayaNum);
           return;
         }
         ayaText = ayaObj.aya_text || ayaObj.text || ayaObj.content;
@@ -1351,7 +1753,10 @@
         const aya = sura.ayas.find(a => a.number === ayaNum || a.aya === ayaNum);
         if (aya) {
           ayaText = aya.text;
-          if (aya.page) window.encCurrentPage = aya.page;
+          if (aya.page) {
+            window.encCurrentPage = aya.page;
+            currentAyahPage = aya.page;
+          }
         }
       }
     }
@@ -1361,47 +1766,87 @@
     } else {
       display.innerHTML = '<span style="color:var(--text-muted); font-size:14px;">تعذر عرض نص الآية من بيانات الرواية</span>';
     }
-    info.textContent = SURA_NAMES_AR[suraNum-1] + ' — الآية ' + ayaNum;
+    info.textContent = SURA_NAMES_AR[suraNum-1] + ' — الآية ' + ayaNum + ' (صفحة ' + currentAyahPage + ')';
+
+    // تحديث تلقائي لمعنى الكلمة الأولى وتفسير الآية فور تغيير الآية أو السورة
+    autoUpdateSciencesAndTafsir(suraNum, ayaNum);
+  }
+
+  function autoUpdateSciencesAndTafsir(suraNum, ayaNum) {
+    setTimeout(() => {
+      const firstWord = document.querySelector('#enc-aya-display .enc-word-span');
+      if (firstWord) {
+        encSelectWord(firstWord, suraNum, ayaNum, 1);
+      }
+      const activeAyaTab = document.querySelector('.enc-aya-tab.active') || document.querySelector('.enc-aya-tab');
+      if (activeAyaTab) {
+        const slug = activeAyaTab.getAttribute('data-slug') || activeAyaTab.getAttribute('onclick')?.match(/'([^']+)'/)?.[1] || 'tafsir-mokhtasar';
+        encFetchAya(slug, activeAyaTab);
+      }
+    }, 50);
   }
 
   function renderWordsFromText(text, suraNum, ayaNum) {
-    const riwaya = encCurrentRiwaya;
-    const font = RIWAYA_CONFIG[riwaya].font;
+    const riwaya = encCurrentRiwaya || 'hafs';
+    const font = RIWAYA_CONFIG[riwaya]?.font || 'UthmanicHafs';
     const display = document.getElementById('enc-aya-display');
     display.style.fontFamily = "'" + font + "', serif";
     
-    const words = text.trim().split(/\s+/);
-    display.innerHTML = words.map((word, i) => {
+    const clean = cleanAyahText(text);
+    const words = clean.split(/\s+/).filter(w => {
+      const pure = w.replace(/[.,:;()\[\]{}0-9\u0660-\u0669۝]/g, '').trim();
+      return pure.length > 0;
+    });
+
+    let html = words.map((word, i) => {
       const num = i + 1;
       return '<span class="enc-word-span" data-word-num="' + num + '" onclick="encSelectWord(this,' + suraNum + ',' + ayaNum + ',' + num + ')" title="اضغط لعلوم الكلمة">' + word + '</span>';
     }).join(' ');
+
+    html += ` <span class="ayah-end-symbol" style="font-family:'Amiri', serif; color:var(--gold); font-size:1.15em; margin:0 8px; user-select:none">۝${toArabicNumerals(ayaNum)}</span>`;
+    display.innerHTML = html;
   }
 
   function renderWordsFromArray(words, suraNum, ayaNum) {
-    const riwaya = encCurrentRiwaya;
-    const font = RIWAYA_CONFIG[riwaya].font;
+    const riwaya = encCurrentRiwaya || 'hafs';
+    const font = RIWAYA_CONFIG[riwaya]?.font || 'UthmanicHafs';
     const display = document.getElementById('enc-aya-display');
     display.style.fontFamily = "'" + font + "', serif";
     
-    display.innerHTML = words.map((w, i) => {
+    const validWords = words.filter(w => {
+      const raw = typeof w === 'string' ? w : (w.text || w.word || '');
+      const clean = cleanAyahText(raw);
+      const pure = clean.replace(/[.,:;()\[\]{}0-9\u0660-\u0669۝]/g, '').trim();
+      return pure.length > 0;
+    });
+
+    let html = validWords.map((w, i) => {
       const num = i + 1;
-      const text = w.text || w.word || w;
-      return '<span class="enc-word-span" data-word-num="' + num + '" onclick="encSelectWord(this,' + suraNum + ',' + ayaNum + ',' + num + ')" title="اضغط لعلوم الكلمة">' + text + '</span>';
+      const raw = typeof w === 'string' ? w : (w.text || w.word || '');
+      const clean = cleanAyahText(raw);
+      return '<span class="enc-word-span" data-word-num="' + num + '" onclick="encSelectWord(this,' + suraNum + ',' + ayaNum + ',' + num + ')" title="اضغط لعلوم الكلمة">' + clean + '</span>';
     }).join(' ');
+
+    html += ` <span class="ayah-end-symbol" style="font-family:'Amiri', serif; color:var(--gold); font-size:1.15em; margin:0 8px; user-select:none">۝${toArabicNumerals(ayaNum)}</span>`;
+    display.innerHTML = html;
   }
 
   function encSelectWord(el, sura, aya, wordNum) {
     document.querySelectorAll('.enc-word-span').forEach(s => s.classList.remove('selected'));
-    el.classList.add('selected');
+    if (el) el.classList.add('selected');
     encSelectedWordNum = wordNum;
     
-    document.getElementById('enc-word-selected').textContent = el.textContent.trim();
-    document.getElementById('enc-word-panel').style.display = 'block';
-    document.getElementById('enc-word-content').textContent = 'اختر قسماً لعرض علوم هذه الكلمة...';
+    const wordText = el ? el.textContent.trim() : '';
+    const wordHeaderEl = document.getElementById('enc-word-selected');
+    if (wordHeaderEl) wordHeaderEl.textContent = wordText;
+
+    const panel = document.getElementById('enc-word-panel');
+    if (panel) panel.style.display = 'block';
     
-    // Auto-fetch meaning
-    const firstTab = document.querySelector('.enc-word-tab');
-    if (firstTab) encFetchWord('meaning-word', firstTab);
+    // جلب التبويب النشط أو التلقائي (معنى غريب القرآن oldv)
+    const activeTab = document.querySelector('.enc-word-tab.active') || document.querySelector('.enc-word-tab');
+    const slug = activeTab ? (activeTab.getAttribute('data-slug') || 'meaning-word-oldv') : 'meaning-word-oldv';
+    encFetchWord(slug, activeTab);
   }
 
   async function encFetchWord(slug, btn) {
@@ -1437,38 +1882,115 @@
         return;
       }
 
-      // 2. معنى غريب القرآن وتصريف الكلمة
-      if (slug === 'meaning-word') {
-        let textParts = [];
+      // 2. معنى غريب القرآن والمفردات من SurahApp
+      if (slug === 'meaning-word-oldv' || slug === 'meaning-word') {
         try {
-          const [rTasreef, rEerab] = await Promise.allSettled([
-            fetch(`https://dev.surahapp.com/api/v1/word/word-tasreef/${sura}/${aya}/${word}`).then(r => r.ok ? r.json() : null),
-            fetch(`https://dev.surahapp.com/api/v1/word/eerab-word/${sura}/${aya}/${word}`).then(r => r.ok ? r.json() : null)
-          ]);
-          if (rTasreef.status === 'fulfilled' && rTasreef.value) {
-            const val = Array.isArray(rTasreef.value) ? rTasreef.value.map(d=>d.content||d.text).join('<br>') : (rTasreef.value.content||rTasreef.value.text);
-            if (val) textParts.push(`<div style="background:rgba(27,107,69,0.15); border:1px solid var(--emerald-light); border-radius:10px; padding:12px; margin-bottom:10px;"><strong style="color:var(--emerald-light)">🌱 تصريف ودلالة اللفظة وجذرها:</strong><br>${val}</div>`);
-          }
-          if (rEerab.status === 'fulfilled' && rEerab.value) {
-            const val = Array.isArray(rEerab.value) ? rEerab.value.map(d=>d.content||d.text).join('<br>') : (rEerab.value.content||rEerab.value.text);
-            if (val) textParts.push(`<div style="background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.3); border-radius:10px; padding:12px;"><strong style="color:var(--gold-light)">📖 المعنى الإعرابي والبياني للكلمة:</strong><br>${val}</div>`);
+          const res = await fetch(`https://dev.surahapp.com/api/v1/word/meaning-word-oldv/${sura}/${aya}/${word}`);
+          if (res.ok) {
+            const data = await res.json();
+            const text = data.content || (Array.isArray(data) ? data.map(d=>d.content).join('<br>') : '');
+            if (text) {
+              contentEl.innerHTML = `
+                <div style="background:rgba(201,168,76,0.1); border:1px solid var(--gold); border-radius:12px; padding:16px;">
+                  <strong style="color:var(--gold-light); font-size:16px;">📖 معاني المفردات وغريب القرآن:</strong><br><br>
+                  ${text.replace(/\n/g, '<br>')}
+                </div>
+              `;
+              return;
+            }
           }
         } catch(e) {}
-
-        if (textParts.length > 0) {
-          contentEl.innerHTML = textParts.join('');
-          return;
-        }
       }
 
-      // 3. صورة توضيحية
+      // 3. إعراب الكلمة
+      if (slug === 'eerab-word') {
+        try {
+          const res = await fetch(`https://dev.surahapp.com/api/v1/word/eerab-word/${sura}/${aya}/${word}`);
+          if (res.ok) {
+            const data = await res.json();
+            const text = data.content || (Array.isArray(data) ? data.map(d=>d.content).join('<br>') : '');
+            if (text) {
+              contentEl.innerHTML = `
+                <div style="background:rgba(27,107,69,0.15); border:1px solid var(--emerald-light); border-radius:12px; padding:16px;">
+                  <strong style="color:var(--emerald-light); font-size:16px;">📐 إعراب الكلمة وموقعها النحوي:</strong><br><br>
+                  ${text.replace(/\n/g, '<br>')}
+                </div>
+              `;
+              return;
+            }
+          }
+        } catch(e) {}
+      }
+
+      // 4. تصريف الكلمة والوزن الصرفي
+      if (slug === 'word-tasreef') {
+        try {
+          const res = await fetch(`https://dev.surahapp.com/api/v1/word/word-tasreef/${sura}/${aya}/${word}`);
+          if (res.ok) {
+            const data = await res.json();
+            const text = data.content || (Array.isArray(data) ? data.map(d=>d.content).join('<br>') : '');
+            if (text) {
+              contentEl.innerHTML = `
+                <div style="background:rgba(56,189,248,0.1); border:1px solid var(--blue); border-radius:12px; padding:16px;">
+                  <strong style="color:var(--blue); font-size:16px;">🌱 تصريف الكلمة والوزن الصرفي والجذر:</strong><br><br>
+                  ${text.replace(/\n/g, '<br>')}
+                </div>
+              `;
+              return;
+            }
+          }
+        } catch(e) {}
+      }
+
+      // 5. اختلاف القراءات العشر في الكلمة
+      if (slug === 'word-qeraat') {
+        try {
+          const res = await fetch(`https://dev.surahapp.com/api/v1/word/word-qeraat/${sura}/${aya}/${word}`);
+          if (res.ok) {
+            const data = await res.json();
+            const text = data.content || (Array.isArray(data) ? data.map(d=>d.content).join('<br>') : '');
+            if (text) {
+              contentEl.innerHTML = `
+                <div style="background:rgba(192,132,252,0.1); border:1px solid #c084fc; border-radius:12px; padding:16px;">
+                  <strong style="color:#c084fc; font-size:16px;">📜 وجوه القراءات العشر في الكلمة:</strong><br><br>
+                  ${text.replace(/\n/g, '<br>')}
+                </div>
+              `;
+              return;
+            }
+          }
+        } catch(e) {}
+      }
+
+      // 6. توجيه القراءات وعللها
+      if (slug === 'tawjih-qiraat') {
+        try {
+          const res = await fetch(`https://dev.surahapp.com/api/v1/word/tawjih-qiraat/${sura}/${aya}/${word}`);
+          if (res.ok) {
+            const data = await res.json();
+            const text = data.content || (Array.isArray(data) ? data.map(d=>d.content).join('<br>') : '');
+            if (text) {
+              contentEl.innerHTML = `
+                <div style="background:rgba(251,146,60,0.1); border:1px solid #fb923c; border-radius:12px; padding:16px;">
+                  <strong style="color:#fb923c; font-size:16px;">⚖️ توجيه القراءات وعللها اللغوية والبيانية:</strong><br><br>
+                  ${text.replace(/\n/g, '<br>')}
+                </div>
+              `;
+              return;
+            }
+          }
+        } catch(e) {}
+      }
+
+      // 7. صورة توضيحية للكلمة
       if (slug === 'word-pic') {
         try {
           const resp = await fetch(`https://dev.surahapp.com/api/v1/word/word-pic/${sura}/${aya}/${word}`);
           if (resp.ok) {
             const data = await resp.json();
             if (data.media && data.media.length > 0) {
-              contentEl.innerHTML = `<div style="text-align:center;"><img src="${data.media[0].large_url}" style="max-width:100%; border-radius:12px;"><div style="margin-top:6px; font-size:12px; color:var(--text-muted)">${data.content || ''}</div></div>`;
+              const imgUrl = data.media[0].large_url || data.media[0].url || data.media[0].medium_url;
+              contentEl.innerHTML = `<div style="text-align:center;"><img src="${imgUrl}" style="max-width:100%; border-radius:12px;"><div style="margin-top:6px; font-size:12px; color:var(--text-muted)">${data.content || ''}</div></div>`;
               return;
             }
           }
@@ -1477,7 +1999,7 @@
         return;
       }
 
-      // 4. أماكن ورودها
+      // 8. أماكن ورودها الجغرافية
       if (slug === 'amaaken-words') {
         try {
           const resp = await fetch(`https://dev.surahapp.com/api/v1/word/amaaken-words/${sura}/${aya}/${word}`);
@@ -1494,7 +2016,7 @@
         return;
       }
 
-      // 5. الطلبات العامة على SurahApp
+      // 9. أي طلب آخر عام
       const url = 'https://dev.surahapp.com/api/v1/word/' + slug + '/' + sura + '/' + aya + '/' + word;
       const resp = await fetch(url);
       if (resp.status === 404) { contentEl.textContent = 'لا توجد بيانات مسجلة لهذه الكلمة في هذا القسم تحديداً.'; return; }
@@ -2559,12 +3081,56 @@ let ttsCurrentIdx = 0;
 let isTtsPlaying = false;
 let isTtsPaused = false;
 
+// ─── دوال المساعدة الأساسية ───
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function copyTextById(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  navigator.clipboard.writeText(el.innerText || el.textContent).then(() => {
+    showToast('تم نسخ النص', 'success');
+  }).catch(() => {
+    showToast('تعذر النسخ', 'error');
+  });
+}
+
+/**
+ * تنظيف نص الآية القرآنية من:
+ * 1. رمز نهاية الآية العثماني ۝ (U+06DD)
+ * 2. الأحرف العثمانية التزيينية لرقم الآية في نطاقات: U+FD3E-FD3F, U+FB50-FDFF, U+E000-F8FF (Private Use)
+ * 3. الأرقام العربية الشرقية داخل دائرة الآية
+ */
+function cleanUthmaniAyahMarks(text) {
+  if (!text) return '';
+  return text
+    // رمز نهاية الآية ۝
+    .replace(/\u06DD[\u0660-\u0669\u06F0-\u06F9]*/g, '')
+    // Private Use Area (مستخدمة لرقم الآية في خط KFGQPC)
+    .replace(/[\uE000-\uF8FF]/g, '')
+    // Presentation Forms A - بعض الحروف المركبة المستخدمة كأرقام
+    .replace(/[\uFB50-\uFDFF]/g, '')
+    // Presentation Forms B
+    .replace(/[\uFE70-\uFEFF]/g, '')
+    // أحرف بج وئح وما شابهها المركبة (0xFC00-0xFC64)
+    .replace(/[\uFC00-\uFCFF]/g, '')
+    // أرقام عثمانية مفردة بعد التنظيف
+    .replace(/\u06DD/g, '')
+    .trim();
+}
+
 function sanitizeTextForTts(text) {
   if (!text) return '';
   // إزالة وسوم ماركداون والرموز الخاصة حتى لا ينطقها القارئ الصوتي
-  return text
+  return cleanUthmaniAyahMarks(text)
     .replace(/[#*`_~>\[\](){}|]/g, ' ')
-    .replace(/۝/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -2579,68 +3145,116 @@ function onGlobalVoiceChange(val) {
   const sel2 = document.getElementById('tts-voice-select');
   if (sel1 && sel1.value !== val) sel1.value = val;
   if (sel2 && sel2.value !== val) sel2.value = val;
-  showToast(val ? `تم اختيار صوت القارئ: ${val}` : 'تم ضبط صوت القارئ على التلقائي الأفضل', 'info');
+
+  const friendly = {
+    '__NAAYF__': 'Microsoft Naayf (ذكر سعودي)',
+    '__HODA__': 'Microsoft Hoda (أنثى مصرية)',
+    '__TARIK__': 'Microsoft Tarik (ذكر مغربي)',
+    '__SALMA__': 'Microsoft Salma (أنثى)',
+    '__ZARIYAH__': 'Google Arabic',
+  };
+  const label = friendly[val] || (val ? val.split(' ')[0] : 'التلقائي الأفضل');
+  showToast(`تم اختيار صوت القارئ: ${label}`, 'info');
+}
+
+// خريطة الأصوات المحددة مسبقاً إلى أسمائها الحقيقية في متصفحات مختلفة
+const VOICE_ALIAS_MAP = {
+  '__NAAYF__':   ['Microsoft Naayf', 'Naayf', 'Microsoft Naayf Online (Natural)'],
+  '__HODA__':    ['Microsoft Hoda',  'Hoda',  'Microsoft Hoda Online (Natural)', 'Microsoft Raneem'],
+  '__TARIK__':   ['Microsoft Tarik', 'Tarik'],
+  '__SALMA__':   ['Microsoft Salma', 'Salma'],
+  '__ZARIYAH__': ['Google العربية', 'Google Arabic', 'Google ar', 'Zariyah'],
+};
+
+function resolveVoiceAlias(aliasOrName) {
+  if (!aliasOrName) return null;
+  const voices = synth ? synth.getVoices() : [];
+  // إذا كان alias محدد
+  if (VOICE_ALIAS_MAP[aliasOrName]) {
+    for (const candidate of VOICE_ALIAS_MAP[aliasOrName]) {
+      const found = voices.find(v => v.name === candidate || v.name.includes(candidate.split(' ')[1] || candidate));
+      if (found) return found;
+    }
+  }
+  // بحث مباشر باسم الصوت
+  return voices.find(v => v.name === aliasOrName) || null;
 }
 
 function populateVoices() {
   if (!synth) return;
-  const select1 = document.getElementById('tts-voice-select');
-  const select2 = document.getElementById('global-voice-select');
-  if (!select1 && !select2) return;
   const voices = synth.getVoices();
   const savedVoice = localStorage.getItem('SELECTED_TTS_VOICE') || '';
 
-  // فرز الأصوات العربية وترقية الأصوات الطبيعية العالية الجودة (Natural / Neural / Naayf / Hoda / Shakir / Salma / Zeina / Google Arabic)
-  const arVoices = voices.filter(v => v.lang && (v.lang.toLowerCase().startsWith('ar') || v.lang.toLowerCase().includes('ar') || /arabic/i.test(v.name))).sort((a, b) => {
-    const isNaturalA = /natural|neural|naayf|hoda|tarik|salma|shakir|yousef|zeina|laila|maged/i.test(a.name) ? 1 : 0;
-    const isNaturalB = /natural|neural|naayf|hoda|tarik|salma|shakir|yousef|zeina|laila|maged/i.test(b.name) ? 1 : 0;
-    return isNaturalB - isNaturalA;
+  const arVoices = voices.filter(v => v.lang && (v.lang.toLowerCase().startsWith('ar') || /arabic/i.test(v.name))).sort((a, b) => {
+    const pA = /natural|neural|naayf|hoda|tarik|salma|shakir|yousef|zeina|laila|maged|zariyah/i.test(a.name) ? 1 : 0;
+    const pB = /natural|neural|naayf|hoda|tarik|salma|shakir|yousef|zeina|laila|maged|zariyah/i.test(b.name) ? 1 : 0;
+    return pB - pA;
   });
-  const otherVoices = voices.filter(v => !arVoices.includes(v));
 
-  [select1, select2].forEach(sel => {
-    if (!sel) return;
-    sel.innerHTML = '';
-
-    const optDefault = document.createElement('option');
-    optDefault.value = '';
-    optDefault.textContent = '(أفضل صوت عربي تلقائي)';
-    sel.appendChild(optDefault);
+  // تحديث قائمة global-voice-select: أضف فقط في الـ optgroup الثانية "أصوات النظام"
+  const globalSel = document.getElementById('global-voice-select');
+  if (globalSel) {
+    // احذف فقط optgroup النظام إن وجد، ثم أعد بناءه
+    const existingSystemGrp = Array.from(globalSel.querySelectorAll('optgroup')).find(g => g.label.includes('النظام'));
+    if (existingSystemGrp) existingSystemGrp.remove();
 
     if (arVoices.length > 0) {
       const grp = document.createElement('optgroup');
-      grp.label = '🇸🇦 أصوات اللغة العربية الفصيحة المجانية';
+      grp.label = '🖥️ أصوات النظام (تُحمّل تلقائياً)';
       arVoices.forEach(v => {
         const opt = document.createElement('option');
         opt.value = v.name;
         opt.textContent = `${v.name} (${v.lang})`;
         grp.appendChild(opt);
       });
-      sel.appendChild(grp);
-    } else {
-      const optNone = document.createElement('option');
-      optNone.value = '';
-      optNone.textContent = '(لا يتوفر صوت عربي بنظامك - يرجى تفعيل حزمة العربية بالمتصفح)';
-      sel.appendChild(optNone);
+      globalSel.appendChild(grp);
     }
 
-    if (otherVoices.length > 0) {
+    if (savedVoice) globalSel.value = savedVoice;
+  }
+
+  // تحديث قائمة tts-voice-select (داخل تبويب التفريغ)
+  const ttsSel = document.getElementById('tts-voice-select');
+  if (ttsSel) {
+    ttsSel.innerHTML = '';
+    const opt0 = document.createElement('option');
+    opt0.value = '';
+    opt0.textContent = '(أفضل صوت عربي تلقائي)';
+    ttsSel.appendChild(opt0);
+
+    const staticVoices = [
+      { val: '__NAAYF__', label: 'Microsoft Naayf (ذكر عربي سعودي)' },
+      { val: '__HODA__',  label: 'Microsoft Hoda (أنثى عربية مصرية)' },
+      { val: '__TARIK__', label: 'Microsoft Tarik (ذكر عربي مغربي)' },
+      { val: '__SALMA__', label: 'Microsoft Salma (أنثى عربية)' },
+      { val: '__ZARIYAH__', label: 'Google Arabic (صوت جوجل عربي)' },
+    ];
+    const grpStatic = document.createElement('optgroup');
+    grpStatic.label = '🇸🇦 أصوات عربية مُوصى بها';
+    staticVoices.forEach(sv => {
+      const opt = document.createElement('option');
+      opt.value = sv.val;
+      opt.textContent = sv.label;
+      grpStatic.appendChild(opt);
+    });
+    ttsSel.appendChild(grpStatic);
+
+    if (arVoices.length > 0) {
       const grp2 = document.createElement('optgroup');
-      grp2.label = '🌐 أصوات النظام الأخرى';
-      otherVoices.slice(0, 10).forEach(v => {
+      grp2.label = '🖥️ أصوات النظام المثبتة';
+      arVoices.forEach(v => {
         const opt = document.createElement('option');
         opt.value = v.name;
         opt.textContent = `${v.name} (${v.lang})`;
         grp2.appendChild(opt);
       });
-      sel.appendChild(grp2);
+      ttsSel.appendChild(grp2);
     }
 
-    if (savedVoice) {
-      sel.value = savedVoice;
-    }
-  });
+    if (savedVoice) ttsSel.value = savedVoice;
+  }
 }
+
 if (synth) {
   populateVoices();
   synth.onvoiceschanged = populateVoices;
@@ -2707,12 +3321,13 @@ function playNextTtsChunk() {
   const preferredVoiceName = localStorage.getItem('SELECTED_TTS_VOICE') ||
                              document.getElementById('global-voice-select')?.value ||
                              document.getElementById('tts-voice-select')?.value;
+
+  // حل الـ alias للأصوات المحددة مسبقاً (__NAAYF__, __HODA__, إلخ)
+  const resolvedVoice = resolveVoiceAlias(preferredVoiceName);
   const arVoices = synth.getVoices().filter(v => v.lang && (v.lang.toLowerCase().startsWith('ar') || /arabic/i.test(v.name)));
 
-  if (preferredVoiceName) {
-    const v = synth.getVoices().find(x => x.name === preferredVoiceName);
-    if (v) utterance.voice = v;
-    else if (arVoices.length > 0) utterance.voice = arVoices[0];
+  if (resolvedVoice) {
+    utterance.voice = resolvedVoice;
   } else if (arVoices.length > 0) {
     utterance.voice = arVoices[0];
   }
@@ -3482,15 +4097,324 @@ function answerUserLocally(q) {
   };
 }
 
+// ─── دوال المحادثة الذكية التفاعلية (Chat) ───
+let CHAT_HISTORY = []; // سجل المحادثة
+
+function autoResizeTextarea(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function clearChatHistory() {
+  CHAT_HISTORY = [];
+  const container = document.getElementById('chat-messages');
+  if (container) {
+    container.innerHTML = `
+      <div class="chat-msg bot">
+        <div class="msg-avatar">☪</div>
+        <div class="msg-bubble">
+          <p><strong>وعليكم السلام ورحمة الله وبركاته! 🌿 أهلاً بك مجدداً.</strong></p>
+          <p style="margin-top:6px; font-size:13.5px; line-height:1.7;">تم مسح المحادثة. كيف يمكنني مساعدتك؟</p>
+          <div class="msg-time"><span>الآن</span> · <span>محرك حواري مدعوم بالمصادر</span></div>
+        </div>
+      </div>`;
+  }
+  showToast('تم مسح المحادثة', 'info');
+}
+
+function quickChatPrompt(text) {
+  const input = document.getElementById('chat-input');
+  if (input) {
+    input.value = text;
+    autoResizeTextarea(input);
+    sendChatMessage();
+  }
+}
+
+function appendChatMessage(role, text, provider) {
+  const container = document.getElementById('chat-messages');
+  if (!container) return;
+  const div = document.createElement('div');
+  div.className = `chat-msg ${role}`;
+  const now = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+  if (role === 'user') {
+    div.innerHTML = `
+      <div class="msg-bubble" style="background:linear-gradient(135deg,var(--emerald),var(--emerald-light)); margin-right:auto; margin-left:0;">
+        <p style="font-size:14px; line-height:1.7; color:#fff;">${escHtml(text)}</p>
+        <div class="msg-time" style="color:rgba(255,255,255,0.7);"><span>${now}</span></div>
+      </div>
+      <div class="msg-avatar" style="background:linear-gradient(135deg,var(--gold),var(--gold-dark));">👤</div>`;
+  } else {
+    const msgId = 'msg-' + Date.now();
+    div.innerHTML = `
+      <div class="msg-avatar">☪</div>
+      <div class="msg-bubble">
+        <div id="${msgId}" style="font-size:14px; line-height:1.9; white-space:pre-wrap;">${escHtml(text)}</div>
+        <div class="msg-time">
+          <span>${now}</span> · <span style="color:var(--gold-light);">${escHtml(provider || 'محرك حواري')}</span>
+        </div>
+        <div style="display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;">
+          <button class="act-btn" onclick="speakTextById('${msgId}')" style="font-size:11px; padding:3px 8px;">🔊 استماع</button>
+          <button class="act-btn stop" onclick="stopSpeech()" style="font-size:11px; padding:3px 8px;">⏹️ إيقاف</button>
+          <button class="act-btn" onclick="copyTextById('${msgId}')" style="font-size:11px; padding:3px 8px;">📋 نسخ</button>
+        </div>
+      </div>`;
+  }
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+async function sendChatMessage() {
+  const inputEl = document.getElementById('chat-input');
+  if (!inputEl) return;
+  const q = inputEl.value.trim();
+  if (!q) return;
+
+  inputEl.value = '';
+  autoResizeTextarea(inputEl);
+  inputEl.disabled = true;
+  const sendBtn = document.getElementById('chat-send-btn');
+  if (sendBtn) sendBtn.disabled = true;
+
+  // إضافة رسالة المستخدم
+  appendChatMessage('user', q, '');
+  CHAT_HISTORY.push({ role: 'user', text: q });
+
+  // إظهار مؤشر الكتابة
+  const typing = document.getElementById('chat-typing-indicator');
+  if (typing) typing.style.display = 'flex';
+
+  const apiKey = (localStorage.getItem('GEMINI_API_KEY') || '').trim();
+  const relevantSources = findRelevantSourcesLocally(q);
+
+  let answered = false;
+
+  // محاولة Gemini أولاً
+  if (apiKey) {
+    const contextText = relevantSources.map(s => `[مصدر: ${s.title || s.ref}]\n${s.text || s.fullText}`).join('\n\n');
+    const systemPrompt = `أنت «مساعد الذكاء الاصطناعي الإسلامي»، محادث ذكي يتحدث بطلاقة وأسلوب طبيعي كما يتحدث أي نموذج AI متطور. تحدث بحرية وعفوية وودية. في المسائل الشرعية استند للقرآن والسنة. قل "لا أعلم" عند غياب الدليل. ممنوع كتابة أكواد أو إنشاء صور.
+${contextText ? '\n\nالمصادر المتاحة:\n' + contextText : ''}`;
+
+    // بناء سجل المحادثة للإرسال
+    const historyForApi = CHAT_HISTORY.slice(-10).map(m => ({
+      role: m.role === 'user' ? 'user' : 'model',
+      parts: [{ text: m.text }]
+    }));
+
+    const modelsToTry = [
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
+      'gemini-1.5-flash-latest'
+    ];
+
+    for (const model of modelsToTry) {
+      if (answered) break;
+      try {
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        const body = {
+          system_instruction: { parts: [{ text: systemPrompt }] },
+          contents: historyForApi,
+          generationConfig: { temperature: 0.7, maxOutputTokens: 1500 }
+        };
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (res.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+          const ans = data.candidates[0].content.parts[0].text;
+          if (typing) typing.style.display = 'none';
+          appendChatMessage('bot', ans, `Gemini (${model})`);
+          CHAT_HISTORY.push({ role: 'model', text: ans });
+          answered = true;
+        } else if (data.error) {
+          console.log(`[Gemini ${model}] error:`, data.error.message);
+        }
+      } catch (err) {
+        console.log(`[Gemini ${model}] fetch error:`, err.message);
+      }
+    }
+  }
+
+  // المحرك المحلي كـ fallback
+  if (!answered) {
+    const localRes = answerUserLocally(q);
+    if (typing) typing.style.display = 'none';
+    appendChatMessage('bot', localRes.answer, 'المحرك الحواري المحلي (موسوعة إسلامية 28,849 حديث)');
+    CHAT_HISTORY.push({ role: 'model', text: localRes.answer });
+  }
+
+  inputEl.disabled = false;
+  if (sendBtn) sendBtn.disabled = false;
+  inputEl.focus();
+}
+
+// ─── تفريغ الصوت المجاني (Web Speech API + ترانسكريبشن مجانية) ───
+let uploadedAudioFile = null;
+let webSpeechRecognitionSession = null;
+
+function handleAudioFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  uploadedAudioFile = file;
+
+  const preview = document.getElementById('audio-upload-preview');
+  const player = document.getElementById('uploaded-audio-player');
+  const filename = document.getElementById('uploaded-audio-filename');
+
+  if (preview) preview.style.display = 'flex';
+  if (player) player.src = URL.createObjectURL(file);
+  if (filename) filename.textContent = `📁 ${file.name} (${(file.size / 1024).toFixed(0)} كيلوبايت)`;
+
+  showToast('تم تحميل الملف الصوتي، اضغط "تفريغ مجاني فوري"', 'success');
+}
+
+async function transcribeUploadedAudio() {
+  // طريقة 1: Web Speech API لتفريغ الصوت مجاناً (بدون أي token أو API خارجي)
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    // طريقة 2: إظهار الملف في المشغل وطلب من المستخدم الاستماع
+    if (!uploadedAudioFile) {
+      showToast('يرجى اختيار ملف صوتي أولاً', 'warning');
+      return;
+    }
+    showToast('متصفحك لا يدعم التفريغ التلقائي. الملف جاهز للاستماع. يمكنك الاستماع وكتابة النص يدوياً في حقل الرسالة.', 'info', 8000);
+    return;
+  }
+
+  if (!uploadedAudioFile) {
+    showToast('يرجى اختيار ملف صوتي أولاً', 'warning');
+    return;
+  }
+
+  const btn = document.getElementById('transcribe-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ جارٍ التفريغ...'; }
+
+  showToast('بدأ التفريغ المجاني بـ Web Speech API...', 'info', 5000);
+
+  // تشغيل الملف الصوتي وفي نفس الوقت تشغيل SpeechRecognition
+  const player = document.getElementById('uploaded-audio-player');
+  if (player) {
+    player.currentTime = 0;
+    player.play().catch(() => {});
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'ar-SA';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  let transcript = '';
+
+  recognition.onresult = (event) => {
+    let interim = '';
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      if (event.results[i].isFinal) {
+        transcript += event.results[i][0].transcript + ' ';
+      } else {
+        interim += event.results[i][0].transcript;
+      }
+    }
+    const chatInput = document.getElementById('chat-input');
+    if (chatInput) chatInput.value = (transcript + interim).trim();
+  };
+
+  recognition.onerror = (e) => {
+    console.log('SpeechRecognition error:', e.error);
+    if (btn) { btn.disabled = false; btn.textContent = '⚡ تفريغ مجاني فوري'; }
+    if (e.error === 'not-allowed') {
+      showToast('يرجى السماح بالوصول للميكروفون لتفريغ الصوت', 'warning', 5000);
+    }
+  };
+
+  recognition.onend = () => {
+    if (btn) { btn.disabled = false; btn.textContent = '✅ انتهى التفريغ'; }
+    if (player) player.pause();
+    if (transcript.trim()) {
+      showToast('✅ تم التفريغ بنجاح! راجع النص في حقل الإدخال.', 'success', 4000);
+      const chatInput = document.getElementById('chat-input');
+      if (chatInput) autoResizeTextarea(chatInput);
+    } else {
+      showToast('لم يُتعرف على الصوت. تأكد من جودة الملف أو جرب ملفاً آخر.', 'warning', 5000);
+    }
+  };
+
+  recognition.start();
+  webSpeechRecognitionSession = recognition;
+
+  // إيقاف التفريغ تلقائياً بعد انتهاء الملف الصوتي
+  if (player) {
+    player.onended = () => {
+      setTimeout(() => {
+        try { recognition.stop(); } catch(e) {}
+      }, 1500);
+    };
+  }
+}
+
+// ─── تعريف toggleSpeechRecognition للميكروفون الحي ───
+let activeSpeechRecognitions = {};
+function toggleSpeechRecognition(inputId, btnId) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    showToast('متصفحك لا يدعم الإدخال الصوتي. جرب Chrome أو Edge.', 'warning', 4000);
+    return;
+  }
+
+  if (activeSpeechRecognitions[inputId]) {
+    try { activeSpeechRecognitions[inputId].stop(); } catch(e) {}
+    activeSpeechRecognitions[inputId] = null;
+    const btn = document.getElementById(btnId);
+    if (btn) { btn.textContent = '🎙️'; btn.style.color = ''; }
+    return;
+  }
+
+  const input = document.getElementById(inputId);
+  const btn = document.getElementById(btnId);
+  if (btn) { btn.textContent = '🔴'; btn.style.color = 'var(--red)'; }
+
+  const rec = new SpeechRecognition();
+  rec.lang = 'ar-SA';
+  rec.continuous = true;
+  rec.interimResults = true;
+
+  rec.onresult = (event) => {
+    let text = '';
+    for (let i = 0; i < event.results.length; i++) {
+      text += event.results[i][0].transcript;
+    }
+    if (input) input.value = text;
+  };
+  rec.onerror = () => {
+    if (btn) { btn.textContent = '🎙️'; btn.style.color = ''; }
+    activeSpeechRecognitions[inputId] = null;
+  };
+  rec.onend = () => {
+    if (btn) { btn.textContent = '🎙️'; btn.style.color = ''; }
+    activeSpeechRecognitions[inputId] = null;
+  };
+  rec.start();
+  activeSpeechRecognitions[inputId] = rec;
+}
+
 // ─── 12. السؤال المعرفي الحواري الموثوق ───
 async function askQuestion() {
-  const q = document.getElementById('question').value.trim();
+  const qEl = document.getElementById('question') || document.getElementById('chat-input');
+  const q = qEl ? qEl.value.trim() : '';
   if (!q) { showToast('يُرجى كتابة سؤالك أولاً', 'warning'); return; }
 
-  document.getElementById('results').style.display = 'block';
-  document.getElementById('loading-box').style.display = 'flex';
-  document.getElementById('answer-box').innerHTML = '';
-  document.getElementById('ask-btn').disabled = true;
+  const resultsEl = document.getElementById('results');
+  const loadingEl = document.getElementById('loading-box');
+  const answerEl = document.getElementById('answer-box');
+  const askBtn = document.getElementById('ask-btn');
+
+  if (resultsEl) resultsEl.style.display = 'block';
+  if (loadingEl) loadingEl.style.display = 'flex';
+  if (answerEl) answerEl.innerHTML = '';
+  if (askBtn) askBtn.disabled = true;
 
   const relevantSources = findRelevantSourcesLocally(q);
   const apiKey = (localStorage.getItem('GEMINI_API_KEY') || '').trim();
@@ -3517,7 +4441,8 @@ ${q}`;
 
     const modelsToTry = [
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent'
     ];
 
     let geminiSuccess = false;
@@ -3537,10 +4462,10 @@ ${q}`;
         const data = await res.json();
         if (res.ok && data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
           const ans = data.candidates[0].content.parts[0].text;
-          document.getElementById('loading-box').style.display = 'none';
+          if (loadingEl) loadingEl.style.display = 'none';
           renderAnswerUI(ans, relevantSources, "Google Gemini AI (نموذج حواري مربوط بالمصادر وموسوعة سورة)");
           geminiSuccess = true;
-          document.getElementById('ask-btn').disabled = false;
+          if (askBtn) askBtn.disabled = false;
           return;
         } else if (data.error) {
           geminiErrorMsg = data.error.message || ('رمز الخطأ: ' + res.status);
@@ -3556,15 +4481,16 @@ ${q}`;
   }
 
   // المحرك الحواري الذكي المدمج
-  document.getElementById('loading-box').style.display = 'none';
+  if (loadingEl) loadingEl.style.display = 'none';
   const localRes = answerUserLocally(q);
   renderAnswerUI(
     localRes.answer,
     localRes.sources,
     "المحرك الحواري الذكي المدمج (مربوط بالموسوعة ومحكم بالمصادر)"
   );
-  document.getElementById('ask-btn').disabled = false;
+  if (askBtn) askBtn.disabled = false;
 }
+
 
 function findRelevantSourcesLocally(q) {
   const normQ = normalizeArabic(q);
@@ -4097,7 +5023,8 @@ function parseIsnadText(sanadText) {
   // تنظيف شامل للألقاب والأدعية التبجيلية
   clean = clean.replace(/\s*(?:رضي\s*الله\s*(?:عنهما|عنهم|عنها|عنه)|رحمه\s*الله|عليه\s*السلام|صلى\s*الله\s*عليه\s*وسلم|كرم\s*الله\s*وجهه|رضوان\s*الله\s*عليهم|على\s*المنبر|يقول|قال)\s*/gi, ' ');
 
-  const tokens = clean.split(/(?:حدثنا|حدثني|أخبرنا|أخبرني|أنبأنا|عن|سمعت|أنه سمع|قال سمعت|يقول سمعت|قال)/gi)
+  // ⚡ الفصل بحروف التحديث والرواية مع الإبقاء على ترتيب النص
+  const tokens = clean.split(/(?:حدثنا|حدثني|أخبرنا|أخبرني|أنبأنا|عن|سمعت|أنه\s+سمع|قال\s+سمعت|يقول\s+سمعت|قال)/gi)
     .map(s => s.trim()).filter(s => s.length > 2);
 
   // قائمة كلمات الأفعال والأسماء التي يستحيل أن تكون أسماء رواة
@@ -4106,9 +5033,10 @@ function parseIsnadText(sanadText) {
     'الصدق', 'الكذب', 'الأعمال', 'النيات', 'النساء', 'الرجال', 'الماء', 'المسجد', 'البيت', 'يوم', 'الساعة',
     'القيامة', 'المؤمن', 'المسلم', 'الكافر', 'المنافق', 'حتى', 'إذا', 'إلا', 'لكن', 'أن', 'إن', 'كل',
     'توضأ', 'صلى', 'صام', 'حج', 'خرج', 'دخل', 'نهى', 'أمر', 'سأل', 'أتى', 'جاء', 'رأى', 'كان', 'يكون',
-    'أحدكم', 'نفسه', 'ماله', 'ولده', 'أهله', 'الناس', 'أجمعين'
+    'أحدكم', 'نفسه', 'ماله', 'ولده', 'أهله', 'الناس', 'أجمعين', 'محمد'
   ]);
 
+  // الاحتفاظ بالترتيب الأصلي للنص (المحدِّث الأول هو الأعلى في السند)
   const recognized = [];
 
   tokens.forEach(rawTok => {
@@ -4146,46 +5074,19 @@ function parseIsnadText(sanadText) {
     const words = tok.split(/\s+/);
     const hasForbidden = words.some(w => forbiddenHadithWords.has(w));
     if (!hasForbidden && (tok.includes(' بن ') || tok.startsWith('أبو ') || tok.startsWith('ابن ') || tok.startsWith('أم '))) {
-      // تنظيف الاسم والتحقق من الطول
-      if (tok.length > 5 && tok.length < 35 && !recognized.includes(tok)) {
+      if (tok.length > 5 && tok.length < 40 && !recognized.includes(tok)) {
         recognized.push(tok);
       }
     }
   });
 
-  // دالة حساب سنة الوفاة التاريخية لترتيب حلقات السند ترتيباً تصاعدياً حقيقياً
-  function getDeathYearNum(name) {
-    if (name.includes('محمد رسول الله') || name.includes('رسول الله')) return 11;
-    const key = Object.keys(AUTHENTIC_NARRATORS_DB).find(k => name.includes(k) || k.includes(name));
-    const info = AUTHENTIC_NARRATORS_DB[key];
-    if (info && info.death) {
-      const m = info.death.match(/\d+/);
-      if (m) return parseInt(m[0], 10);
-      if (info.death.includes('عبد الملك')) return 85;
-    }
-    if (info && info.tabaqa) {
-      if (info.tabaqa.includes('صحابي') || info.tabaqa.includes('صحابة')) return 70;
-      if (info.tabaqa.includes('كبار التابعين') || info.tabaqa.includes('سيد التابعين')) return 100;
-      if (info.tabaqa.includes('أوساط التابعين') || info.tabaqa.includes('الرابعة')) return 120;
-      if (info.tabaqa.includes('الخامسة')) return 140;
-      if (info.tabaqa.includes('السابعة') || info.tabaqa.includes('أتباع التابعين')) return 170;
-      if (info.tabaqa.includes('الثامنة')) return 190;
-      if (info.tabaqa.includes('التاسعة')) return 200;
-      if (info.tabaqa.includes('العاشرة')) return 230;
-      if (info.tabaqa.includes('المصنف')) return 260;
-    }
-    return 150;
-  }
+  // ترتيب الأسانيد: النص يبدأ من المحدِّث الأخير (المصنِّف) إلى الصحابي
+  // نعكسه ليبدأ المشجر من النبي ﷺ ثم الصحابي ثم التابعي ... حتى المصنِّف
+  // لكن أولاً نضع النبي ﷺ في القمة دائماً
+  const reversedNarrators = [...recognized].reverse();
 
-  // فرز الرواة ترتيباً زمنياً تصاعدياً صارماً:
-  // يبدأ من الصحابي (الأقرب لعهد النبي ﷺ) ثم التابعي ثم أتباع التابعين وصولاً للمصنف والمخرج
-  const sortedNarrators = [...recognized].filter(n => !n.includes('رسول الله')).sort((a, b) => {
-    return getDeathYearNum(a) - getDeathYearNum(b);
-  });
-
-  // وضع المصدر المعصوم ﷺ أولاً في قمة المشجر
   const ordered = ['محمد رسول الله ﷺ'];
-  sortedNarrators.forEach(n => {
+  reversedNarrators.forEach(n => {
     if (!ordered.includes(n)) ordered.push(n);
   });
 
@@ -4196,7 +5097,7 @@ function renderIsnadNodes(narrators) {
   const container = document.getElementById('isnad-tree-root');
   container.innerHTML = '';
   document.getElementById('isnad-display-card').style.display = 'block';
-  document.getElementById('isnad-count-badge').textContent = `${narrators.length} حلقات إسنادية متصلة زمنياً`;
+  document.getElementById('isnad-count-badge').textContent = `${narrators.length} حلقات إسنادية متصلة`;
 
   narrators.forEach((name, idx) => {
     const isProphet = idx === 0;
@@ -4205,7 +5106,12 @@ function renderIsnadNodes(narrators) {
 
     const key = Object.keys(AUTHENTIC_NARRATORS_DB).find(k => name.includes(k));
     const info = AUTHENTIC_NARRATORS_DB[key] || {};
-    const deathYear = info.death ? `توفي: ${info.death}` : 'من رواة الحديث الثقات';
+
+    // ⚡ عرض سنة الوفاة فقط إذا كانت موجودة في قاعدة البيانات (لا تخمين)
+    const deathStr = info.death ? `📅 توفي: ${info.death}` : '';
+
+    // ⚡ عرض مكان الإقامة فقط إذا كان موجوداً في قاعدة البيانات
+    const locStr = info.loc ? `📍 إقامته: ${info.loc}` : '';
 
     let nodeClass = 'isnad-node';
     let tagClass = 'tag-narrator';
@@ -4215,6 +5121,7 @@ function renderIsnadNodes(narrators) {
     else if (isSahabi) { nodeClass += ' sahabi'; tagClass = 'tag-sahabi'; tagText = 'صحابي جليل (عدل)'; }
     else if (isAuthor) { nodeClass += ' author'; tagClass = 'tag-author'; tagText = 'المصنف والمخرج للكتاب'; }
     else if (idx === 2) { tagClass = 'tag-tabiee'; tagText = 'كبار التابعين'; }
+    else if (info.tabaqa) { tagText = info.tabaqa.split('(')[0].trim().slice(0, 30) || 'راوٍ ثقة ثبت'; }
 
     const nodeEl = document.createElement('div');
     nodeEl.className = nodeClass;
@@ -4222,11 +5129,11 @@ function renderIsnadNodes(narrators) {
     nodeEl.innerHTML = `
       <div class="node-header">
         <span class="node-tag ${tagClass}">${tagText}</span>
-        <span style="background:rgba(201,168,76,0.15); color:var(--gold-light); font-size:11px; padding:2px 8px; border-radius:8px; font-weight:700">📅 ${deathYear}</span>
+        ${deathStr ? `<span style="background:rgba(201,168,76,0.15); color:var(--gold-light); font-size:11px; padding:2px 8px; border-radius:8px; font-weight:700">${deathStr}</span>` : ''}
       </div>
       <div class="node-name" style="margin-top:6px">${escHtml(name)}</div>
       <div style="font-size:11.5px; color:var(--text-muted); margin-top:4px">
-        ${isProphet ? 'عن جبريل عليه السلام عن رب العزة جل وعلا' : (info.loc ? `📍 إقامته: ${info.loc} · انقر لفتح بطاقة الجرح والتعديل 🔍` : 'سماع وتحديث متصل · انقر للبطاقة التوثيقية 🔍')}
+        ${isProphet ? 'عن جبريل عليه السلام عن رب العزة جل وعلا' : (locStr ? `${locStr} · انقر لفتح بطاقة الجرح والتعديل 🔍` : 'انقر لفتح بطاقة الجرح والتعديل 🔍')}
       </div>
     `;
     container.appendChild(nodeEl);
@@ -4248,6 +5155,7 @@ function renderIsnadNodes(narrators) {
     }
   });
 }
+
 
 let CURRENT_NARRATOR_DATA = {};
 function showNarratorInfo(rawName) {
