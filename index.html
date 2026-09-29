@@ -717,6 +717,12 @@
                 <option value="Husary_128kbps" data-type="ayah">🎙️ محمود خليل الحصري — مرتل (حفص - آية آية)</option>
                 <option value="Minshawy_Murattal_128kbps" data-type="ayah">🎙️ محمد صديق المنشاوي — مرتل (حفص - آية آية)</option>
                 <option value="Abdul_Basit_Murattal_192kbps" data-type="ayah">🎙️ عبد الباسط عبد الصمد — مرتل (حفص - آية آية)</option>
+                <option value="Nasser_Alqatami_128kbps" data-type="ayah">🎙️ ناصر القطامي (حفص - آية آية)</option>
+                <option value="Hudhaify_128kbps" data-type="ayah">🎙️ علي عبد الرحمن الحذيفي (حفص - آية آية)</option>
+                <option value="Muhammad_Ayyoub_128kbps" data-type="ayah">🎙️ محمد أيوب (حفص - آية آية)</option>
+                <option value="Abdullah_Basfar_128kbps" data-type="ayah">🎙️ عبد الله بصفر (حفص - آية آية)</option>
+                <option value="Fares_Abbad_64kbps" data-type="ayah">🎙️ فارس عباد (حفص - آية آية)</option>
+                <option value="https://server6.mp3quran.net/abkr/" data-type="surah">🎙️ إدريس أبكر (حفص - سورة كاملة)</option>
                 <option value="warsh/warsh_yassin_al_jazaery_64kbps" data-type="ayah">🎙️ [ورش عن نافع] — الشيخ ياسين الجزائري (آية آية)</option>
                 <option value="warsh/warsh_Abdul_Basit_128kbps" data-type="ayah">🎙️ [ورش عن نافع] — الشيخ عبد الباسط عبد الصمد (آية آية)</option>
                 <option value="https://server13.mp3quran.net/husr/Rewayat-Qalon-A-n-Nafi/" data-type="surah">🎙️ [قالون عن نافع] — الشيخ محمود خليل الحصري (سورة كاملة)</option>
@@ -1116,7 +1122,7 @@
 
     <!-- ملحوظة هامة -->
     <div style="background: linear-gradient(135deg,#1a2a18,#0d1a0c); border: 1px solid var(--emerald-light); border-radius:12px; padding:12px 16px; margin-bottom:14px; font-size:13px; color:var(--gold-light); direction:rtl;">
-      <strong>📌 تنبيه:</strong> جميع التفاسير (الميسر، ابن كثير، السعدي، الطبري...) وإعراب الآيات وعلوم القرآن المعروضة هنا مبنية على <strong>رواية حفص عن عاصم</strong> من موسوعة سورة الموثوقة. نصوص الروايات الأخرى مستخرجة من مشروع خطوط الروايات العثمانية.
+      <strong>📌 تنبيه:</strong> جميع التفاسير (الميسر، ابن كثير، السعدي، الطبري...) وإعراب الآيات وعلوم القرآن المعروضة هنا مبنية على <strong>رواية حفص عن عاصم</strong> من موسوعة سورة الموثوقة. نصوص الروايات الأخرى مستخرجة من مجمع الملك فهد لطباعة المصحف الشريف.
     </div>
 
     <!-- شريط الإعدادات الرئيسية -->
@@ -1325,23 +1331,28 @@
     let ayaText = null;
     const d = encQuranData;
     
+    let currentAyahPage = 1;
     if (Array.isArray(d)) {
-      // flat list of ayas: {sura, aya, text} or {sura_number, aya_number, ...words}
-      const ayaObj = d.find(a => (a.sura === suraNum || a.sura_number === suraNum) && (a.aya === ayaNum || a.aya_number === ayaNum));
+      // flat list of ayas: {sura_no, aya_no, aya_text}
+      const ayaObj = d.find(a => (a.sura_no === suraNum || a.sura === suraNum || a.sura_number === suraNum) && (a.aya_no === ayaNum || a.aya === ayaNum || a.aya_number === ayaNum));
       if (ayaObj) {
+        if (ayaObj.page) currentAyahPage = ayaObj.page;
+        window.encCurrentPage = currentAyahPage;
         if (ayaObj.words && Array.isArray(ayaObj.words)) {
-          // words array
           renderWordsFromArray(ayaObj.words, suraNum, ayaNum);
-          info.textContent = SURA_NAMES_AR[suraNum-1] + ' — الآية ' + ayaNum;
+          info.textContent = SURA_NAMES_AR[suraNum-1] + ' — الآية ' + ayaNum + ' (صفحة ' + currentAyahPage + ')';
           return;
         }
-        ayaText = ayaObj.text || ayaObj.aya_text || ayaObj.content;
+        ayaText = ayaObj.aya_text || ayaObj.text || ayaObj.content;
       }
     } else if (d.suras && Array.isArray(d.suras)) {
       const sura = d.suras.find(s => s.number === suraNum || s.sura === suraNum);
       if (sura && sura.ayas) {
         const aya = sura.ayas.find(a => a.number === ayaNum || a.aya === ayaNum);
-        if (aya) ayaText = aya.text;
+        if (aya) {
+          ayaText = aya.text;
+          if (aya.page) window.encCurrentPage = aya.page;
+        }
       }
     }
 
@@ -1407,27 +1418,95 @@
     contentEl.innerHTML = '';
 
     try {
-      let url;
-      if (slug === 'word-pic') {
-        url = 'https://dev.surahapp.com/api/v1/word/word-pic/' + sura + '/' + aya + '/' + word;
-      } else {
-        url = 'https://dev.surahapp.com/api/v1/word/' + slug + '/' + sura + '/' + aya + '/' + word;
+      // 1. الرسم العثماني
+      if (slug === 'wordrasm') {
+        const wordText = document.getElementById('enc-word-selected')?.textContent.trim() || '';
+        const riwaya = encCurrentRiwaya || 'hafs';
+        const font = RIWAYA_CONFIG[riwaya]?.font || 'UthmanicHafs';
+        contentEl.innerHTML = `
+          <div style="background:rgba(201,168,76,0.08); border:1px solid rgba(201,168,76,0.3); border-radius:12px; padding:16px; text-align:center;">
+            <div style="font-family:'${font}',serif; font-size:38px; color:var(--gold-light); margin-bottom:12px;">${wordText}</div>
+            <div style="font-size:13px; color:var(--text); line-height:2; text-align:right;">
+              <strong style="color:var(--gold)">📜 الرسم العثماني التوقيفي:</strong><br>
+              • كُتبت هذه الكلمة برسم المصحف العثماني برواية <strong>${RIWAYA_CONFIG[riwaya]?.name || 'حفص عن عاصم'}</strong> المعتمد في مجمع الملك فهد لطباعة المصحف الشريف.<br>
+              • موافقة لقواعد الرسم الست: الحذف، الزيادة، الهمز، البدل، الفصل والوصل، وما فيه قراءتان.<br>
+              • الرسم العثماني سنة متبعة مجمع عليها بين الصحابة والأئمة رضوان الله عليهم.
+            </div>
+          </div>
+        `;
+        return;
       }
+
+      // 2. معنى غريب القرآن وتصريف الكلمة
+      if (slug === 'meaning-word') {
+        let textParts = [];
+        try {
+          const [rTasreef, rEerab] = await Promise.allSettled([
+            fetch(`https://dev.surahapp.com/api/v1/word/word-tasreef/${sura}/${aya}/${word}`).then(r => r.ok ? r.json() : null),
+            fetch(`https://dev.surahapp.com/api/v1/word/eerab-word/${sura}/${aya}/${word}`).then(r => r.ok ? r.json() : null)
+          ]);
+          if (rTasreef.status === 'fulfilled' && rTasreef.value) {
+            const val = Array.isArray(rTasreef.value) ? rTasreef.value.map(d=>d.content||d.text).join('<br>') : (rTasreef.value.content||rTasreef.value.text);
+            if (val) textParts.push(`<div style="background:rgba(27,107,69,0.15); border:1px solid var(--emerald-light); border-radius:10px; padding:12px; margin-bottom:10px;"><strong style="color:var(--emerald-light)">🌱 تصريف ودلالة اللفظة وجذرها:</strong><br>${val}</div>`);
+          }
+          if (rEerab.status === 'fulfilled' && rEerab.value) {
+            const val = Array.isArray(rEerab.value) ? rEerab.value.map(d=>d.content||d.text).join('<br>') : (rEerab.value.content||rEerab.value.text);
+            if (val) textParts.push(`<div style="background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.3); border-radius:10px; padding:12px;"><strong style="color:var(--gold-light)">📖 المعنى الإعرابي والبياني للكلمة:</strong><br>${val}</div>`);
+          }
+        } catch(e) {}
+
+        if (textParts.length > 0) {
+          contentEl.innerHTML = textParts.join('');
+          return;
+        }
+      }
+
+      // 3. صورة توضيحية
+      if (slug === 'word-pic') {
+        try {
+          const resp = await fetch(`https://dev.surahapp.com/api/v1/word/word-pic/${sura}/${aya}/${word}`);
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data.media && data.media.length > 0) {
+              contentEl.innerHTML = `<div style="text-align:center;"><img src="${data.media[0].large_url}" style="max-width:100%; border-radius:12px;"><div style="margin-top:6px; font-size:12px; color:var(--text-muted)">${data.content || ''}</div></div>`;
+              return;
+            }
+          }
+        } catch(e) {}
+        contentEl.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-muted); background:rgba(255,255,255,0.02); border-radius:10px;"><span style="font-size:24px">🖼️</span><br><strong style="color:var(--gold-light)">لا توجد صورة توضيحية لهذه الكلمة بعينها</strong><br><span style="font-size:12px;">(الصور في موسوعة سورة مخصصة للمفردات البيئية والتاريخية الحسية مثل: الأنعام، السفينة، الطور، الناقة، الجبال).</span></div>`;
+        return;
+      }
+
+      // 4. أماكن ورودها
+      if (slug === 'amaaken-words') {
+        try {
+          const resp = await fetch(`https://dev.surahapp.com/api/v1/word/amaaken-words/${sura}/${aya}/${word}`);
+          if (resp.ok) {
+            const data = await resp.json();
+            const text = Array.isArray(data) ? data.map(d => d.content || d.text).join('<br>') : (data.content || data.text);
+            if (text) {
+              contentEl.innerHTML = `<div style="background:rgba(56,189,248,0.1); border:1px solid var(--blue); border-radius:10px; padding:12px;"><strong style="color:var(--blue)">📍 الموضع الجغرافي للكلمة:</strong><br>${text.replace(/\n/g, '<br>')}</div>`;
+              return;
+            }
+          }
+        } catch(e) {}
+        contentEl.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-muted); background:rgba(255,255,255,0.02); border-radius:10px;"><span style="font-size:24px">📍</span><br><strong style="color:var(--blue)">هذه اللفظة ليست اسماً لموضع أو مكان جغرافي</strong><br><span style="font-size:12px;">(موسوعة الأماكن مخصصة للمدن والبقاع الجغرافية كالمدينة، مكة، بابل، إرم، سيناء، الأحقاف).</span></div>`;
+        return;
+      }
+
+      // 5. الطلبات العامة على SurahApp
+      const url = 'https://dev.surahapp.com/api/v1/word/' + slug + '/' + sura + '/' + aya + '/' + word;
       const resp = await fetch(url);
-      if (resp.status === 404) { contentEl.textContent = 'لا توجد بيانات لهذه الكلمة في هذا القسم.'; return; }
+      if (resp.status === 404) { contentEl.textContent = 'لا توجد بيانات مسجلة لهذه الكلمة في هذا القسم تحديداً.'; return; }
       if (!resp.ok) throw new Error('server error');
       const data = await resp.json();
 
-      if (slug === 'word-pic' && data.media && data.media.length > 0) {
-        contentEl.innerHTML = '<img src="' + data.media[0].large_url + '" style="max-width:100%; border-radius:12px;">';
-      } else {
-        const text = Array.isArray(data) 
-          ? data.map(d => d.content || '').join('<br>') 
-          : (data.content || data.text || 'لا يوجد محتوى.');
-        contentEl.innerHTML = text.replace(/\n/g,'<br>');
-      }
+      const text = Array.isArray(data) 
+        ? data.map(d => d.content || '').join('<br>') 
+        : (data.content || data.text || 'لا يوجد محتوى.');
+      contentEl.innerHTML = text.replace(/\n/g,'<br>');
     } catch(e) {
-      contentEl.innerHTML = '<span style="color:var(--text-muted)">خطأ في جلب البيانات. تأكد من الاتصال.</span>';
+      contentEl.innerHTML = '<span style="color:var(--text-muted)">تعذر جلب البيانات (تأكد من الاتصال بالإنترنت).</span>';
     } finally {
       loadEl.style.display = 'none';
     }
@@ -1442,10 +1521,82 @@
     loadEl.style.display = 'block';
     contentEl.innerHTML = '';
 
+    const sura = encCurrentSura;
+    const aya = encCurrentAya;
+
     try {
-      const url = 'https://dev.surahapp.com/api/v1/aya/' + slug + '/' + encCurrentSura + '/' + encCurrentAya;
+      // 1. التفسير الميسر
+      if (slug === 'w-moyassar') {
+        try {
+          const resp = await fetch(`https://quranenc.com/api/v1/translation/aya/arabic_moyassar/${sura}/${aya}`);
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data.result?.translation) {
+              contentEl.innerHTML = `<div style="background:rgba(45,158,104,0.12); border:1px solid var(--emerald-light); border-radius:12px; padding:16px;"><strong style="color:var(--emerald-light); font-size:15px;">📖 التفسير الميسر (مجمع الملك فهد):</strong><br><br>${data.result.translation}</div>`;
+              return;
+            }
+          }
+        } catch(e) {}
+        try {
+          const resp2 = await fetch(`https://api.alquran.cloud/v1/ayah/${sura}:${aya}/ar.muyassar`);
+          if (resp2.ok) {
+            const data2 = await resp2.json();
+            if (data2.data?.text) {
+              contentEl.innerHTML = `<div style="background:rgba(45,158,104,0.12); border:1px solid var(--emerald-light); border-radius:12px; padding:16px;"><strong style="color:var(--emerald-light); font-size:15px;">📖 التفسير الميسر:</strong><br><br>${data2.data.text}</div>`;
+              return;
+            }
+          }
+        } catch(e) {}
+      }
+
+      // 2. تفسير الطبري
+      if (slug === 'tafsir-tabary') {
+        try {
+          const resp = await fetch(`https://api.alquran.cloud/v1/ayah/${sura}:${aya}/ar.tabari`);
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data.data?.text) {
+              contentEl.innerHTML = `<div style="background:rgba(201,168,76,0.1); border:1px solid var(--gold-dark); border-radius:12px; padding:16px;"><strong style="color:var(--gold-light); font-size:15px;">📖 جامع البيان في تأويل القرآن — للإمام الطبري:</strong><br><br>${data.data.text}</div>`;
+              return;
+            }
+          }
+        } catch(e) {}
+      }
+
+      // 3. تفسير البغوي
+      if (slug === 'tafsir-baghawy') {
+        try {
+          const resp = await fetch(`https://api.alquran.cloud/v1/ayah/${sura}:${aya}/ar.baghawi`);
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data.data?.text) {
+              contentEl.innerHTML = `<div style="background:rgba(201,168,76,0.1); border:1px solid var(--gold-dark); border-radius:12px; padding:16px;"><strong style="color:var(--gold-light); font-size:15px;">📖 معالم التنزيل — للإمام البغوي:</strong><br><br>${data.data.text}</div>`;
+              return;
+            }
+          }
+        } catch(e) {}
+      }
+
+      // 4. فوائد وتدبر
+      if (slug === 'fwaed_qassim') {
+        const page = window.encCurrentPage || 1;
+        try {
+          const resp = await fetch(`https://dev.surahapp.com/api/v1/page/fawaed-page/${page}`);
+          if (resp.ok) {
+            const data = await resp.json();
+            const text = Array.isArray(data) ? data.map(d => d.content || d.text).join('<br><br>') : (data.content || data.text);
+            if (text) {
+              contentEl.innerHTML = `<div style="background:rgba(201,168,76,0.12); border:1px solid var(--gold); border-radius:12px; padding:16px;"><strong style="color:var(--gold); font-size:15px;">💎 مختصر الفوائد والتدبرات (صفحة المصحف ${page}):</strong><br><br>${text.replace(/\n/g, '<br>')}</div>`;
+              return;
+            }
+          }
+        } catch(e) {}
+      }
+
+      // 5. الطلبات العامة على SurahApp
+      const url = 'https://dev.surahapp.com/api/v1/aya/' + slug + '/' + sura + '/' + aya;
       const resp = await fetch(url);
-      if (resp.status === 404) { contentEl.textContent = 'لا توجد بيانات لهذه الآية في هذا القسم.'; return; }
+      if (resp.status === 404) { contentEl.textContent = 'لا توجد بيانات مسجلة لهذه الآية في هذا القسم.'; return; }
       if (!resp.ok) throw new Error('server error');
       const data = await resp.json();
       const text = Array.isArray(data) 
@@ -1453,7 +1604,7 @@
         : (data.content || data.text || 'لا يوجد محتوى.');
       contentEl.innerHTML = text.replace(/\n/g,'<br>');
     } catch(e) {
-      contentEl.innerHTML = '<span style="color:var(--text-muted)">خطأ في جلب البيانات. تأكد من الاتصال.</span>';
+      contentEl.innerHTML = '<span style="color:var(--text-muted)">تعذر جلب التفسير من المصادر المعتمدة (تأكد من الاتصال).</span>';
     } finally {
       loadEl.style.display = 'none';
     }
@@ -2061,10 +2212,72 @@ async function audioFetchWord(slug, btn) {
   if (contentEl) contentEl.innerHTML = '';
 
   try {
-    const url = (slug === 'word-pic')
-      ? `https://dev.surahapp.com/api/v1/word/word-pic/${sura}/${aya}/${word}`
-      : `https://dev.surahapp.com/api/v1/word/${slug}/${sura}/${aya}/${word}`;
-    
+    if (slug === 'wordrasm') {
+      const wordText = document.getElementById('audio-word-selected')?.textContent.trim() || '';
+      contentEl.innerHTML = `
+        <div style="background:rgba(201,168,76,0.08); border:1px solid rgba(201,168,76,0.3); border-radius:10px; padding:12px; text-align:center;">
+          <div style="font-family:'UthmanicHafs',serif; font-size:32px; color:var(--gold-light); margin-bottom:8px;">${wordText}</div>
+          <div style="font-size:12px; color:var(--text); line-height:1.8; text-align:right;">
+            <strong>📜 الرسم العثماني:</strong> كُتبت هذه الكلمة برسم المصحف العثماني التوقيفي المعتمد بمجمع الملك فهد لطباعة المصحف الشريف.
+          </div>
+        </div>`;
+      return;
+    }
+
+    if (slug === 'meaning-word') {
+      let textParts = [];
+      try {
+        const [rTasreef, rEerab] = await Promise.allSettled([
+          fetch(`https://dev.surahapp.com/api/v1/word/word-tasreef/${sura}/${aya}/${word}`).then(r => r.ok ? r.json() : null),
+          fetch(`https://dev.surahapp.com/api/v1/word/eerab-word/${sura}/${aya}/${word}`).then(r => r.ok ? r.json() : null)
+        ]);
+        if (rTasreef.status === 'fulfilled' && rTasreef.value) {
+          const val = Array.isArray(rTasreef.value) ? rTasreef.value.map(d=>d.content||d.text).join('<br>') : (rTasreef.value.content||rTasreef.value.text);
+          if (val) textParts.push(`<div style="background:rgba(27,107,69,0.15); border:1px solid var(--emerald-light); border-radius:8px; padding:10px; margin-bottom:8px;"><strong style="color:var(--emerald-light)">🌱 تصريف ودلالة اللفظة:</strong><br>${val}</div>`);
+        }
+        if (rEerab.status === 'fulfilled' && rEerab.value) {
+          const val = Array.isArray(rEerab.value) ? rEerab.value.map(d=>d.content||d.text).join('<br>') : (rEerab.value.content||rEerab.value.text);
+          if (val) textParts.push(`<div style="background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.3); border-radius:8px; padding:10px;"><strong style="color:var(--gold-light)">📖 إعراب وموقع الكلمة:</strong><br>${val}</div>`);
+        }
+      } catch(e) {}
+      if (textParts.length > 0) {
+        contentEl.innerHTML = textParts.join('');
+        return;
+      }
+    }
+
+    if (slug === 'word-pic') {
+      try {
+        const resp = await fetch(`https://dev.surahapp.com/api/v1/word/word-pic/${sura}/${aya}/${word}`);
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.media && data.media.length > 0) {
+            contentEl.innerHTML = `<img src="${data.media[0].large_url}" style="max-width:100%; border-radius:10px; margin:6px 0;">`;
+            return;
+          }
+        }
+      } catch(e) {}
+      contentEl.innerHTML = '<span style="color:var(--text-muted); font-size:12px;">🖼️ لا توجد صورة توضيحية لهذه الكلمة (الصور خاصة بكلمات محددة كالأنعام والفلك).</span>';
+      return;
+    }
+
+    if (slug === 'amaaken-words') {
+      try {
+        const resp = await fetch(`https://dev.surahapp.com/api/v1/word/amaaken-words/${sura}/${aya}/${word}`);
+        if (resp.ok) {
+          const data = await resp.json();
+          const text = Array.isArray(data) ? data.map(d => d.content || d.text).join('<br>') : (data.content || data.text);
+          if (text) {
+            contentEl.innerHTML = `<div style="background:rgba(56,189,248,0.1); border:1px solid var(--blue); border-radius:8px; padding:10px;"><strong style="color:var(--blue)">📍 الموضع الجغرافي:</strong><br>${text}</div>`;
+            return;
+          }
+        }
+      } catch(e) {}
+      contentEl.innerHTML = '<span style="color:var(--text-muted); font-size:12px;">📍 هذه اللفظة ليست اسماً لموضع أو مكان جغرافي بالقرآن الكريم.</span>';
+      return;
+    }
+
+    const url = `https://dev.surahapp.com/api/v1/word/${slug}/${sura}/${aya}/${word}`;
     const resp = await fetch(url);
     if (resp.status === 404) {
       if (contentEl) contentEl.innerHTML = '<span style="color:var(--text-muted)">لا تتوفر بيانات لهذه الكلمة في هذا القسم.</span>';
@@ -2072,15 +2285,8 @@ async function audioFetchWord(slug, btn) {
     }
     if (!resp.ok) throw new Error('server error');
     const data = await resp.json();
-
-    if (slug === 'word-pic' && data.media && data.media.length > 0) {
-      if (contentEl) contentEl.innerHTML = `<img src="${data.media[0].large_url}" style="max-width:100%; border-radius:10px; margin:6px 0;">`;
-    } else {
-      const text = Array.isArray(data)
-        ? data.map(d => d.content || '').join('<br>')
-        : (data.content || data.text || 'لا يوجد محتوى.');
-      if (contentEl) contentEl.innerHTML = text.replace(/\n/g, '<br>');
-    }
+    const text = Array.isArray(data) ? data.map(d => d.content || '').join('<br>') : (data.content || data.text || 'لا يوجد محتوى.');
+    if (contentEl) contentEl.innerHTML = text.replace(/\n/g, '<br>');
   } catch (err) {
     if (contentEl) contentEl.innerHTML = '<span style="color:var(--text-muted)">تعذر جلب البيانات (تحقق من الاتصال بالإنترنت).</span>';
   } finally {
@@ -2101,6 +2307,70 @@ async function audioFetchAya(slug, btn) {
   if (contentEl) contentEl.innerHTML = '';
 
   try {
+    if (slug === 'w-moyassar') {
+      try {
+        const resp = await fetch(`https://quranenc.com/api/v1/translation/aya/arabic_moyassar/${sura}/${aya}`);
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.result?.translation) {
+            contentEl.innerHTML = `<strong style="color:var(--emerald-light)">📖 التفسير الميسر:</strong><br><br>${data.result.translation}`;
+            return;
+          }
+        }
+      } catch(e) {}
+      try {
+        const resp2 = await fetch(`https://api.alquran.cloud/v1/ayah/${sura}:${aya}/ar.muyassar`);
+        if (resp2.ok) {
+          const data2 = await resp2.json();
+          if (data2.data?.text) {
+            contentEl.innerHTML = `<strong style="color:var(--emerald-light)">📖 التفسير الميسر:</strong><br><br>${data2.data.text}`;
+            return;
+          }
+        }
+      } catch(e) {}
+    }
+
+    if (slug === 'tafsir-tabary') {
+      try {
+        const resp = await fetch(`https://api.alquran.cloud/v1/ayah/${sura}:${aya}/ar.tabari`);
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.data?.text) {
+            contentEl.innerHTML = `<strong style="color:var(--gold-light)">📖 تفسير الطبري:</strong><br><br>${data.data.text}`;
+            return;
+          }
+        }
+      } catch(e) {}
+    }
+
+    if (slug === 'tafsir-baghawy') {
+      try {
+        const resp = await fetch(`https://api.alquran.cloud/v1/ayah/${sura}:${aya}/ar.baghawi`);
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.data?.text) {
+            contentEl.innerHTML = `<strong style="color:var(--gold-light)">📖 تفسير البغوي:</strong><br><br>${data.data.text}`;
+            return;
+          }
+        }
+      } catch(e) {}
+    }
+
+    if (slug === 'fwaed_qassim') {
+      const page = window.encCurrentPage || 1;
+      try {
+        const resp = await fetch(`https://dev.surahapp.com/api/v1/page/fawaed-page/${page}`);
+        if (resp.ok) {
+          const data = await resp.json();
+          const text = Array.isArray(data) ? data.map(d => d.content || d.text).join('<br><br>') : (data.content || data.text);
+          if (text) {
+            contentEl.innerHTML = `<strong style="color:var(--gold)">💎 فوائد وتدبرات (صفحة ${page}):</strong><br><br>${text.replace(/\n/g, '<br>')}`;
+            return;
+          }
+        }
+      } catch(e) {}
+    }
+
     const url = `https://dev.surahapp.com/api/v1/aya/${slug}/${sura}/${aya}`;
     const resp = await fetch(url);
     if (resp.status === 404) {
@@ -3073,6 +3343,12 @@ function switchTab(name) {
     if (el) el.style.display = (t === name) ? 'block' : 'none';
     if (btn) btn.classList.toggle('active', t === name);
   });
+  if (name === 'quran-enc') {
+    if (!window.encInitialized) {
+      window.encInitialized = true;
+      encInit();
+    }
+  }
   if (name === 'isnad' && document.getElementById('isnad-tree-root').children.length === 0) {
     generateIsnadTree();
   }
@@ -3139,12 +3415,15 @@ function answerUserLocally(q) {
   }
 
   // 2. التحيات والمحادثة الإنسانية الطبيعية الحرة
-  const greetings = ['السلام عليكم', 'مرحبا', 'اهلا', 'صباح الخير', 'مساء الخير', 'كيف حالك', 'شلونك', 'ازيك', 'عساك بخير', 'شخبارك', 'حياك الله'];
-  const isGreetingOnly = greetings.some(g => normQ === normalizeArabic(g) || normQ === normalizeArabic(g) + ' و رحمة الله' || (normQ.startsWith(normalizeArabic(g)) && normQ.length < g.length + 10));
+  const greetings = ['السلام عليكم', 'سلام', 'مرحبا', 'اهلا', 'اهلين', 'هلا', 'صباح الخير', 'مساء الخير', 'كيف حالك', 'كيفك', 'شلونك', 'ازيك', 'عساك بخير', 'شخبارك', 'اخبارك', 'أخبارك', 'عامل ايه', 'حياك الله'];
+  const isGreetingOnly = greetings.some(g => {
+    const ng = normalizeArabic(g);
+    return normQ === ng || normQ === ng + ' و رحمه الله' || normQ.startsWith(ng) && normQ.length < ng.length + 15 || normQ.includes(ng) && normQ.length < 25;
+  });
 
   if (isGreetingOnly) {
     return {
-      answer: `وعليكم السلام ورحمة الله وبركاته! 🌿\n\nأهلاً ومرحباً بك أخي الفاضل. أنا بخير ونعمة وفضل عظيم من الله سبحانه وتعالى، وأرجو أن تكون في أتم الصحة والعافية والسكينة.\n\nأنا هنا معك وبجانبك كأخ ومساعد ذكي، جاهز للحوار والإجابة عن أي تساؤل أو مدارسة في علوم القرآن الكريم، والحديث النبوي الشريف، وأحكام الفقه، وسير الصحابة والتابعين. كيف يمكنني خدمتك والتيسير عليك اليوم؟`,
+      answer: `وعليكم السلام ورحمة الله وبركاته! 🌿\n\nأهلاً وسهلاً بك أخي الكريم. أنا بخير ونعمة وفضل عظيم من الله سبحانه وتعالى، وأسأل الله أن تكون بأتم الصحة والعافية والسكينة والبركة.\n\nأنا «مساعد الذكاء الاصطناعي الإسلامي»، شات بوت حواري ذكي جاهز لمحاورتك ومساعدتك في أي مسألة أو سؤال في علوم القرآن الكريم بالقراءات العشر، والأحاديث النبوية الصحيحة، والفقه الميسر، والتاريخ الإسلامي، ومواقيت الصلاة، وتفريغ الصوتيات. كيف يمكنني إفادتك اليوم؟`,
       sources: []
     };
   }
@@ -3237,12 +3516,12 @@ ${contextText ? 'المصادر والكتب الموثقة المتاحة لل�
 ${q}`;
 
     const modelsToTry = [
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent'
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
     ];
 
     let geminiSuccess = false;
+    let geminiErrorMsg = '';
 
     for (const endpoint of modelsToTry) {
       if (geminiSuccess) break;
@@ -3255,26 +3534,24 @@ ${q}`;
           })
         });
 
-        if (res.ok) {
-          const data = await res.json();
-          if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-            const ans = data.candidates[0].content.parts[0].text;
-            document.getElementById('loading-box').style.display = 'none';
-            renderAnswerUI(ans, relevantSources, "Google Gemini AI (نموذج حواري مربوط بالمصادر المعتمدة)");
-            geminiSuccess = true;
-            document.getElementById('ask-btn').disabled = false;
-            return;
-          }
-        } else {
-          console.warn(`Gemini endpoint ${endpoint} status:`, res.status);
+        const data = await res.json();
+        if (res.ok && data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+          const ans = data.candidates[0].content.parts[0].text;
+          document.getElementById('loading-box').style.display = 'none';
+          renderAnswerUI(ans, relevantSources, "Google Gemini AI (نموذج حواري مربوط بالمصادر وموسوعة سورة)");
+          geminiSuccess = true;
+          document.getElementById('ask-btn').disabled = false;
+          return;
+        } else if (data.error) {
+          geminiErrorMsg = data.error.message || ('رمز الخطأ: ' + res.status);
         }
       } catch (err) {
-        console.warn(`Gemini fetch error on ${endpoint}:`, err);
+        geminiErrorMsg = err.message;
       }
     }
 
     if (!geminiSuccess) {
-      showToast('تعذر الاتصال بـ Gemini API (تحقق من صحة المفتاح). تم تفعيل المحرك الحواري الذكي المدمج.', 'info', 5000);
+      showToast(geminiErrorMsg ? `تنبيه Gemini: ${geminiErrorMsg} (تم تفعيل المحرك المحلي المدمج)` : 'تعذر الاتصال بـ Gemini، تم تفعيل المحرك المحلي المدمج.', 'warning', 6000);
     }
   }
 
@@ -3747,6 +4024,7 @@ const AUTHENTIC_NARRATORS_DB = {
   "يحيى بن سعيد القطان": { tabaqa: "الطبقة التاسعة", grade: "إمام الجرح والتعديل، الحافظ الثبت المتقن", death: "198 هـ", loc: "البصرة", bio: "يحيى بن سعيد بن فروخ القطان التميمي البصري." },
   "عبد الرحمن بن مهدي": { tabaqa: "الطبقة التاسعة", grade: "إمام نقد الحديث والعلل، ثقة ثبت حجة", death: "198 هـ", loc: "البصرة", bio: "عبد الرحمن بن مهدي بن حسان العنبري البصري." },
   "الشافعي": { tabaqa: "مجدد القرن الثاني (صاحب المذهب)", grade: "ناصر السنة، واضع علم أصول الفقه، حجة الأمة", death: "204 هـ", loc: "مكة / بغداد / مصر", bio: "محمد بن إدريس بن العباس الشافعي المطلبي القرشي." },
+  "موسى بن أعين": { tabaqa: "الطبقة السابعة (رواة الحديث الثقات)", grade: "ثقة ثبت عابد، من أئمة الحديث بالجزيرة", death: "177 هـ", loc: "حران / الجزيرة", bio: "موسى بن أعين الجزري الحراني أبو سعيد، روى عنه أحمد بن حنبل وابن معين وأبو داود." },
   "أحمد بن حنبل": { tabaqa: "إمام أهل السنة والجماعة", grade: "أمير المؤمنين في الحديث، الصابر في المحنة، صاحب المسند", death: "241 هـ", loc: "بغداد", bio: "أحمد بن محمد بن حنبل بن هلال الشيباني المروزي ثم البغدادي." },
   "إسحاق بن راهويه": { tabaqa: "الطبقة العاشرة", grade: "أمير المؤمنين في الحديث، قرين أحمد بن حنبل وشيخ البخاري", death: "238 هـ", loc: "نيسابور", bio: "إسحاق بن إبراهيم بن مخلد الحنظلي التميمي النيسابوري." },
   "علي بن المديني": { tabaqa: "الطبقة العاشرة", grade: "شيخ البخاري، أعلم أهل زمانه بعلل الحديث واختلاف طرقه", death: "234 هـ", loc: "البصرة / بغداد", bio: "علي بن عبد الله بن جعفر السعدي المديني." },
@@ -3875,12 +4153,40 @@ function parseIsnadText(sanadText) {
     }
   });
 
-  // إضافة المصدر المعصوم ﷺ في قمة الإسناد
+  // دالة حساب سنة الوفاة التاريخية لترتيب حلقات السند ترتيباً تصاعدياً حقيقياً
+  function getDeathYearNum(name) {
+    if (name.includes('محمد رسول الله') || name.includes('رسول الله')) return 11;
+    const key = Object.keys(AUTHENTIC_NARRATORS_DB).find(k => name.includes(k) || k.includes(name));
+    const info = AUTHENTIC_NARRATORS_DB[key];
+    if (info && info.death) {
+      const m = info.death.match(/\d+/);
+      if (m) return parseInt(m[0], 10);
+      if (info.death.includes('عبد الملك')) return 85;
+    }
+    if (info && info.tabaqa) {
+      if (info.tabaqa.includes('صحابي') || info.tabaqa.includes('صحابة')) return 70;
+      if (info.tabaqa.includes('كبار التابعين') || info.tabaqa.includes('سيد التابعين')) return 100;
+      if (info.tabaqa.includes('أوساط التابعين') || info.tabaqa.includes('الرابعة')) return 120;
+      if (info.tabaqa.includes('الخامسة')) return 140;
+      if (info.tabaqa.includes('السابعة') || info.tabaqa.includes('أتباع التابعين')) return 170;
+      if (info.tabaqa.includes('الثامنة')) return 190;
+      if (info.tabaqa.includes('التاسعة')) return 200;
+      if (info.tabaqa.includes('العاشرة')) return 230;
+      if (info.tabaqa.includes('المصنف')) return 260;
+    }
+    return 150;
+  }
+
+  // فرز الرواة ترتيباً زمنياً تصاعدياً صارماً:
+  // يبدأ من الصحابي (الأقرب لعهد النبي ﷺ) ثم التابعي ثم أتباع التابعين وصولاً للمصنف والمخرج
+  const sortedNarrators = [...recognized].filter(n => !n.includes('رسول الله')).sort((a, b) => {
+    return getDeathYearNum(a) - getDeathYearNum(b);
+  });
+
+  // وضع المصدر المعصوم ﷺ أولاً في قمة المشجر
   const ordered = ['محمد رسول الله ﷺ'];
-  // ترتيب حلقات السند زمنياً من الصحابي (الذي سمع من النبي ﷺ) نزولاً إلى المصنف
-  const chainFromSahabi = [...recognized].reverse();
-  chainFromSahabi.forEach(n => {
-    if (n !== 'محمد رسول الله ﷺ' && !ordered.includes(n)) ordered.push(n);
+  sortedNarrators.forEach(n => {
+    if (!ordered.includes(n)) ordered.push(n);
   });
 
   return ordered;
