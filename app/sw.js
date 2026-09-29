@@ -1,7 +1,10 @@
+// Version: 2.2.0 - Cache Busted 2026-09-29
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js');
 
+const CACHE_VER = 'v2.2.0';
+
 if (workbox) {
-  console.log(`[SW] Workbox is loaded`);
+  console.log(`[SW] Workbox is loaded (${CACHE_VER})`);
 
   workbox.core.skipWaiting();
   workbox.core.clientsClaim();
@@ -10,7 +13,7 @@ if (workbox) {
   workbox.routing.registerRoute(
     ({request}) => request.destination === 'style' || request.destination === 'script' || request.destination === 'font',
     new workbox.strategies.StaleWhileRevalidate({
-      cacheName: 'static-resources',
+      cacheName: `static-resources-${CACHE_VER}`,
     })
   );
 
