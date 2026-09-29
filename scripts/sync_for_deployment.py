@@ -43,6 +43,14 @@ def sync_files():
     elif (APP / "encyclopedia.js").exists() and not (ROOT / "encyclopedia.js").exists():
         shutil.copy2(APP / "encyclopedia.js", ROOT / "encyclopedia.js")
 
+    # 4.1 مزامنة مجلد data للأحاديث والكتب
+    if (ROOT / "data").exists():
+        shutil.copytree(ROOT / "data", APP / "data", dirs_exist_ok=True)
+        print("  ✓ تم مزامنة مجلد data إلى app/data")
+    elif (APP / "data").exists():
+        shutil.copytree(APP / "data", ROOT / "data", dirs_exist_ok=True)
+        print("  ✓ تم مزامنة مجلد data إلى Root/data")
+
     # 5. التأكد من وجود sw.js و manifest.json و icon.svg
     for fname in ["manifest.json", "icon.svg", "sw.js", "quran_ar.json", "adhan.mp3"]:
         src = APP / fname if (APP / fname).exists() else ROOT / fname

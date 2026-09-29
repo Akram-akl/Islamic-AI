@@ -14,3 +14,4 @@ data/eval.jsonl
 data/islamic.db
 data/islamic.db-wal
 data/islamic.db-shm
+app/data/
